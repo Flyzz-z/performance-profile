@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "runId": "mvp-read_write-c32-warmup-r1",
+  "runGroup": "mvp",
+  "scenario": "read_write",
+  "scenarioLabel": "读写混合",
+  "concurrency": 32,
+  "kind": "warmup",
+  "repeat": 1,
+  "status": "passed",
+  "exitCode": 0,
+  "protocol": {
+    "warmupSeconds": 60,
+    "durationSeconds": 60,
+    "adaptiveThresholdPercent": 10,
+    "repeatCount": 2
+  },
+  "startedAt": "2026-10-05T15:18:19.555Z",
+  "finishedAt": "2026-10-05T15:19:27.676Z",
+  "command": "sysbench '/usr/share/sysbench/oltp_read_write.lua' '--db-driver=mysql' '--mysql-host=mysql' '--mysql-port=3306' '--mysql-user=root' '--mysql-password=***' '--mysql-db=sbtest' '--tables=10' '--table-size=100000' '--threads=32' '--time=60' '--report-interval=10' '--percentile=99' '--histogram=on' '--rand-type=uniform' '--rand-seed=42' '--mysql-ssl=off' 'run'",
+  "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-warmup-r1.txt",
+  "stderrPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-warmup-r1.stderr.txt",
+  "environmentPath": "benchmarks/mysql/results/environment.json",
+  "metrics": {
+    "transactions": 120592,
+    "queries": 2411840,
+    "tps": 2007.89,
+    "qps": 40157.76,
+    "averageLatencyMs": 15.93,
+    "p95Ms": 36.894,
+    "p99Ms": 71.83,
+    "p95Source": "histogram",
+    "p99Source": "sysbench",
+    "ignoredErrors": 0,
+    "reconnects": 0,
+    "queriesPerTransaction": 20,
+    "errors": 0,
+    "queriesPerSecondPerTransaction": 19.999980078589964
+  },
+  "parseError": null,
+  "environment": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-10-05T14:34:49.158Z",
+    "environmentLabel": "local Docker benchmark",
+    "exploratory": true,
+    "container": {
+      "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "imagePlatform": "linux/arm64",
+      "repositoryDigests": [
+        "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+      ],
+      "platform": "linux/arm64",
+      "mysqlCpuLimit": 4,
+      "mysqlMemoryLimit": "6g",
+      "loadGeneratorCpuLimit": 1,
+      "loadGeneratorMemoryLimit": "1g",
+      "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+    },
+    "mysql": {
+      "version": "8.4.11",
+      "bufferPoolBytes": 3221225472,
+      "maxConnections": 512,
+      "flushLogAtTransactionCommit": 1,
+      "syncBinlog": 1,
+      "transactionIsolation": "REPEATABLE-READ"
+    },
+    "loadGenerator": {
+      "sysbenchVersion": "sysbench 1.0.20",
+      "image": "performance-profile/mysql-sysbench:1.0.0"
+    },
+    "runtime": {
+      "dockerServer": "29.4.0|linux/arm64",
+      "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+      "composeVersion": "5.1.2"
+    },
+    "host": {
+      "architecture": "arm64",
+      "model": "MacBookPro18,1",
+      "cpuCount": 10,
+      "memoryBytes": 17179869184
+    },
+    "limitations": [
+      "Docker on macOS runs Linux containers inside a virtual machine.",
+      "Results include OrbStack virtualization and local SSD overhead.",
+      "Values are exploratory and must not be treated as production capacity."
+    ]
+  }
+}

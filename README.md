@@ -15,3 +15,13 @@ npm run openspec:validate
 ```
 
 OpenSpec 规格与变更记录位于 `openspec/`。
+
+## 当前结果
+
+MySQL 本地 Docker 测试页面：
+
+```bash
+npm run site
+```
+
+打开 `http://127.0.0.1:4173/`。结果明确标记为 `local Docker benchmark`，不代表生产服务器性能。

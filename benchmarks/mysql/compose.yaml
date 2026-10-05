@@ -1,0 +1,66 @@
+name: performance-profile-mysql
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE}
+    platform: ${MYSQL_PLATFORM}
+    restart: "no"
+    cpus: ${MYSQL_CPUS}
+    mem_limit: ${MYSQL_MEMORY}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "127.0.0.1:${MYSQL_HOST_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./config/my.cnf:/etc/mysql/conf.d/performance-profile.cnf:ro
+    networks:
+      - benchmark
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  sysbench:
+    image: ${LOADGEN_IMAGE}
+    platform: ${MYSQL_PLATFORM}
+    profiles:
+      - tools
+    build:
+      context: ./loadgen
+    cpus: ${LOADGEN_CPUS}
+    mem_limit: ${LOADGEN_MEMORY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TABLE_COUNT: ${TABLE_COUNT}
+      TABLE_SIZE: ${TABLE_SIZE}
+    volumes:
+      - ./results:/workspace/results
+    working_dir: /workspace
+    networks:
+      - benchmark
+    entrypoint:
+      - /bin/bash
+
+volumes:
+  mysql_data:
+    name: ${MYSQL_VOLUME_NAME}
+
+networks:
+  benchmark:
+    name: ${MYSQL_NETWORK_NAME}
+    driver: bridge

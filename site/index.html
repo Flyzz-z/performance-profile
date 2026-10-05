@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Performance Profile</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark">PP</span>
+        <span>Performance Profile</span>
+      </a>
+      <span class="environment-chip">Local benchmark lab</span>
+    </header>
+
+    <main>
+      <section class="index-intro">
+        <p class="eyebrow">Component profiles</p>
+        <h1>常见互联网组件性能画像</h1>
+        <p class="lede">
+          使用统一实验协议记录不同场景下的吞吐、延迟和资源表现。
+        </p>
+      </section>
+
+      <section class="component-grid" aria-label="组件列表">
+        <article class="component-card" data-mysql-card>
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">Database</p>
+              <h2>MySQL</h2>
+            </div>
+            <span class="tag">local Docker benchmark</span>
+          </div>
+          <p class="component-description">
+            主键点查、索引更新和读写混合负载。
+          </p>
+          <div class="metric-row" data-mysql-headline>
+            <span>正在读取测试结果...</span>
+          </div>
+          <a class="button-link" href="./mysql.html">查看详情</a>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

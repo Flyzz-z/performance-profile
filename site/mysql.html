@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MySQL 性能报告</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark">PP</span>
+        <span>Performance Profile</span>
+      </a>
+      <a class="back-link" href="./index.html">返回索引</a>
+    </header>
+
+    <main>
+      <section class="component-header">
+        <div>
+          <p class="eyebrow">Database profile</p>
+          <h1>MySQL</h1>
+          <p class="lede" data-mysql-summary>正在读取测试结果...</p>
+        </div>
+        <div class="environment-panel">
+          <span class="tag">local Docker benchmark</span>
+          <dl>
+            <div><dt>版本</dt><dd data-mysql-version>-</dd></div>
+            <div><dt>平台</dt><dd data-mysql-platform>-</dd></div>
+            <div><dt>资源</dt><dd data-mysql-resources>-</dd></div>
+            <div><dt>测试时间</dt><dd data-mysql-tested-at>-</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Scope</p>
+          <h2>测试范围</h2>
+        </div>
+        <div class="summary-grid">
+          <div>
+            <span>数据集</span>
+            <strong data-mysql-dataset>-</strong>
+          </div>
+          <div>
+            <span>并发</span>
+            <strong data-mysql-concurrency>-</strong>
+          </div>
+          <div>
+            <span>协议</span>
+            <strong data-mysql-protocol>-</strong>
+          </div>
+          <div>
+            <span>场景</span>
+            <strong data-mysql-scenarios>-</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Throughput</p>
+          <h2>吞吐与并发</h2>
+        </div>
+        <div class="chart-frame">
+          <div id="throughput-chart" class="chart"></div>
+        </div>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Latency</p>
+          <h2>延迟与并发</h2>
+        </div>
+        <div class="chart-frame">
+          <div id="latency-chart" class="chart"></div>
+        </div>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Read vs write</p>
+          <h2>读写差异</h2>
+        </div>
+        <div class="comparison-grid" id="comparison-grid"></div>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Stability</p>
+          <h2>运行稳定性</h2>
+        </div>
+        <div class="table-frame">
+          <table>
+            <thead>
+              <tr>
+                <th>场景</th>
+                <th>并发</th>
+                <th>运行次数</th>
+                <th>TPS</th>
+                <th>p99</th>
+                <th>波动</th>
+                <th>判定</th>
+              </tr>
+            </thead>
+            <tbody id="stability-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Raw data</p>
+          <h2>原始结果</h2>
+        </div>
+        <details class="raw-results">
+          <summary>展开原始运行</summary>
+          <div id="raw-result-list" class="raw-result-list"></div>
+        </details>
+      </section>
+
+      <section class="section-band">
+        <div class="section-heading">
+          <p class="eyebrow">Limitations</p>
+          <h2>结论边界</h2>
+        </div>
+        <ul class="limitations" id="limitations-list"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

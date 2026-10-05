@@ -4,9 +4,17 @@
   "private": true,
   "description": "Benchmarks and quantified performance profiles for common internet infrastructure components.",
   "scripts": {
+    "mysql:up": "docker compose --env-file benchmarks/mysql/.env -f benchmarks/mysql/compose.yaml up -d mysql",
+    "mysql:down": "docker compose --env-file benchmarks/mysql/.env -f benchmarks/mysql/compose.yaml down --volumes --remove-orphans",
+    "mysql:prepare": "node benchmarks/mysql/scripts/prepare.mjs",
+    "mysql:benchmark": "node benchmarks/mysql/scripts/run.mjs",
+    "mysql:collect": "node benchmarks/mysql/scripts/collect.mjs",
+    "mysql:mvp": "npm run mysql:prepare && npm run mysql:benchmark && npm run mysql:collect",
+    "test:mysql": "node --test benchmarks/mysql/scripts/test/*.test.mjs",
     "openspec": "openspec",
     "openspec:list": "openspec list",
-    "openspec:validate": "openspec validate --all --strict"
+    "openspec:validate": "openspec validate --all --strict",
+    "site": "node site/server.mjs"
   },
   "devDependencies": {
     "@fission-ai/openspec": "^1.13.2"
