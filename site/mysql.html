@@ -3,141 +3,68 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MySQL 性能报告</title>
+    <title>MySQL | Performance Profile</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body data-page="mysql">
     <header class="topbar">
-      <a class="brand" href="./index.html">
-        <span class="brand-mark">PP</span>
-        <span>Performance Profile</span>
-      </a>
-      <a class="back-link" href="./index.html">返回索引</a>
+      <a class="brand" href="./index.html"><span class="brand-mark">PP</span>Performance Profile</a>
+      <nav aria-label="报告导航"><a href="./index.html">组件索引</a><span class="nav-divider">/</span><span aria-current="page">MySQL</span></nav>
     </header>
-
     <main>
-      <section class="component-header">
-        <div>
-          <p class="eyebrow">Database profile</p>
-          <h1>MySQL</h1>
-          <p class="lede" data-mysql-summary>正在读取测试结果...</p>
-        </div>
-        <div class="environment-panel">
-          <span class="tag">local Docker benchmark</span>
-          <dl>
-            <div><dt>版本</dt><dd data-mysql-version>-</dd></div>
-            <div><dt>平台</dt><dd data-mysql-platform>-</dd></div>
-            <div><dt>资源</dt><dd data-mysql-resources>-</dd></div>
-            <div><dt>测试时间</dt><dd data-mysql-tested-at>-</dd></div>
-          </dl>
-        </div>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Scope</p>
-          <h2>测试范围</h2>
-        </div>
-        <div class="summary-grid">
+      <div id="load-status" class="load-status" role="status" aria-live="polite">正在读取测试结果...</div>
+      <div id="report" hidden>
+        <section class="report-header">
           <div>
-            <span>数据集</span>
-            <strong data-mysql-dataset>-</strong>
+            <div class="title-line"><h1>MySQL <span id="mysql-version"></span></h1><span class="tag">local Docker benchmark</span></div>
+            <p class="report-meta">InnoDB · <span id="report-platform"></span> · <time id="report-time"></time> <span class="muted">UTC+8</span></p>
           </div>
-          <div>
-            <span>并发</span>
-            <strong data-mysql-concurrency>-</strong>
+          <a class="subtle-link" href="#environment">环境明细</a>
+        </section>
+        <section class="resources" aria-label="MySQL 容器资源限制">
+          <div><span>MySQL 容器 CPU 上限</span><strong id="cpu-limit"></strong><small>配置配额，非独占物理核</small></div>
+          <div><span>MySQL 容器内存上限</span><strong id="memory-limit"></strong><small>容器限制，非实际使用量</small></div>
+          <div><span>InnoDB Buffer Pool</span><strong id="buffer-pool"></strong><small>数据库缓存配置</small></div>
+          <div><span>数据集</span><strong id="dataset-size"></strong><small id="dataset-detail"></small></div>
+        </section>
+        <div class="protocol-strip" id="protocol-strip"></div>
+        <section class="dashboard" aria-labelledby="dashboard-title">
+          <div class="section-heading">
+            <div><h2 id="dashboard-title">性能看板</h2><p class="muted">读、写、混合负载 · 同环境 / 同数据集</p></div>
+            <span id="result-count" class="muted"></span>
           </div>
-          <div>
-            <span>协议</span>
-            <strong data-mysql-protocol>-</strong>
+          <div class="dashboard-toolbar">
+            <fieldset class="scenario-filter"><legend class="visually-hidden">场景筛选</legend><div id="scenario-controls"></div></fieldset>
+            <fieldset class="concurrency-filter"><legend>并发</legend><div class="segmented" id="concurrency-controls"></div></fieldset>
           </div>
-          <div>
-            <span>场景</span>
-            <strong data-mysql-scenarios>-</strong>
+          <div class="chart-grid" id="chart-grid"></div>
+          <div class="selected-values">
+            <div class="table-caption"><h3>并发 <span id="selected-concurrency"></span></h3><span class="muted">汇总值 · 延迟按事件 / 事务计量</span></div>
+            <div class="table-scroll">
+              <table aria-label="选中并发的指标"><thead><tr><th>场景</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>查询 / 事件</th><th>稳定性</th></tr></thead><tbody id="selected-body"></tbody></table>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Throughput</p>
-          <h2>查询吞吐 QPS</h2>
-          <p class="section-note">线性刻度，保留读写吞吐的真实差距</p>
-        </div>
-        <div class="chart-frame">
-          <div id="qps-chart" class="chart"></div>
-        </div>
-        <div class="section-heading section-heading-spaced">
-          <h2>事务吞吐 TPS</h2>
-          <p class="section-note">对数刻度，避免小量级场景贴近零轴</p>
-        </div>
-        <div class="chart-frame">
-          <div id="tps-chart" class="chart"></div>
-        </div>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Latency</p>
-          <h2>延迟与并发</h2>
-          <p class="section-note">对数刻度，同时展示微秒级读延迟与毫秒级写延迟</p>
-        </div>
-        <div class="chart-frame">
-          <div id="latency-chart" class="chart"></div>
-        </div>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Read vs write</p>
-          <h2>读写差异</h2>
-        </div>
-        <div class="comparison-grid" id="comparison-grid"></div>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Stability</p>
-          <h2>运行稳定性</h2>
-        </div>
-        <div class="table-frame">
-          <table>
-            <thead>
-              <tr>
-                <th>场景</th>
-                <th>并发</th>
-                <th>运行次数</th>
-                <th>TPS</th>
-                <th>p99</th>
-                <th>波动</th>
-                <th>判定</th>
-              </tr>
-            </thead>
-            <tbody id="stability-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Raw data</p>
-          <h2>原始结果</h2>
-        </div>
-        <details class="raw-results">
-          <summary>展开原始运行</summary>
-          <div id="raw-result-list" class="raw-result-list"></div>
-        </details>
-      </section>
-
-      <section class="section-band">
-        <div class="section-heading">
-          <p class="eyebrow">Limitations</p>
-          <h2>结论边界</h2>
-        </div>
-        <ul class="limitations" id="limitations-list"></ul>
-      </section>
+        </section>
+        <section class="section-band" aria-labelledby="results-title">
+          <div class="section-heading"><h2 id="results-title">结果明细</h2><span class="muted">汇总与逐次运行</span></div>
+          <div id="result-details" class="result-details"></div>
+        </section>
+        <section class="section-band" id="environment" aria-labelledby="environment-title">
+          <div class="section-heading"><h2 id="environment-title">环境与实验协议</h2><span class="muted">测试时的记录快照</span></div>
+          <div id="environment-groups" class="environment-groups"></div>
+        </section>
+        <section class="section-band limitations" aria-labelledby="scope-title">
+          <h2 id="scope-title">指标来源与结论边界</h2>
+          <ul>
+            <li>p95 为延迟直方图近似值；p99 为 sysbench 原生分位数输出。两者均按测试事件 / 事务计量。</li>
+            <li>点查与索引更新每事件 1 条查询，标准读写混合每事件 20 条查询。TPS 不等同于单条 SQL 的执行速度。</li>
+            <li>macOS 上的 Linux 容器运行于 OrbStack 虚拟机，结果包含虚拟化和本地存储影响，不代表生产容量。</li>
+            <li>资源字段为记录的配置上限；未采集实时 CPU 或 I/O 瓶颈，不将观察到的拐点视作已证实的瓶颈。</li>
+          </ul>
+        </section>
+      </div>
+      <footer>Performance Profile <span>可复现的组件性能记录</span></footer>
     </main>
-
     <script type="module" src="./app.js"></script>
   </body>
 </html>

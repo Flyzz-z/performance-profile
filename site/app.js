@@ -1,371 +1,180 @@
-const SERIES_COLORS = {
-  point_select: "#1769aa",
-  update_index: "#c66a13",
-  read_write: "#1d7a4d",
-};
+import {
+  MISSING, SCENARIOS, METRICS, projectReport, peakPoint, environmentGroups,
+  formatNumber, formatLatency, formatMemory, formatDate, text, stabilityLabel, artifactUrl,
+} from "./report.mjs";
+import { MetricChart } from "./charts.mjs";
 
-const numberFormatter = new Intl.NumberFormat("zh-CN", {
-  maximumFractionDigits: 2,
-});
+const escape = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+const setText = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
+const badge = (value) => `<span class="status status-${["stable", "acceptable", "unstable", "failed"].includes(value) ? value : "missing"}">${stabilityLabel(value)}</span>`;
+const scenarioName = (series) => `<span class="scenario-name"><i class="swatch" style="background:${series.color}"></i>${escape(series.label)}</span>`;
+let report;
+let state;
+let charts = [];
+let requestNumber = 0;
 
-function formatNumber(value) {
-  return Number.isFinite(value) ? numberFormatter.format(value) : "-";
+function renderCommon() {
+  const { data } = report;
+  setText("mysql-version", text(data.component.version));
+  setText("report-platform", text(data.environment?.container?.platform));
+  setText("report-time", formatDate(data.component.testedAt));
 }
 
-function formatMs(value) {
-  return Number.isFinite(value) ? `${numberFormatter.format(value)} ms` : "-";
+function renderIndex() {
+  const { data } = report;
+  const container = data.environment?.container ?? {};
+  const mysql = data.environment?.mysql ?? {};
+  setText("index-resources", `${formatNumber(container.mysqlCpuLimit)} CPU / ${formatMemory(container.mysqlMemoryLimit)}`);
+  setText("index-buffer", `Buffer Pool ${formatMemory(mysql.bufferPoolBytes)}`);
+  const peak = peakPoint(report);
+  setText("index-peak", peak ? formatNumber(peak.qps) : "暂无有效数据");
+  setText("index-peak-scope", peak ? `${peak.label} · 并发 ${peak.concurrency} · ${stabilityLabel(peak.stability)}` : "未记录指标");
+  setText("index-tested-at", formatDate(data.component.testedAt));
 }
 
-function formatPercent(value) {
-  return Number.isFinite(value) ? `${numberFormatter.format(value)}%` : "-";
+function renderEnvironment() {
+  const { data } = report;
+  const container = data.environment?.container ?? {};
+  const mysql = data.environment?.mysql ?? {};
+  const protocol = data.protocol ?? {};
+  const dataset = data.dataset ?? {};
+  setText("cpu-limit", typeof container.mysqlCpuLimit === "number" ? `${formatNumber(container.mysqlCpuLimit)} CPU` : MISSING);
+  setText("memory-limit", formatMemory(container.mysqlMemoryLimit));
+  setText("buffer-pool", formatMemory(mysql.bufferPoolBytes));
+  setText("dataset-size", typeof dataset.actualRows === "number" ? `${formatNumber(dataset.actualRows)} 行` : MISSING);
+  setText("dataset-detail", `${text(dataset.tableCount)} 表 · 每表 ${formatNumber(dataset.tableSize)} 行`);
+  document.getElementById("protocol-strip").innerHTML = [
+    `预热 <b>${escape(text(protocol.warmupSeconds))}s</b>`,
+    `单次测量 <b>${escape(text(protocol.durationSeconds))}s</b>`,
+    `正式运行 <b>${escape(text(protocol.initialRuns))}-${escape(text(protocol.maximumRuns))} 次</b>`,
+    `TPS / p99 差异 &gt; <b>${escape(text(protocol.varianceThresholdPercent))}%</b> 补跑`,
+  ].map((item) => `<span>${item}</span>`).join("");
+  document.getElementById("environment-groups").innerHTML = environmentGroups(data).map((group) =>
+    `<details class="environment-detail"><summary>${escape(group.name)}</summary><dl>${group.rows.map((row) =>
+      `<div class="${row.value.length > 65 ? "long-value" : ""}"><dt>${escape(row.label)}</dt><dd>${escape(row.value)}</dd></div>`).join("")}</dl></details>`).join("");
 }
 
-function formatBytes(value) {
-  if (!Number.isFinite(value)) return "-";
-  const gib = value / 1024 ** 3;
-  return `${numberFormatter.format(gib)} GiB`;
-}
-
-function artifactUrl(rawOutputPath) {
-  const prefix = "benchmarks/mysql/results/";
-  return rawOutputPath.startsWith(prefix)
-    ? `./artifacts/mysql/${encodeURI(rawOutputPath.slice(prefix.length))}`
-    : "#";
-}
-
-function setText(selector, value) {
-  const element = document.querySelector(selector);
-  if (element) element.textContent = value;
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function renderLineChart(
-  container,
-  series,
-  {
-    metric,
-    valueLabel,
-    colorByScenario,
-    scale = "linear",
-    valueFormatter = formatNumber,
-  },
-) {
-  if (!container) return;
-  const width = 900;
-  const height = 340;
-  const margin = { top: 24, right: 34, bottom: 54, left: 76 };
-  const plotWidth = width - margin.left - margin.right;
-  const plotHeight = height - margin.top - margin.bottom;
-  const allPoints = series.flatMap((item) => item.points);
-  if (!allPoints.length) {
-    container.textContent = "暂无测试结果";
-    return;
-  }
-
-  const xValues = [...new Set(allPoints.map((point) => point.concurrency))].sort(
-    (left, right) => left - right,
-  );
-  const metricFor = (item) => item.metric ?? metric;
-  const yValues = series
-    .flatMap((item) =>
-      item.points.map((point) => point[metricFor(item)]),
-    )
-    .filter(Number.isFinite);
-  const positiveValues = yValues.filter((value) => value > 0);
-  let minY = 0;
-  let maxY = 1;
-  let yTicks = [];
-
-  if (scale === "log") {
-    if (!positiveValues.length) {
-      container.textContent = "暂无正值数据";
-      return;
-    }
-    const minPower = Math.floor(Math.log10(Math.min(...positiveValues)));
-    const maxPower = Math.ceil(Math.log10(Math.max(...positiveValues)));
-    minY = 10 ** minPower;
-    maxY = 10 ** Math.max(maxPower, minPower + 1);
-    yTicks = Array.from(
-      { length: Math.log10(maxY) - Math.log10(minY) + 1 },
-      (_, index) => minY * 10 ** index,
-    );
-  } else {
-    minY = 0;
-    maxY = Math.max(...yValues) * 1.12 || 1;
-    yTicks = Array.from({ length: 5 }, (_, index) => maxY * (1 - index / 4));
-  }
-
-  const xPosition = (value) =>
-    margin.left +
-    (xValues.indexOf(value) / Math.max(xValues.length - 1, 1)) * plotWidth;
-  const yPosition = (value) => {
-    if (scale === "log") {
-      const safeValue = Math.max(value, minY);
-      const logRange = Math.log10(maxY) - Math.log10(minY);
-      const ratio =
-        (Math.log10(safeValue) - Math.log10(minY)) / logRange;
-      return margin.top + plotHeight - ratio * plotHeight;
-    }
-    return margin.top + plotHeight - ((value - minY) / (maxY - minY)) * plotHeight;
+function renderControls() {
+  document.getElementById("scenario-controls").innerHTML = SCENARIOS.map((s) =>
+    `<label class="scenario-option"><input type="checkbox" value="${s.id}" checked aria-label="${s.label}"/>
+      <i class="swatch" style="background:${s.color}"></i>${s.label}</label>`).join("");
+  document.getElementById("scenario-controls").onchange = (event) => {
+    if (event.target.checked) state.visible.add(event.target.value);
+    else state.visible.delete(event.target.value);
+    renderDashboard();
   };
-
-  const gridLines = yTicks
-    .map((value) => {
-      const y = yPosition(value);
-    return `
-      <line class="chart-grid-line" x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" />
-      <text class="chart-axis" x="${margin.left - 12}" y="${y + 4}" text-anchor="end">${escapeHtml(valueFormatter(value))}</text>
-    `;
-    })
-    .join("");
-
-  const xLabels = xValues
-    .map(
-      (value) =>
-        `<text class="chart-axis" x="${xPosition(value)}" y="${height - 24}" text-anchor="middle">${value}</text>`,
-    )
-    .join("");
-
-  const paths = series
-    .map((item) => {
-      const points = item.points
-        .filter((point) => Number.isFinite(point[metricFor(item)]))
-        .sort((left, right) => left.concurrency - right.concurrency);
-      if (!points.length) return "";
-      const d = points
-        .map(
-          (point, index) =>
-            `${index === 0 ? "M" : "L"} ${xPosition(point.concurrency)} ${yPosition(point[metricFor(item)])}`,
-        )
-        .join(" ");
-      const circles = points
-        .map(
-          (point) => `
-            <circle class="chart-point" cx="${xPosition(point.concurrency)}" cy="${yPosition(point[metricFor(item)])}" r="4" fill="${colorByScenario[item.scenario]}">
-              <title>${escapeHtml(item.label)}，并发 ${point.concurrency}，${valueLabel} ${escapeHtml(valueFormatter(point[metricFor(item)]))}</title>
-            </circle>
-          `,
-        )
-        .join("");
-      return `
-        <path class="chart-series ${item.lineStyle === "dashed" ? "chart-series-dashed" : ""}" d="${d}" stroke="${colorByScenario[item.scenario]}" />
-        ${circles}
-      `;
-    })
-    .join("");
-
-  const legend = series
-    .map(
-      (item) => `
-        <span class="legend-item">
-          <span class="legend-swatch" style="background:${colorByScenario[item.scenario]}"></span>
-          ${escapeHtml(item.label)}
-        </span>
-      `,
-    )
-    .join("");
-
-  container.innerHTML = `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(valueLabel)}与并发关系图">
-      ${gridLines}
-      ${xLabels}
-      <text class="chart-label" x="${margin.left + plotWidth / 2}" y="${height - 4}" text-anchor="middle">并发数</text>
-      ${paths}
-    </svg>
-    <div class="legend">${legend}</div>
-  `;
+  document.getElementById("concurrency-controls").innerHTML = report.concurrency.map((value) =>
+    `<button type="button" data-concurrency="${value}" aria-label="并发 ${value}" aria-pressed="${value === state.selectedConcurrency}">${value}</button>`).join("");
+  document.getElementById("concurrency-controls").onclick = (event) => {
+    const button = event.target.closest("button[data-concurrency]");
+    if (button) selectConcurrency(Number(button.dataset.concurrency));
+  };
+  document.getElementById("chart-grid").innerHTML = METRICS.map((metric) =>
+    `<article class="chart-panel" data-metric="${metric.key}" aria-label="${metric.label}">
+      <div class="chart-heading"><h3>${metric.label}<span>${metric.unit}</span></h3>
+        <div class="chart-scale"><span class="axis-label">Y 轴</span><div class="segmented" aria-label="${metric.symbol} 刻度">
+          <button type="button" data-scale="linear" aria-label="${metric.symbol} 线性刻度" aria-pressed="false">线性</button>
+          <button type="button" data-scale="log" aria-label="${metric.symbol} 对数刻度" aria-pressed="true">对数</button>
+        </div></div></div>
+      <div class="chart"></div><div class="chart-note"></div>
+    </article>`).join("");
+  charts = METRICS.map((metric) => {
+    const panel = document.querySelector(`[data-metric="${metric.key}"]`);
+    panel.querySelector(".chart-scale").onclick = (event) => {
+      const button = event.target.closest("button[data-scale]");
+      if (!button) return;
+      state.scales[metric.key] = button.dataset.scale;
+      renderDashboard();
+    };
+    return new MetricChart(panel, metric, selectConcurrency);
+  });
 }
 
-function applyIndexData(data) {
-  const headline = data.headline;
-  const peak = headline?.peak;
-  const comparison = headline?.representativeComparison;
-  const container = document.querySelector("[data-mysql-headline]");
-  if (!container || !peak) return;
-  container.innerHTML = `
-    <div><span>最高吞吐</span><strong>${formatNumber(peak.qps)} QPS</strong></div>
-    <div><span>写读吞吐比</span><strong>${comparison ? `${numberFormatter.format(comparison.writeToRead.qpsRatio * 100)}%` : "-"}</strong></div>
-  `;
-  setText("[data-mysql-card] h2", `MySQL ${data.component.version}`);
+function selectConcurrency(level) {
+  state.selectedConcurrency = level;
+  renderDashboard();
 }
 
-function applyMysqlData(data) {
-  const { component, environment, dataset, protocol } = data;
-  setText(
-    "[data-mysql-summary]",
-    `${component.version} 在本机 Docker 环境中的读、写和混合负载探索性结果。`,
-  );
-  setText("[data-mysql-version]", component.version);
-  setText(
-    "[data-mysql-platform]",
-    `${environment.container.platform} / ${environment.host.architecture}`,
-  );
-  setText(
-    "[data-mysql-resources]",
-    `${environment.container.mysqlCpuLimit} vCPU / ${environment.container.mysqlMemoryLimit}`,
-  );
-  setText(
-    "[data-mysql-tested-at]",
-    new Date(component.testedAt).toLocaleString("zh-CN", { hour12: false }),
-  );
-  setText(
-    "[data-mysql-dataset]",
-    `${dataset.tableCount} 表 / ${formatNumber(dataset.actualRows)} 行`,
-  );
-  setText("[data-mysql-concurrency]", protocol.concurrency.join(" / "));
-  setText(
-    "[data-mysql-protocol]",
-    `${protocol.warmupSeconds}s 预热 + ${protocol.initialRuns} × ${protocol.durationSeconds}s`,
-  );
-  setText(
-    "[data-mysql-scenarios]",
-    data.series.map((item) => item.label).join(" / "),
-  );
-
-  const qpsSeries = data.series.map((item) => ({
-    ...item,
-    metric: "qps",
-    label: `${item.label} QPS`,
-    lineStyle: "solid",
-  }));
-  const tpsSeries = data.series.map((item) => ({
-    ...item,
-    metric: "tps",
-    label: `${item.label} TPS`,
-    lineStyle: "solid",
-  }));
-  const latencySeries = data.series.flatMap((item) => [
-    {
-      ...item,
-      metric: "p95Ms",
-      label: `${item.label} p95`,
-      lineStyle: "dashed",
-    },
-    {
-      ...item,
-      metric: "p99Ms",
-      label: `${item.label} p99`,
-      lineStyle: "solid",
-    },
-  ]);
-
-  renderLineChart(document.querySelector("#qps-chart"), qpsSeries, {
-    valueLabel: "QPS",
-    colorByScenario: SERIES_COLORS,
+function renderDashboard() {
+  const visibleSeries = report.series.filter((s) => state.visible.has(s.id));
+  document.querySelectorAll("[data-concurrency]").forEach((button) => {
+    if (button.tagName === "BUTTON") button.setAttribute("aria-pressed", String(Number(button.dataset.concurrency) === state.selectedConcurrency));
   });
-  renderLineChart(document.querySelector("#tps-chart"), tpsSeries, {
-    valueLabel: "TPS",
-    colorByScenario: SERIES_COLORS,
-    scale: "log",
+  charts.forEach((chart) => {
+    const mode = state.scales[chart.metric.key];
+    chart.panel.querySelectorAll("[data-scale]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.scale === mode)));
+    chart.update({ series: visibleSeries, concurrency: report.concurrency, selectedConcurrency: state.selectedConcurrency, mode });
   });
-  renderLineChart(document.querySelector("#latency-chart"), latencySeries, {
-    valueLabel: "延迟",
-    colorByScenario: SERIES_COLORS,
-    scale: "log",
-    valueFormatter: formatMs,
-  });
+  setText("selected-concurrency", state.selectedConcurrency ?? MISSING);
+  document.getElementById("selected-body").innerHTML = visibleSeries.length
+    ? visibleSeries.map((series) => {
+      const point = series.points.find((p) => p.concurrency === state.selectedConcurrency);
+      return `<tr data-scenario="${series.id}"><td>${scenarioName(series)}</td><td>${formatNumber(point?.qps)}</td><td>${formatNumber(point?.tps)}</td>
+        <td>${formatLatency(point?.p95Ms)}</td><td>${formatLatency(point?.p99Ms)}</td><td>${formatNumber(point?.queriesPerTransaction)}</td><td>${badge(point?.stability)}</td></tr>`;
+    }).join("")
+    : '<tr><td colspan="7">未选择场景</td></tr>';
+}
 
-  const comparisonGrid = document.querySelector("#comparison-grid");
-  if (comparisonGrid) {
-    comparisonGrid.innerHTML = data.comparisons
-      .map(
-        (comparison) => `
-          <article class="comparison-item">
-            <h3>并发 ${comparison.concurrency}</h3>
-            <dl>
-              <div><dt>写/读 TPS</dt><dd>${formatPercent(comparison.writeToRead.tpsRatio * 100)}</dd></div>
-              <div><dt>写/读 QPS</dt><dd>${formatPercent(comparison.writeToRead.qpsRatio * 100)}</dd></div>
-              <div><dt>写/读 p95</dt><dd>${numberFormatter.format(comparison.writeToRead.p95Ratio)}×</dd></div>
-              <div><dt>写/读 p99</dt><dd>${numberFormatter.format(comparison.writeToRead.p99Ratio)}×</dd></div>
-            </dl>
-          </article>
-        `,
-      )
-      .join("");
-  }
-
-  const stabilityBody = document.querySelector("#stability-body");
-  if (stabilityBody) {
-    stabilityBody.innerHTML = data.stability
-      .map(
-        (row) => `
-          <tr>
-            <td>${escapeHtml(row.scenarioLabel)}</td>
-            <td>${row.concurrency}</td>
-            <td>${row.attempts}</td>
-            <td>${formatNumber(row.selected.tps)}</td>
-            <td>${formatMs(row.selected.p99Ms)}</td>
-            <td>${formatPercent(row.spreadPercent)}</td>
-            <td><span class="status status-${escapeHtml(row.stability)}">${escapeHtml(row.stability)}</span></td>
-          </tr>
-        `,
-      )
-      .join("");
-  }
-
-  const limitations = document.querySelector("#limitations-list");
-  if (limitations) {
-    limitations.innerHTML = data.limitations
-      .map((item) => `<li>${escapeHtml(item)}</li>`)
-      .join("");
-  }
-
-  const rawResultList = document.querySelector("#raw-result-list");
-  if (rawResultList) {
-    const groups = new Map();
-    for (const result of data.rawResults) {
-      if (!groups.has(result.scenario)) {
-        groups.set(result.scenario, []);
-      }
-      groups.get(result.scenario).push(result);
-    }
-    rawResultList.innerHTML = [...groups.entries()]
-      .map(([scenario, results]) => {
-        const series = data.series.find((item) => item.scenario === scenario);
-        return `
-          <section>
-            <h3>${escapeHtml(series?.label ?? scenario)}</h3>
-            <div class="raw-link-grid">
-              ${results
-                .sort(
-                  (left, right) =>
-                    left.concurrency - right.concurrency ||
-                    left.repeat - right.repeat,
-                )
-                .map(
-                  (result) => `
-                    <a href="${artifactUrl(result.rawOutputPath)}" target="_blank" rel="noreferrer">
-                      并发 ${result.concurrency} / 第 ${result.repeat} 次
-                    </a>
-                  `,
-                )
-                .join("")}
-            </div>
-          </section>
-        `;
-      })
-      .join("");
-  }
+function renderResults() {
+  const { data } = report;
+  const validRuns = (rows) => (Array.isArray(rows) ? rows : [])
+    .filter((r) => r.status !== "failed" && r.errors === 0);
+  const points = report.series.flatMap((series) => series.points.map((point) => ({ series, point })));
+  setText("result-count", `${points.length} 个组合 · ${(data.rawResults ?? []).filter((r) => r.status === "passed").length} 次测量`);
+  document.getElementById("result-details").innerHTML = points.length ? points.map(({ series, point }) => {
+    const combination = (data.stability ?? []).find((s) => s.scenario === series.id && s.concurrency === point.concurrency);
+    const runs = validRuns(combination?.runs);
+    return `<details class="result-detail" data-scenario="${series.id}" data-level="${point.concurrency}">
+      <summary><span class="detail-heading">${scenarioName(series)} · 并发 ${point.concurrency}</span>
+        <span class="detail-stats"><span>QPS <strong>${formatNumber(point.qps)}</strong></span><span>TPS <strong>${formatNumber(point.tps)}</strong></span>
+          <span>p99 <strong>${formatLatency(point.p99Ms)}</strong></span></span>
+        <span class="detail-count">${escape(text(combination?.attempts ?? point.attempts))} 次 · 波动 ${formatNumber(combination?.spreadPercent)}%</span>${badge(point.stability)}</summary>
+      <div class="table-scroll"><table aria-label="${series.label} 并发 ${point.concurrency} 逐次结果"><thead><tr>
+        <th>运行</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>错误</th><th>原始输出</th></tr></thead><tbody>
+      ${runs.length ? runs.map((run) => {
+        const link = artifactUrl(run.rawOutputPath);
+        return `<tr><td>第 ${escape(run.repeat)} 次</td><td>${formatNumber(run.qps)}</td><td>${formatNumber(run.tps)}</td>
+          <td>${formatLatency(run.p95Ms)}</td><td>${formatLatency(run.p99Ms)}</td><td>${formatNumber(run.errors)}</td>
+          <td>${link ? `<a class="run-link" href="${escape(link)}" target="_blank" rel="noreferrer">原始输出</a>` : MISSING}</td></tr>`;
+      }).join("") : '<tr><td colspan="7">未记录逐次运行</td></tr>'}
+      </tbody></table></div></details>`;
+  }).join("") : '<p class="muted">暂无有效结果</p>';
 }
 
 async function loadData() {
+  const request = ++requestNumber;
+  charts.forEach((chart) => chart.destroy());
+  charts = [];
+  const status = document.getElementById("load-status");
+  const content = document.getElementById("report");
+  content.hidden = true;
+  status.hidden = false;
+  status.dataset.state = "loading";
+  status.textContent = "正在读取测试结果...";
   try {
     const response = await fetch("./data/mysql.json", { cache: "no-store" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) throw new Error(`请求失败（HTTP ${response.status}）`);
     const data = await response.json();
-    applyIndexData(data);
-    if (document.querySelector("#qps-chart")) {
-      applyMysqlData(data);
-    }
+    if (request !== requestNumber) return;
+    report = projectReport(data);
+    state = { visible: new Set(SCENARIOS.map((s) => s.id)), selectedConcurrency: report.selectedConcurrency,
+      scales: Object.fromEntries(METRICS.map((m) => [m.key, "log"])) };
+    renderCommon();
+    content.hidden = false;
+    if (document.body.dataset.page === "mysql") {
+      renderEnvironment();
+      renderControls();
+      renderDashboard();
+      renderResults();
+    } else renderIndex();
+    status.hidden = true;
   } catch (error) {
-    console.error("Unable to load benchmark data", error);
+    if (request !== requestNumber) return;
+    content.hidden = true;
+    status.dataset.state = "error";
+    status.innerHTML = `<strong>无法读取测试结果</strong><p>${escape(error.message)}</p><button class="retry-button" type="button">重试</button>`;
+    status.querySelector("button").onclick = loadData;
   }
 }
 

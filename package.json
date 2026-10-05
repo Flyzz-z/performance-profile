@@ -11,6 +11,8 @@
     "mysql:collect": "node benchmarks/mysql/scripts/collect.mjs",
     "mysql:mvp": "npm run mysql:prepare && npm run mysql:benchmark && npm run mysql:collect",
     "test:mysql": "node --test benchmarks/mysql/scripts/test/*.test.mjs",
+    "test:site": "node --test site/test/report.test.mjs",
+    "test:site:browser": "node site/test/browser.mjs",
     "openspec": "openspec",
     "openspec:list": "openspec list",
     "openspec:validate": "openspec validate --all --strict",

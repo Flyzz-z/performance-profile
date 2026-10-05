@@ -3,47 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Performance Profile</title>
+    <title>组件索引 | Performance Profile</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body data-page="index">
     <header class="topbar">
-      <a class="brand" href="./index.html">
-        <span class="brand-mark">PP</span>
-        <span>Performance Profile</span>
-      </a>
-      <span class="environment-chip">Local benchmark lab</span>
+      <a class="brand" href="./index.html"><span class="brand-mark">PP</span>Performance Profile</a>
+      <nav aria-label="主导航"><span aria-current="page">组件索引</span></nav>
     </header>
-
     <main>
-      <section class="index-intro">
-        <p class="eyebrow">Component profiles</p>
-        <h1>常见互联网组件性能画像</h1>
-        <p class="lede">
-          使用统一实验协议记录不同场景下的吞吐、延迟和资源表现。
-        </p>
+      <section class="report-header">
+        <div><h1>组件性能记录</h1><p class="report-meta">固定环境下的读写吞吐、延迟与运行稳定性</p></div>
+        <span class="tag">本地探索性基线</span>
       </section>
-
-      <section class="component-grid" aria-label="组件列表">
-        <article class="component-card" data-mysql-card>
-          <div class="card-heading">
-            <div>
-              <p class="eyebrow">Database</p>
-              <h2>MySQL</h2>
-            </div>
-            <span class="tag">local Docker benchmark</span>
-          </div>
-          <p class="component-description">
-            主键点查、索引更新和读写混合负载。
-          </p>
-          <div class="metric-row" data-mysql-headline>
-            <span>正在读取测试结果...</span>
-          </div>
-          <a class="button-link" href="./mysql.html">查看详情</a>
+      <div id="load-status" class="load-status" role="status" aria-live="polite">正在读取测试结果...</div>
+      <section id="report" class="index-results" hidden aria-label="已测试组件">
+        <div class="index-table-head"><span>组件与环境</span><span>资源上限</span><span>最高观测 QPS</span><span>测试记录</span></div>
+        <article class="component-entry">
+          <div><a class="component-name" href="./mysql.html">MySQL <span id="mysql-version"></span></a><p class="muted"><span id="report-platform"></span> · local Docker benchmark</p></div>
+          <div><strong id="index-resources"></strong><p class="muted" id="index-buffer"></p></div>
+          <div><strong class="index-peak" id="index-peak"></strong><p class="muted" id="index-peak-scope"></p></div>
+          <div><span id="index-tested-at"></span><p><a class="subtle-link" href="./mysql.html">查看报告</a></p></div>
         </article>
       </section>
+      <footer>Performance Profile <span>所有结论受测试环境与负载语义约束</span></footer>
     </main>
-
     <script type="module" src="./app.js"></script>
   </body>
 </html>
