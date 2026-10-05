@@ -1,0 +1,17 @@
+{
+  "name": "performance-profile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Benchmarks and quantified performance profiles for common internet infrastructure components.",
+  "scripts": {
+    "openspec": "openspec",
+    "openspec:list": "openspec list",
+    "openspec:validate": "openspec validate --all --strict"
+  },
+  "devDependencies": {
+    "@fission-ai/openspec": "^1.13.2"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

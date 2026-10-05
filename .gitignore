@@ -1,0 +1,17 @@
+node_modules/
+
+# Build and test output
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# Generated benchmark output
+benchmark-results/

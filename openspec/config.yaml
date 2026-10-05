@@ -1,0 +1,36 @@
+schema: spec-driven
+
+context: |
+  Language: zh-CN
+  All artifacts must be written in zh-CN.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+  Project: Performance Profile.
+  Goal: Build reproducible benchmarks that quantify how common internet
+  components perform under different scenarios, so results can be compared
+  and understood with evidence rather than intuition.
+  Delivery: A web presentation with one detail page per component and an
+  index page that summarizes and links to all component profiles.
+  Development: Manage the project with Git and use OpenSpec for spec-driven
+  development. Define material behavior changes through OpenSpec changes.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
