@@ -240,6 +240,16 @@ dd {
   margin-bottom: 22px;
 }
 
+.section-heading-spaced {
+  margin-top: 28px;
+}
+
+.section-note {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

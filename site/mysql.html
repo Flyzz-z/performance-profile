@@ -61,10 +61,18 @@
       <section class="section-band">
         <div class="section-heading">
           <p class="eyebrow">Throughput</p>
-          <h2>吞吐与并发</h2>
+          <h2>查询吞吐 QPS</h2>
+          <p class="section-note">线性刻度，保留读写吞吐的真实差距</p>
         </div>
         <div class="chart-frame">
-          <div id="throughput-chart" class="chart"></div>
+          <div id="qps-chart" class="chart"></div>
+        </div>
+        <div class="section-heading section-heading-spaced">
+          <h2>事务吞吐 TPS</h2>
+          <p class="section-note">对数刻度，避免小量级场景贴近零轴</p>
+        </div>
+        <div class="chart-frame">
+          <div id="tps-chart" class="chart"></div>
         </div>
       </section>
 
@@ -72,6 +80,7 @@
         <div class="section-heading">
           <p class="eyebrow">Latency</p>
           <h2>延迟与并发</h2>
+          <p class="section-note">对数刻度，同时展示微秒级读延迟与毫秒级写延迟</p>
         </div>
         <div class="chart-frame">
           <div id="latency-chart" class="chart"></div>

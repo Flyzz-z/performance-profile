@@ -53,6 +53,7 @@ function renderLineChart(
     metric,
     valueLabel,
     colorByScenario,
+    scale = "linear",
     valueFormatter = formatNumber,
   },
 ) {
@@ -77,23 +78,53 @@ function renderLineChart(
       item.points.map((point) => point[metricFor(item)]),
     )
     .filter(Number.isFinite);
-  const minY = 0;
-  const maxY = Math.max(...yValues) * 1.12 || 1;
+  const positiveValues = yValues.filter((value) => value > 0);
+  let minY = 0;
+  let maxY = 1;
+  let yTicks = [];
+
+  if (scale === "log") {
+    if (!positiveValues.length) {
+      container.textContent = "暂无正值数据";
+      return;
+    }
+    const minPower = Math.floor(Math.log10(Math.min(...positiveValues)));
+    const maxPower = Math.ceil(Math.log10(Math.max(...positiveValues)));
+    minY = 10 ** minPower;
+    maxY = 10 ** Math.max(maxPower, minPower + 1);
+    yTicks = Array.from(
+      { length: Math.log10(maxY) - Math.log10(minY) + 1 },
+      (_, index) => minY * 10 ** index,
+    );
+  } else {
+    minY = 0;
+    maxY = Math.max(...yValues) * 1.12 || 1;
+    yTicks = Array.from({ length: 5 }, (_, index) => maxY * (1 - index / 4));
+  }
+
   const xPosition = (value) =>
     margin.left +
     (xValues.indexOf(value) / Math.max(xValues.length - 1, 1)) * plotWidth;
-  const yPosition = (value) =>
-    margin.top + plotHeight - ((value - minY) / (maxY - minY)) * plotHeight;
+  const yPosition = (value) => {
+    if (scale === "log") {
+      const safeValue = Math.max(value, minY);
+      const logRange = Math.log10(maxY) - Math.log10(minY);
+      const ratio =
+        (Math.log10(safeValue) - Math.log10(minY)) / logRange;
+      return margin.top + plotHeight - ratio * plotHeight;
+    }
+    return margin.top + plotHeight - ((value - minY) / (maxY - minY)) * plotHeight;
+  };
 
-  const gridLines = Array.from({ length: 5 }, (_, index) => {
-    const ratio = index / 4;
-    const y = margin.top + plotHeight * ratio;
-    const value = maxY * (1 - ratio);
+  const gridLines = yTicks
+    .map((value) => {
+      const y = yPosition(value);
     return `
       <line class="chart-grid-line" x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" />
       <text class="chart-axis" x="${margin.left - 12}" y="${y + 4}" text-anchor="end">${escapeHtml(valueFormatter(value))}</text>
     `;
-  }).join("");
+    })
+    .join("");
 
   const xLabels = xValues
     .map(
@@ -198,20 +229,18 @@ function applyMysqlData(data) {
     data.series.map((item) => item.label).join(" / "),
   );
 
-  const throughputSeries = data.series.flatMap((item) => [
-    {
-      ...item,
-      metric: "qps",
-      label: `${item.label} QPS`,
-      lineStyle: "solid",
-    },
-    {
-      ...item,
-      metric: "tps",
-      label: `${item.label} TPS`,
-      lineStyle: "dashed",
-    },
-  ]);
+  const qpsSeries = data.series.map((item) => ({
+    ...item,
+    metric: "qps",
+    label: `${item.label} QPS`,
+    lineStyle: "solid",
+  }));
+  const tpsSeries = data.series.map((item) => ({
+    ...item,
+    metric: "tps",
+    label: `${item.label} TPS`,
+    lineStyle: "solid",
+  }));
   const latencySeries = data.series.flatMap((item) => [
     {
       ...item,
@@ -227,13 +256,19 @@ function applyMysqlData(data) {
     },
   ]);
 
-  renderLineChart(document.querySelector("#throughput-chart"), throughputSeries, {
-    valueLabel: "吞吐",
+  renderLineChart(document.querySelector("#qps-chart"), qpsSeries, {
+    valueLabel: "QPS",
     colorByScenario: SERIES_COLORS,
+  });
+  renderLineChart(document.querySelector("#tps-chart"), tpsSeries, {
+    valueLabel: "TPS",
+    colorByScenario: SERIES_COLORS,
+    scale: "log",
   });
   renderLineChart(document.querySelector("#latency-chart"), latencySeries, {
     valueLabel: "延迟",
     colorByScenario: SERIES_COLORS,
+    scale: "log",
     valueFormatter: formatMs,
   });
 
@@ -326,7 +361,7 @@ async function loadData() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     applyIndexData(data);
-    if (document.querySelector("#throughput-chart")) {
+    if (document.querySelector("#qps-chart")) {
       applyMysqlData(data);
     }
   } catch (error) {
