@@ -2,6 +2,7 @@ export const MISSING = "未记录";
 export const SCENARIOS = [
   { id: "point_select", label: "主键点查", color: "#1769aa", kind: "READ" },
   { id: "update_index", label: "索引更新", color: "#c66a13", kind: "WRITE" },
+  { id: "update_index_async", label: "索引更新（异步刷盘）", color: "#a14572", kind: "WRITE" },
   { id: "read_write", label: "读写混合", color: "#1d7a4d", kind: "MIXED" },
 ];
 export const METRICS = [
@@ -92,7 +93,7 @@ export function environmentGroups(data) {
   const dataset = data.dataset ?? {};
   const cpu = (value) => validMetric(value) ? `${formatNumber(value)} CPU` : MISSING;
   const rows = (values) => values.map(([label, value]) => ({ label, value: text(value) }));
-  return [
+  const groups = [
     { name: "MySQL 容器与配置", rows: rows([
       ["CPU 上限（配额）", cpu(container.mysqlCpuLimit)],
       ["内存上限", formatMemory(container.mysqlMemoryLimit)],
@@ -132,6 +133,22 @@ export function environmentGroups(data) {
       ["测试时间（UTC+8）", formatDate(data.component?.testedAt)],
     ]) },
   ];
+  if (data.durabilityComparison) {
+    groups[0].rows = groups[0].rows.filter((row) =>
+      !["innodb_flush_log_at_trx_commit", "sync_binlog"].includes(row.label));
+    for (const series of (data.series ?? []).filter((s) => ["update_index", "update_index_async"].includes(s.scenario))) {
+      const logging = series.environment?.mysql ?? {};
+      groups.push({ name: `${series.label} · 日志配置`, rows: rows([
+        ["报告日期（UTC+8）", formatDate(series.testedAt)],
+        ["结果组", series.runGroup],
+        ["innodb_flush_log_at_trx_commit", logging.flushLogAtTransactionCommit],
+        ["sync_binlog", logging.syncBinlog],
+        ["innodb_flush_log_at_timeout", logging.flushLogAtTimeout],
+        ["binlog 开启", logging.logBinEnabled === undefined ? null : logging.logBinEnabled ? "ON" : "OFF"],
+      ]) });
+    }
+  }
+  return groups;
 }
 
 export function projectReport(data) {
@@ -139,7 +156,8 @@ export function projectReport(data) {
     throw new Error("结果格式不兼容");
   }
   const levels = new Set((data.protocol?.concurrency ?? []).filter((v) => Number.isInteger(v) && v > 0));
-  const series = SCENARIOS.map((definition) => {
+  const series = SCENARIOS.filter((definition) => definition.id !== "update_index_async"
+    || data.series.some((item) => item.scenario === definition.id)).map((definition) => {
     const source = data.series.find((item) => item.scenario === definition.id);
     const points = (Array.isArray(source?.points) ? source.points : [])
       .filter((point) => Number.isInteger(point.concurrency) && point.concurrency > 0 && point.status !== "failed")
@@ -151,14 +169,19 @@ export function projectReport(data) {
         };
       })
       .sort((a, b) => a.concurrency - b.concurrency);
-    return { ...definition, points };
+    return { ...definition, label: typeof source?.label === "string" ? source.label : definition.label,
+      points, environment: source?.environment ?? data.environment,
+      testedAt: source?.testedAt ?? data.component.testedAt,
+      runGroup: source?.runGroup, sourceRole: source?.sourceRole };
   });
   const concurrency = [...levels].sort((a, b) => a - b);
   return { data, series, concurrency, selectedConcurrency: concurrency.at(-1) ?? null };
 }
 
 export function peakPoint(report) {
-  return report.series.flatMap((series) => series.points.map((point) => ({ ...point, label: series.label })))
+  return report.series.flatMap((series) => series.points.map((point) => ({
+    ...point, label: series.label, testedAt: series.testedAt, sourceRole: series.sourceRole,
+  })))
     .filter((point) => validMetric(point.qps)).sort((a, b) => b.qps - a.qps)[0] ?? null;
 }
 

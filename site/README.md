@@ -34,3 +34,9 @@ npm run test:site:browser
 测试自行启动临时本地服务，结束后关闭，不影响 `npm run site` 的预览服务。验证四种视口、触摸/键盘、场景筛选、刻度、并发、原始输出、缺失环境和请求/解析错误。
 
 截图默认写入 `/tmp/performance-profile-dashboard`；可通过 `SITE_SCREENSHOTS` 环境变量改变目录。
+
+## 索引更新日志对照
+
+异步场景仅在报告中确实存在时显示。新同步/异步曲线使用各自的 `series.environment`、`testedAt` 和 `runGroup`，不把基础资源记录的单一日志配置套到所有曲线。
+
+旧点查/混合的 `sourceRole=historical` 表示背景参照，新两组为 `paired`。风险与跨批次说明位于看板上方，每个组合展开后显示报告日期和实际日志参数。没有新增历史报告选择或独立比值面板。

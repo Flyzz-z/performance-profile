@@ -8,11 +8,11 @@ import {
 
 const data = JSON.parse(readFileSync(new URL("../data/mysql.json", import.meta.url)));
 
-test("projects all nine combinations without changing source values", () => {
+test("projects all report combinations without changing source values", () => {
   const before = JSON.stringify(data);
   const report = projectReport(data);
   assert.deepEqual(report.concurrency, [1, 8, 32]);
-  assert.equal(report.series.flatMap((s) => s.points).length, 9);
+  assert.equal(report.series.flatMap((s) => s.points).length, data.series.flatMap((s) => s.points).length);
   for (const series of report.series) {
     for (const point of series.points) {
       const source = data.series.find((s) => s.scenario === series.id).points.find((p) => p.concurrency === point.concurrency);
@@ -20,7 +20,7 @@ test("projects all nine combinations without changing source values", () => {
     }
   }
   assert.equal(JSON.stringify(data), before);
-  assert.equal(peakPoint(report).qps, 135335.59);
+  assert.equal(peakPoint(report).qps, Math.max(...data.series.flatMap((s) => s.points.map((p) => p.qps))));
 });
 
 test("accepts empty and partial reports, excludes failed points", () => {
@@ -52,8 +52,27 @@ test("keeps resource layers distinct and complete", () => {
   assert.equal(lookup("压测端", "CPU 上限（配额）"), "1 CPU");
   assert.equal(lookup("Docker VM", "VM 可见 CPU"), "10 CPU");
   assert.equal(lookup("宿主机", "物理内存"), "16 GiB");
-  assert.equal(lookup("MySQL 容器与配置", "sync_binlog"), "1");
+  if (!data.durabilityComparison) assert.equal(lookup("MySQL 容器与配置", "sync_binlog"), "1");
   assert.match(lookup("MySQL 容器与配置", "镜像摘要"), /sha256:/);
+});
+
+test("fourth series uses its actual environment without inventing historical binlog state", () => {
+  const fixture = structuredClone(data);
+  fixture.series = fixture.series.filter((series) => series.scenario !== "update_index_async");
+  const source = fixture.series.find((series) => series.scenario === "update_index");
+  source.label = "索引更新（同步刷盘）";
+  source.environment = { mysql: { flushLogAtTransactionCommit: 1, syncBinlog: 1, logBinEnabled: true, flushLogAtTimeout: 1 } };
+  fixture.series.push({ ...structuredClone(source), scenario: "update_index_async", label: "索引更新（异步刷盘）",
+    environment: { mysql: { flushLogAtTransactionCommit: 2, syncBinlog: 0, logBinEnabled: true, flushLogAtTimeout: 1 } } });
+  fixture.durabilityComparison = { runGroup: "fixture" };
+  const report = projectReport(fixture);
+  assert.equal(report.series.length, 4);
+  assert.equal(report.series.find((s) => s.id === "update_index_async").environment.mysql.syncBinlog, 0);
+  const groups = environmentGroups(fixture);
+  assert.equal(groups.find((g) => g.name.startsWith("索引更新（异步")).rows.find((r) => r.label === "sync_binlog").value, "0");
+  assert.ok(!groups[0].rows.some((row) => row.label === "sync_binlog"));
+  fixture.series = fixture.series.filter((s) => s.scenario !== "update_index_async");
+  assert.equal(projectReport(fixture).series.length, 3);
 });
 
 test("handles incomplete and malformed environment without inventing values", () => {

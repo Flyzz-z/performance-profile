@@ -1,5 +1,5 @@
 import {
-  MISSING, SCENARIOS, METRICS, projectReport, peakPoint, environmentGroups,
+  MISSING, METRICS, projectReport, peakPoint, environmentGroups,
   formatNumber, formatLatency, formatMemory, formatDate, text, stabilityLabel, artifactUrl,
 } from "./report.mjs";
 import { MetricChart } from "./charts.mjs";
@@ -29,7 +29,8 @@ function renderIndex() {
   setText("index-buffer", `Buffer Pool ${formatMemory(mysql.bufferPoolBytes)}`);
   const peak = peakPoint(report);
   setText("index-peak", peak ? formatNumber(peak.qps) : "暂无有效数据");
-  setText("index-peak-scope", peak ? `${peak.label} · 并发 ${peak.concurrency} · ${stabilityLabel(peak.stability)}` : "未记录指标");
+  setText("index-peak-scope", peak ? `${peak.label} · 并发 ${peak.concurrency} · ${stabilityLabel(peak.stability)}${
+    peak.sourceRole === "historical" ? ` · 历史 ${formatDate(peak.testedAt).split(" ")[0]}` : ""}` : "未记录指标");
   setText("index-tested-at", formatDate(data.component.testedAt));
 }
 
@@ -39,6 +40,14 @@ function renderEnvironment() {
   const mysql = data.environment?.mysql ?? {};
   const protocol = data.protocol ?? {};
   const dataset = data.dataset ?? {};
+  if (data.durabilityComparison) {
+    setText("dashboard-scope", "同资源 / 同数据规模 · 日志策略对照；历史曲线仅作背景参照");
+    setText("durability-risk", `${data.durabilityComparison.risk} ${data.durabilityComparison.note}`);
+    document.getElementById("durability-risk").hidden = false;
+  } else {
+    setText("dashboard-scope", "读、写、混合负载 · 同环境 / 同数据集");
+    document.getElementById("durability-risk").hidden = true;
+  }
   setText("cpu-limit", typeof container.mysqlCpuLimit === "number" ? `${formatNumber(container.mysqlCpuLimit)} CPU` : MISSING);
   setText("memory-limit", formatMemory(container.mysqlMemoryLimit));
   setText("buffer-pool", formatMemory(mysql.bufferPoolBytes));
@@ -56,9 +65,9 @@ function renderEnvironment() {
 }
 
 function renderControls() {
-  document.getElementById("scenario-controls").innerHTML = SCENARIOS.map((s) =>
-    `<label class="scenario-option"><input type="checkbox" value="${s.id}" checked aria-label="${s.label}"/>
-      <i class="swatch" style="background:${s.color}"></i>${s.label}</label>`).join("");
+  document.getElementById("scenario-controls").innerHTML = report.series.map((s) =>
+    `<label class="scenario-option"><input type="checkbox" value="${s.id}" checked aria-label="${escape(s.label)}"/>
+      <i class="swatch" style="background:${s.color}"></i>${escape(s.label)}</label>`).join("");
   document.getElementById("scenario-controls").onchange = (event) => {
     if (event.target.checked) state.visible.add(event.target.value);
     else state.visible.delete(event.target.value);
@@ -125,12 +134,17 @@ function renderResults() {
   document.getElementById("result-details").innerHTML = points.length ? points.map(({ series, point }) => {
     const combination = (data.stability ?? []).find((s) => s.scenario === series.id && s.concurrency === point.concurrency);
     const runs = validRuns(combination?.runs);
+    const logging = combination?.environment?.mysql ?? series.environment?.mysql ?? {};
+    const context = `<p class="run-context">报告日期 ${escape(formatDate(combination?.testedAt ?? series.testedAt))}
+      · ${series.sourceRole === "historical" ? "历史背景参照" : series.sourceRole === "paired" ? "同批日志策略对照" : "原测试"}
+      · redo ${escape(text(logging.flushLogAtTransactionCommit))} / sync_binlog ${escape(text(logging.syncBinlog))}
+      · binlog ${logging.logBinEnabled === undefined ? MISSING : logging.logBinEnabled ? "ON" : "OFF"}</p>`;
     return `<details class="result-detail" data-scenario="${series.id}" data-level="${point.concurrency}">
       <summary><span class="detail-heading">${scenarioName(series)} · 并发 ${point.concurrency}</span>
         <span class="detail-stats"><span>QPS <strong>${formatNumber(point.qps)}</strong></span><span>TPS <strong>${formatNumber(point.tps)}</strong></span>
           <span>p99 <strong>${formatLatency(point.p99Ms)}</strong></span></span>
         <span class="detail-count">${escape(text(combination?.attempts ?? point.attempts))} 次 · 波动 ${formatNumber(combination?.spreadPercent)}%</span>${badge(point.stability)}</summary>
-      <div class="table-scroll"><table aria-label="${series.label} 并发 ${point.concurrency} 逐次结果"><thead><tr>
+      ${context}<div class="table-scroll"><table aria-label="${escape(series.label)} 并发 ${point.concurrency} 逐次结果"><thead><tr>
         <th>运行</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>错误</th><th>原始输出</th></tr></thead><tbody>
       ${runs.length ? runs.map((run) => {
         const link = artifactUrl(run.rawOutputPath);
@@ -158,7 +172,7 @@ async function loadData() {
     const data = await response.json();
     if (request !== requestNumber) return;
     report = projectReport(data);
-    state = { visible: new Set(SCENARIOS.map((s) => s.id)), selectedConcurrency: report.selectedConcurrency,
+    state = { visible: new Set(report.series.map((s) => s.id)), selectedConcurrency: report.selectedConcurrency,
       scales: Object.fromEntries(METRICS.map((m) => [m.key, "log"])) };
     renderCommon();
     content.hidden = false;

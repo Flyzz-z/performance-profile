@@ -36,6 +36,12 @@ export const SCENARIOS = {
     script: "oltp_update_index.lua",
     description: "随机更新一行并维护索引，代表写路径。",
   },
+  update_index_async: {
+    id: "update_index_async",
+    label: "索引更新（异步刷盘）",
+    script: "oltp_update_index.lua",
+    description: "相同索引更新 SQL，redo=2、sync_binlog=0，降低提交持久化保障。",
+  },
   read_write: {
     id: "read_write",
     label: "读写混合",
@@ -51,6 +57,7 @@ export const SCENARIO_ORDER = [
 ];
 
 export const CONCURRENCY_LEVELS = [1, 8, 32];
+export const DURABILITY_SCENARIOS = ["update_index", "update_index_async"];
 
 export function nowIso() {
   return new Date().toISOString();
@@ -162,12 +169,14 @@ export async function runProcess(command, args, options = {}) {
     cwd = PATHS.projectRoot,
     echo = false,
     env = process.env,
+    signal,
   } = options;
 
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
       env,
+      signal,
       stdio: ["ignore", "pipe", "pipe"],
     });
 
@@ -211,7 +220,7 @@ export async function compose(env, args, options = {}) {
 export async function composeServiceShell(env, service, command, options = {}) {
   return compose(
     env,
-    ["run", "--rm", service, "-lc", command],
+    ["run", "--rm", ...(options.containerName ? ["--name", options.containerName] : []), service, "-lc", command],
     options,
   );
 }

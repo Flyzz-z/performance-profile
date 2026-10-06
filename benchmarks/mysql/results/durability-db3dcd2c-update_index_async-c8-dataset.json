@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-06T03:40:30.030Z",
+  "database": "sbtest",
+  "tableCount": 10,
+  "tableSize": 100000,
+  "expectedRows": 1000000,
+  "actualRows": 1000000,
+  "status": "ready",
+  "command": "sysbench '/usr/share/sysbench/oltp_point_select.lua' '--db-driver=mysql' '--mysql-host=mysql' '--mysql-port=3306' '--mysql-user=root' '--mysql-password=***' '--mysql-db=sbtest' '--tables=10' '--table-size=100000' '--threads=4' '--time=1' '--report-interval=10' '--percentile=99' '--histogram=on' '--rand-type=uniform' '--rand-seed=42' '--mysql-ssl=off' 'prepare'",
+  "startedAt": "2026-10-06T03:40:21.744Z",
+  "finishedAt": "2026-10-06T03:40:28.019Z"
+}

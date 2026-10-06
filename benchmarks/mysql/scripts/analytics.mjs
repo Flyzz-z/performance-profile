@@ -4,6 +4,7 @@ import {
   SCENARIOS,
   assert,
 } from "./lib.mjs";
+import { LOGGING_MODES, assertLoggingMatch } from "./logging.mjs";
 
 function numericValues(runs, field) {
   return runs
@@ -139,9 +140,9 @@ function successfulMeasuredRuns(runs) {
   );
 }
 
-export function aggregateCombinations(runs) {
+export function aggregateCombinations(runs, scenarios = SCENARIO_ORDER) {
   const combinations = [];
-  for (const scenario of SCENARIO_ORDER) {
+  for (const scenario of scenarios) {
     for (const concurrency of CONCURRENCY_LEVELS) {
       const matching = successfulMeasuredRuns(runs)
         .filter(
@@ -256,12 +257,12 @@ export function validateRunRecord(run) {
   }
 }
 
-export function validateSiteData(siteData, { allowPartial = false } = {}) {
+export function validateSiteData(siteData, { allowPartial = false, scenarios = SCENARIO_ORDER } = {}) {
   assert(siteData.schemaVersion === 1, "Unsupported site data schema");
   assert(siteData.component?.id === "mysql", "Site data must describe MySQL");
   assert(Array.isArray(siteData.series), "Site data is missing scenario series");
   assert(
-    siteData.series.length === SCENARIO_ORDER.length,
+    siteData.series.length === scenarios.length,
     "Site data must contain all MySQL scenarios",
   );
   assert(Array.isArray(siteData.comparisons), "Site data is missing comparisons");
@@ -273,4 +274,42 @@ export function validateSiteData(siteData, { allowPartial = false } = {}) {
       );
     }
   }
+}
+
+export function validateDurabilityRuns(runs) {
+  assert(new Set(runs.map((run) => run.runGroup)).size === 1, "Cannot mix run groups");
+  for (const run of runs) {
+    assert(run.restorationVerified === true, "Logging restoration was not verified; refusing to publish");
+    assert(LOGGING_MODES[run.scenario], "Unexpected durability scenario");
+    assertLoggingMatch(run.environment?.mysql ?? {}, LOGGING_MODES[run.scenario]);
+    assert(run.status === "passed" && run.metrics?.errors === 0, `Invalid run ${run.runId}`);
+  }
+}
+
+export function mergeDurabilityReport(previous, comparison) {
+  const paired = comparison.series;
+  const names = ["point_select", "update_index", "update_index_async", "read_write"];
+  const background = (scenario) => {
+    const series = previous.series.find((s) => s.scenario === scenario);
+    return series ? { ...series, environment: series.environment ?? previous.environment,
+      testedAt: series.testedAt ?? previous.component.testedAt,
+      runGroup: series.runGroup ?? "mvp", sourceRole: "historical" } : null;
+  };
+  const series = names.map((name) => paired.find((s) => s.scenario === name) ?? background(name)).filter(Boolean);
+  const oldRows = (rows) => rows.filter((row) => row.scenario !== "update_index" && row.scenario !== "update_index_async");
+  const points = series.flatMap((item) => item.points);
+  return {
+    ...previous,
+    component: { ...previous.component, testedAt: comparison.component.testedAt },
+    series,
+    stability: [...oldRows(previous.stability), ...comparison.stability],
+    rawResults: [...oldRows(previous.rawResults), ...comparison.rawResults],
+    comparisons: [],
+    headline: { peak: [...points].sort((a, b) => b.qps - a.qps)[0], representativeComparison: null },
+    durabilityComparison: {
+      runGroup: comparison.runGroup,
+      risk: "异步刷盘降低持久化保障；VM、系统或断电故障可能丢失已确认事务或 binlog。",
+      note: "新同步/异步更新同批测量；点查和读写混合来自历史批次，仅作背景参照。",
+    },
+  };
 }

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { shouldRunThirdRun } from "./analytics.mjs";
+import { LOGGING_MODES, readLoggingState, assertLoggingMatch } from "./logging.mjs";
 import {
   CONCURRENCY_LEVELS,
   PATHS,
@@ -15,6 +16,7 @@ import {
   ensureDirectories,
   loadBenchmarkEnv,
   nowIso,
+  mysqlQuery,
   parseCliArguments,
   parseSysbenchOutput,
   readJson,
@@ -35,8 +37,6 @@ function parseList(value, fallback) {
 
 const cli = parseCliArguments(process.argv.slice(2));
 const env = loadBenchmarkEnv();
-ensureDirectories();
-mkdirSync(PATHS.rawDir, { recursive: true });
 
 const scenarios = parseList(cli.scenario, SCENARIO_ORDER);
 const concurrencies = parseList(cli.concurrency, CONCURRENCY_LEVELS).map(Number);
@@ -50,6 +50,9 @@ const runGroup = String(cli["run-group"] ?? "mvp");
 const skipWarmup = cli["skip-warmup"] === true;
 const dryRun = cli["dry-run"] === true;
 const verbose = cli.verbose === true;
+const containerName = cli["container-name"] ? String(cli["container-name"]) : undefined;
+assert(/^[a-zA-Z0-9_-]+$/.test(runGroup), "Invalid run group");
+assert(!containerName || /^[a-zA-Z0-9_-]+$/.test(containerName), "Invalid container name");
 
 for (const scenario of scenarios) {
   assert(SCENARIOS[scenario], `Unsupported scenario: ${scenario}`);
@@ -67,8 +70,9 @@ assert(repeatCount >= 1 && repeatCount <= 3, "runs must be between 1 and 3");
 const combinations = scenarios.flatMap((scenario) =>
   concurrencies.map((concurrency) => ({ scenario, concurrency })),
 );
-const environmentPath = path.join(PATHS.resultsDir, "environment.json");
-const environmentSnapshot = readJson(environmentPath);
+const environmentPath = cli["environment-path"]
+  ? path.resolve(PATHS.projectRoot, String(cli["environment-path"]))
+  : path.join(PATHS.resultsDir, "environment.json");
 
 if (dryRun) {
   console.log("Dry run: no benchmark commands will be executed.\n");
@@ -104,7 +108,13 @@ if (dryRun) {
   process.exit(0);
 }
 
+ensureDirectories();
+mkdirSync(PATHS.rawDir, { recursive: true });
 await waitForMysql(env);
+const environmentSnapshot = readJson(environmentPath);
+if (scenarios.includes("update_index_async")) {
+  assertLoggingMatch(await readLoggingState((sql) => mysqlQuery(env, sql)), LOGGING_MODES.update_index_async);
+}
 console.log(
   `Running ${combinations.length} combinations sequentially with group "${runGroup}".`,
 );
@@ -128,6 +138,9 @@ async function runOnce({
   const outputPath = path.join(PATHS.rawDir, `${runId}.txt`);
   const stderrPath = path.join(PATHS.rawDir, `${runId}.stderr.txt`);
   const metadataPath = path.join(PATHS.rawDir, `${runId}.meta.json`);
+  if (cli["environment-path"]) {
+    assert(!existsSync(outputPath) && !existsSync(metadataPath), `Refusing to overwrite existing result ${runId}`);
+  }
   const startedAt = nowIso();
 
   console.log(
@@ -135,10 +148,11 @@ async function runOnce({
   );
   const result = await composeServiceShell(env, "sysbench", shellCommand, {
     echo: verbose,
+    containerName,
   });
   const finishedAt = nowIso();
 
-  writeFileSync(outputPath, result.stdout, "utf8");
+  writeFileSync(outputPath, `${result.stdout.replace(/[ \t]+$/gm, "").trimEnd()}\n`, "utf8");
   writeFileSync(stderrPath, result.stderr, "utf8");
 
   let metrics = null;
@@ -180,6 +194,8 @@ async function runOnce({
       environmentPath,
     ),
     environment: environmentSnapshot,
+    ...(cli["dataset-path"] ? { datasetPath: path.relative(PATHS.projectRoot,
+      path.resolve(PATHS.projectRoot, String(cli["dataset-path"]))) } : {}),
     metrics,
     parseError,
   };

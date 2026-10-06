@@ -1,0 +1,887 @@
+{
+  "schemaVersion": 1,
+  "component": {
+    "id": "mysql",
+    "name": "MySQL",
+    "version": "8.4.11",
+    "environmentLabel": "local Docker benchmark",
+    "testedAt": "2026-10-05T15:37:52.442Z"
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-10-05T14:34:49.158Z",
+    "environmentLabel": "local Docker benchmark",
+    "exploratory": true,
+    "container": {
+      "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "imagePlatform": "linux/arm64",
+      "repositoryDigests": [
+        "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+      ],
+      "platform": "linux/arm64",
+      "mysqlCpuLimit": 4,
+      "mysqlMemoryLimit": "6g",
+      "loadGeneratorCpuLimit": 1,
+      "loadGeneratorMemoryLimit": "1g",
+      "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+    },
+    "mysql": {
+      "version": "8.4.11",
+      "bufferPoolBytes": 3221225472,
+      "maxConnections": 512,
+      "flushLogAtTransactionCommit": 1,
+      "syncBinlog": 1,
+      "transactionIsolation": "REPEATABLE-READ"
+    },
+    "loadGenerator": {
+      "sysbenchVersion": "sysbench 1.0.20",
+      "image": "performance-profile/mysql-sysbench:1.0.0"
+    },
+    "runtime": {
+      "dockerServer": "29.4.0|linux/arm64",
+      "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+      "composeVersion": "5.1.2"
+    },
+    "host": {
+      "architecture": "arm64",
+      "model": "MacBookPro18,1",
+      "cpuCount": 10,
+      "memoryBytes": 17179869184
+    },
+    "limitations": [
+      "Docker on macOS runs Linux containers inside a virtual machine.",
+      "Results include OrbStack virtualization and local SSD overhead.",
+      "Values are exploratory and must not be treated as production capacity."
+    ]
+  },
+  "dataset": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-10-05T15:41:39.270Z",
+    "database": "sbtest",
+    "tableCount": 10,
+    "tableSize": 100000,
+    "expectedRows": 1000000,
+    "actualRows": 1000000,
+    "status": "ready",
+    "command": "sysbench '/usr/share/sysbench/oltp_point_select.lua' '--db-driver=mysql' '--mysql-host=mysql' '--mysql-port=3306' '--mysql-user=root' '--mysql-password=***' '--mysql-db=sbtest' '--tables=10' '--table-size=100000' '--threads=4' '--time=1' '--report-interval=10' '--percentile=99' '--histogram=on' '--rand-type=uniform' '--rand-seed=42' '--mysql-ssl=off' 'prepare'",
+    "startedAt": "2026-10-05T15:41:30.643Z",
+    "finishedAt": "2026-10-05T15:41:37.230Z"
+  },
+  "protocol": {
+    "scenarios": [
+      "point_select",
+      "update_index",
+      "read_write"
+    ],
+    "concurrency": [
+      1,
+      8,
+      32
+    ],
+    "warmupSeconds": 60,
+    "durationSeconds": 120,
+    "initialRuns": 2,
+    "maximumRuns": 3,
+    "varianceThresholdPercent": 10
+  },
+  "headline": {
+    "peak": {
+      "scenario": "point_select",
+      "concurrency": 8,
+      "tps": 135335.59,
+      "qps": 135335.59,
+      "p95Ms": 0.039,
+      "p99Ms": 0.07,
+      "queriesPerTransaction": 1,
+      "stability": "unstable",
+      "attempts": 3
+    },
+    "representativeComparison": {
+      "concurrency": 32,
+      "read": {
+        "tps": 116675,
+        "qps": 116675,
+        "p95Ms": 0.232,
+        "p99Ms": 0.6,
+        "queriesPerTransaction": 1
+      },
+      "write": {
+        "tps": 3457.3950000000004,
+        "qps": 3457.3950000000004,
+        "p95Ms": 31.67,
+        "p99Ms": 69.33500000000001,
+        "queriesPerTransaction": 1
+      },
+      "mixed": {
+        "tps": 1934,
+        "qps": 38679.95,
+        "p95Ms": 39.65,
+        "p99Ms": 77.925,
+        "queriesPerTransaction": 20
+      },
+      "writeToRead": {
+        "tpsRatio": 0.029632697664452545,
+        "qpsRatio": 0.029632697664452545,
+        "p95Ratio": 136.50862068965517,
+        "p99Ratio": 115.55833333333335
+      },
+      "stability": {
+        "read": "acceptable",
+        "write": "acceptable",
+        "mixed": "acceptable"
+      }
+    }
+  },
+  "series": [
+    {
+      "scenario": "point_select",
+      "label": "主键点查",
+      "description": "按主键读取随机单行，代表纯读路径。",
+      "points": [
+        {
+          "scenario": "point_select",
+          "concurrency": 1,
+          "tps": 42421.835,
+          "qps": 42421.835,
+          "p95Ms": 0.027,
+          "p99Ms": 0.04,
+          "queriesPerTransaction": 1,
+          "stability": "stable",
+          "attempts": 2
+        },
+        {
+          "scenario": "point_select",
+          "concurrency": 8,
+          "tps": 135335.59,
+          "qps": 135335.59,
+          "p95Ms": 0.039,
+          "p99Ms": 0.07,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3
+        },
+        {
+          "scenario": "point_select",
+          "concurrency": 32,
+          "tps": 116675,
+          "qps": 116675,
+          "p95Ms": 0.232,
+          "p99Ms": 0.6,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "label": "索引更新",
+      "description": "随机更新一行并维护索引，代表写路径。",
+      "points": [
+        {
+          "scenario": "update_index",
+          "concurrency": 1,
+          "tps": 313.625,
+          "qps": 313.625,
+          "p95Ms": 6.162,
+          "p99Ms": 19.645,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2
+        },
+        {
+          "scenario": "update_index",
+          "concurrency": 8,
+          "tps": 1273.02,
+          "qps": 1273.02,
+          "p95Ms": 15.7015,
+          "p99Ms": 44.185,
+          "queriesPerTransaction": 1,
+          "stability": "stable",
+          "attempts": 2
+        },
+        {
+          "scenario": "update_index",
+          "concurrency": 32,
+          "tps": 3457.3950000000004,
+          "qps": 3457.3950000000004,
+          "p95Ms": 31.67,
+          "p99Ms": 69.33500000000001,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "label": "读写混合",
+      "description": "标准读写混合负载，接近典型 OLTP 访问模式。",
+      "points": [
+        {
+          "scenario": "read_write",
+          "concurrency": 1,
+          "tps": 190.75,
+          "qps": 3815.08,
+          "p95Ms": 8.737,
+          "p99Ms": 19.29,
+          "queriesPerTransaction": 20,
+          "stability": "unstable",
+          "attempts": 3
+        },
+        {
+          "scenario": "read_write",
+          "concurrency": 8,
+          "tps": 918.7550000000001,
+          "qps": 18375.14,
+          "p95Ms": 15.829999999999998,
+          "p99Ms": 38.95,
+          "queriesPerTransaction": 20,
+          "stability": "stable",
+          "attempts": 2
+        },
+        {
+          "scenario": "read_write",
+          "concurrency": 32,
+          "tps": 1934,
+          "qps": 38679.95,
+          "p95Ms": 39.65,
+          "p99Ms": 77.925,
+          "queriesPerTransaction": 20,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "concurrency": 1,
+      "read": {
+        "tps": 42421.835,
+        "qps": 42421.835,
+        "p95Ms": 0.027,
+        "p99Ms": 0.04,
+        "queriesPerTransaction": 1
+      },
+      "write": {
+        "tps": 313.625,
+        "qps": 313.625,
+        "p95Ms": 6.162,
+        "p99Ms": 19.645,
+        "queriesPerTransaction": 1
+      },
+      "mixed": {
+        "tps": 190.75,
+        "qps": 3815.08,
+        "p95Ms": 8.737,
+        "p99Ms": 19.29,
+        "queriesPerTransaction": 20
+      },
+      "writeToRead": {
+        "tpsRatio": 0.007393008812560796,
+        "qpsRatio": 0.007393008812560796,
+        "p95Ratio": 228.22222222222223,
+        "p99Ratio": 491.125
+      },
+      "stability": {
+        "read": "stable",
+        "write": "acceptable",
+        "mixed": "unstable"
+      }
+    },
+    {
+      "concurrency": 8,
+      "read": {
+        "tps": 135335.59,
+        "qps": 135335.59,
+        "p95Ms": 0.039,
+        "p99Ms": 0.07,
+        "queriesPerTransaction": 1
+      },
+      "write": {
+        "tps": 1273.02,
+        "qps": 1273.02,
+        "p95Ms": 15.7015,
+        "p99Ms": 44.185,
+        "queriesPerTransaction": 1
+      },
+      "mixed": {
+        "tps": 918.7550000000001,
+        "qps": 18375.14,
+        "p95Ms": 15.829999999999998,
+        "p99Ms": 38.95,
+        "queriesPerTransaction": 20
+      },
+      "writeToRead": {
+        "tpsRatio": 0.009406394873661836,
+        "qpsRatio": 0.009406394873661836,
+        "p95Ratio": 402.6025641025641,
+        "p99Ratio": 631.2142857142857
+      },
+      "stability": {
+        "read": "unstable",
+        "write": "stable",
+        "mixed": "stable"
+      }
+    },
+    {
+      "concurrency": 32,
+      "read": {
+        "tps": 116675,
+        "qps": 116675,
+        "p95Ms": 0.232,
+        "p99Ms": 0.6,
+        "queriesPerTransaction": 1
+      },
+      "write": {
+        "tps": 3457.3950000000004,
+        "qps": 3457.3950000000004,
+        "p95Ms": 31.67,
+        "p99Ms": 69.33500000000001,
+        "queriesPerTransaction": 1
+      },
+      "mixed": {
+        "tps": 1934,
+        "qps": 38679.95,
+        "p95Ms": 39.65,
+        "p99Ms": 77.925,
+        "queriesPerTransaction": 20
+      },
+      "writeToRead": {
+        "tpsRatio": 0.029632697664452545,
+        "qpsRatio": 0.029632697664452545,
+        "p95Ratio": 136.50862068965517,
+        "p99Ratio": 115.55833333333335
+      },
+      "stability": {
+        "read": "acceptable",
+        "write": "acceptable",
+        "mixed": "acceptable"
+      }
+    }
+  ],
+  "stability": [
+    {
+      "scenario": "point_select",
+      "scenarioLabel": "主键点查",
+      "concurrency": 1,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 0.0683374493347712,
+      "selected": {
+        "tps": 42421.835,
+        "qps": 42421.835,
+        "p95Ms": 0.027,
+        "p99Ms": 0.04,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-point_select-c1-measured-r1",
+          "repeat": 1,
+          "tps": 42407.34,
+          "qps": 42407.34,
+          "p95Ms": 0.027,
+          "p99Ms": 0.04,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-point_select-c1-measured-r2",
+          "repeat": 2,
+          "tps": 42436.33,
+          "qps": 42436.33,
+          "p95Ms": 0.027,
+          "p99Ms": 0.04,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "point_select",
+      "scenarioLabel": "主键点查",
+      "concurrency": 8,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 13.636363636363628,
+      "selected": {
+        "tps": 135335.59,
+        "qps": 135335.59,
+        "p95Ms": 0.039,
+        "p99Ms": 0.07,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-point_select-c8-measured-r1",
+          "repeat": 1,
+          "tps": 135335.59,
+          "qps": 135335.59,
+          "p95Ms": 0.039,
+          "p99Ms": 0.08,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-point_select-c8-measured-r2",
+          "repeat": 2,
+          "tps": 134497.63,
+          "qps": 134497.63,
+          "p95Ms": 0.039,
+          "p99Ms": 0.07,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r2.txt"
+        },
+        {
+          "runId": "mvp-point_select-c8-measured-r3",
+          "repeat": 3,
+          "tps": 136153.07,
+          "qps": 136153.07,
+          "p95Ms": 0.039,
+          "p99Ms": 0.07,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r3.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "point_select",
+      "scenarioLabel": "主键点查",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 6.666666666666673,
+      "selected": {
+        "tps": 116675,
+        "qps": 116675,
+        "p95Ms": 0.232,
+        "p99Ms": 0.6,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-point_select-c32-measured-r1",
+          "repeat": 1,
+          "tps": 117718.1,
+          "qps": 117718.1,
+          "p95Ms": 0.23,
+          "p99Ms": 0.58,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-point_select-c32-measured-r2",
+          "repeat": 2,
+          "tps": 115631.9,
+          "qps": 115631.9,
+          "p95Ms": 0.234,
+          "p99Ms": 0.62,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "scenarioLabel": "索引更新",
+      "concurrency": 1,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 5.908330011956946,
+      "selected": {
+        "tps": 313.625,
+        "qps": 313.625,
+        "p95Ms": 6.162,
+        "p99Ms": 19.645,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-update_index-c1-measured-r1",
+          "repeat": 1,
+          "tps": 304.36,
+          "qps": 304.36,
+          "p95Ms": 6.55,
+          "p99Ms": 20,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c1-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-update_index-c1-measured-r2",
+          "repeat": 2,
+          "tps": 322.89,
+          "qps": 322.89,
+          "p95Ms": 5.774,
+          "p99Ms": 19.29,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c1-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "scenarioLabel": "索引更新",
+      "concurrency": 8,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 3.598506280411896,
+      "selected": {
+        "tps": 1273.02,
+        "qps": 1273.02,
+        "p95Ms": 15.7015,
+        "p99Ms": 44.185,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-update_index-c8-measured-r1",
+          "repeat": 1,
+          "tps": 1274.63,
+          "qps": 1274.63,
+          "p95Ms": 16.408,
+          "p99Ms": 44.98,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c8-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-update_index-c8-measured-r2",
+          "repeat": 2,
+          "tps": 1271.41,
+          "qps": 1271.41,
+          "p95Ms": 14.995,
+          "p99Ms": 43.39,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c8-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "scenarioLabel": "索引更新",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 7.196942381192752,
+      "selected": {
+        "tps": 3457.3950000000004,
+        "qps": 3457.3950000000004,
+        "p95Ms": 31.67,
+        "p99Ms": 69.33500000000001,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-update_index-c32-measured-r1",
+          "repeat": 1,
+          "tps": 3394.51,
+          "qps": 3394.51,
+          "p95Ms": 32.525,
+          "p99Ms": 71.83,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c32-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-update_index-c32-measured-r2",
+          "repeat": 2,
+          "tps": 3520.28,
+          "qps": 3520.28,
+          "p95Ms": 30.815,
+          "p99Ms": 66.84,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c32-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 1,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 53.67316341829085,
+      "selected": {
+        "tps": 190.75,
+        "qps": 3815.08,
+        "p95Ms": 8.737,
+        "p99Ms": 19.29,
+        "queriesPerTransaction": 20
+      },
+      "runs": [
+        {
+          "runId": "mvp-read_write-c1-measured-r1",
+          "repeat": 1,
+          "tps": 175.88,
+          "qps": 3517.59,
+          "p95Ms": 9.734,
+          "p99Ms": 25.74,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-read_write-c1-measured-r2",
+          "repeat": 2,
+          "tps": 190.75,
+          "qps": 3815.08,
+          "p95Ms": 8.737,
+          "p99Ms": 19.29,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r2.txt"
+        },
+        {
+          "runId": "mvp-read_write-c1-measured-r3",
+          "repeat": 3,
+          "tps": 210.58,
+          "qps": 4211.63,
+          "p95Ms": 8.13,
+          "p99Ms": 15,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r3.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 8,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 3.59435173299101,
+      "selected": {
+        "tps": 918.7550000000001,
+        "qps": 18375.14,
+        "p95Ms": 15.829999999999998,
+        "p99Ms": 38.95,
+        "queriesPerTransaction": 20
+      },
+      "runs": [
+        {
+          "runId": "mvp-read_write-c8-measured-r1",
+          "repeat": 1,
+          "tps": 912.07,
+          "qps": 18241.43,
+          "p95Ms": 15.545,
+          "p99Ms": 39.65,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-read_write-c8-measured-r2",
+          "repeat": 2,
+          "tps": 925.44,
+          "qps": 18508.85,
+          "p95Ms": 16.115,
+          "p99Ms": 38.25,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 5.402630734680793,
+      "selected": {
+        "tps": 1934,
+        "qps": 38679.95,
+        "p95Ms": 39.65,
+        "p99Ms": 77.925,
+        "queriesPerTransaction": 20
+      },
+      "runs": [
+        {
+          "runId": "mvp-read_write-c32-measured-r1",
+          "repeat": 1,
+          "tps": 1921.83,
+          "qps": 38436.6,
+          "p95Ms": 39.65,
+          "p99Ms": 80.03,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-read_write-c32-measured-r2",
+          "repeat": 2,
+          "tps": 1946.17,
+          "qps": 38923.3,
+          "p95Ms": 39.65,
+          "p99Ms": 75.82,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r2.txt"
+        }
+      ]
+    }
+  ],
+  "rawResults": [
+    {
+      "runId": "mvp-point_select-c1-measured-r1",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-point_select-c1-measured-r2",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-point_select-c8-measured-r1",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-point_select-c8-measured-r2",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-point_select-c8-measured-r3",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 8,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r3.txt"
+    },
+    {
+      "runId": "mvp-point_select-c32-measured-r1",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-point_select-c32-measured-r2",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-update_index-c1-measured-r1",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c1-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-update_index-c1-measured-r2",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c1-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-update_index-c8-measured-r1",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c8-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-update_index-c8-measured-r2",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c8-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-update_index-c32-measured-r1",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c32-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-update_index-c32-measured-r2",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-update_index-c32-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-read_write-c1-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-read_write-c1-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-read_write-c1-measured-r3",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r3.txt"
+    },
+    {
+      "runId": "mvp-read_write-c8-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-read_write-c8-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-read_write-c32-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-read_write-c32-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r2.txt"
+    }
+  ],
+  "limitations": [
+    "Docker on macOS runs Linux containers inside a virtual machine.",
+    "Results include OrbStack virtualization and local SSD overhead.",
+    "Values are exploratory and must not be treated as production capacity."
+  ]
+}

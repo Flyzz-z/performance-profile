@@ -12,12 +12,19 @@ import {
   loadBenchmarkEnv,
   mysqlQuery,
   nowIso,
+  parseCliArguments,
   runProcess,
   waitForMysql,
   writeJson,
 } from "./lib.mjs";
 
 const env = loadBenchmarkEnv();
+const cli = parseCliArguments(process.argv.slice(2));
+const prefix = cli["manifest-prefix"] ? String(cli["manifest-prefix"]) : "";
+assert(!prefix || /^[a-zA-Z0-9_-]+$/.test(prefix), "Invalid manifest prefix");
+const containerName = cli["container-name"] ? String(cli["container-name"]) : undefined;
+assert(!containerName || /^[a-zA-Z0-9_-]+$/.test(containerName), "Invalid container name");
+const manifestName = (name) => prefix ? `${prefix}-${name}` : name;
 ensureDirectories();
 
 console.log("Starting MySQL and waiting for health check...");
@@ -46,7 +53,7 @@ const prepareResult = await composeServiceShell(
   env,
   "sysbench",
   prepareCommand,
-  { echo: true },
+  { echo: true, containerName },
 );
 const prepareFinishedAt = nowIso();
 assert(
@@ -110,6 +117,8 @@ const mysqlConfiguration = await mysqlQuery(
     "@@max_connections,",
     "@@innodb_flush_log_at_trx_commit,",
     "@@sync_binlog,",
+    "@@log_bin,",
+    "@@innodb_flush_log_at_timeout,",
     "@@transaction_isolation;",
   ].join(" "),
 );
@@ -118,6 +127,8 @@ const [
   maxConnections,
   flushLogAtTransactionCommit,
   syncBinlog,
+  logBinEnabled,
+  flushLogAtTimeout,
   transactionIsolation,
 ] = mysqlConfiguration.split(/\t/);
 
@@ -149,6 +160,8 @@ const environmentManifest = {
     maxConnections: Number(maxConnections),
     flushLogAtTransactionCommit: Number(flushLogAtTransactionCommit),
     syncBinlog: Number(syncBinlog),
+    logBinEnabled: Number(logBinEnabled) === 1,
+    flushLogAtTimeout: Number(flushLogAtTimeout),
     transactionIsolation,
   },
   loadGenerator: {
@@ -187,8 +200,8 @@ const datasetManifest = {
   finishedAt: prepareFinishedAt,
 };
 
-writeJson(path.join(PATHS.resultsDir, "environment.json"), environmentManifest);
-writeJson(path.join(PATHS.resultsDir, "dataset.json"), datasetManifest);
+writeJson(path.join(PATHS.resultsDir, manifestName("environment.json")), environmentManifest);
+writeJson(path.join(PATHS.resultsDir, manifestName("dataset.json")), datasetManifest);
 
 console.log(`Prepared ${actualRows} rows across ${tableCount} tables.`);
-console.log(`Environment manifest: ${path.join(PATHS.resultsDir, "environment.json")}`);
+console.log(`Environment manifest: ${path.join(PATHS.resultsDir, manifestName("environment.json"))}`);
