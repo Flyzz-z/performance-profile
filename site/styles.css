@@ -48,8 +48,9 @@ main { max-width: 1264px; margin: 0 auto; padding: 28px 32px 20px; }
 .resources small { font-size: 11px; color: var(--muted); }
 .protocol-strip { display: flex; flex-wrap: wrap; gap: 6px 22px; padding: 12px 0 20px; color: var(--muted); font-size: 12px; }
 .protocol-strip b { color: #384751; font-weight: 600; }
-.durability-risk { color: #815824; background: #fcf8ed; border-left: 2px solid #c99c43; padding: 8px 12px; margin-bottom: 16px; font-size: 11px; }
 .run-context { color: var(--muted); margin: 4px 0 8px 26px; font-size: 11px; overflow-wrap: anywhere; }
+.resource-detail { font-size: 10px; color: var(--muted); white-space: normal; display: inline-block; max-width: 440px; }
+#resource-unit-note { padding-top: 6px; }
 .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .section-heading p { margin-top: 2px; }
 .dashboard-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 15px 0; }

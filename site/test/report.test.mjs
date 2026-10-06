@@ -49,7 +49,7 @@ test("keeps resource layers distinct and complete", () => {
   const groups = environmentGroups(data);
   const lookup = (name, label) => groups.find((g) => g.name === name).rows.find((r) => r.label === label).value;
   assert.equal(lookup("MySQL 容器与配置", "CPU 上限（配额）"), "4 CPU");
-  assert.equal(lookup("压测端", "CPU 上限（配额）"), "1 CPU");
+  assert.equal(lookup("压测端", "CPU 上限（配额）"), `${data.environment.container.loadGeneratorCpuLimit} CPU`);
   assert.equal(lookup("Docker VM", "VM 可见 CPU"), "10 CPU");
   assert.equal(lookup("宿主机", "物理内存"), "16 GiB");
   if (!data.durabilityComparison) assert.equal(lookup("MySQL 容器与配置", "sync_binlog"), "1");

@@ -37,6 +37,16 @@ sysbench 1.0.20 一次只提供精确的一个分位数。本测试使用 sysben
 - `raw/`：带 runGroup 前缀的原始文本和元数据，元数据携带实际日志配置。
 - `normalized/`：`<runGroup>-runs.jsonl`。
 - `summary/`：带 runGroup 前缀的组合、对照和报告 JSON。
-- `site/data/`：更新看板前保留一份 `<runGroup>-previous.json`。
+- `summary/`：正式更新看板前保留一份 `<runGroup>-previous-report.json`；验证报告仅保存在此目录。
 
-旧原始文件与默认汇总不覆盖。看板里的同步/异步更新来自新对照，点查/混合保留历史数据并标日期。不同日期的背景数据不作为日志策略的受控对照。没有新增历史报告选择界面。
+旧原始文件与默认汇总保留。旧归档报告可能包含不同日期的背景参照，但不属于当前最终产物。最终发布规则如下，不增加历史报告选择界面。
+
+## 正式4 CPU基线
+
+最终报告只接受 `purpose=formal` 的同一结果组12组合，不接受旧条件、短测或verification。正式组原始资料使用 `formal-4cpu-*` 前缀；每次测量额外有 `.resources.json` 采样及元数据资源汇总。
+
+逐次CPU资源使用按采样覆盖时间加权汇总，性能指标继续使用原均值/中位数。资源使用为辅助证据，不新增实验场景。
+
+发布前旧JSON归档至 `summary/<runGroup>-previous-report.json`，历史site/data备份移到summary。最终site/data仅保留当前mysql.json，不混入历史或过程资料；旧数据仍可在开发/归档目录及Git追溯。
+
+经用户确认替换的受中断组合完整保存到本地 `verification/`，不提交、不参与正式collector或页面。归档清单记录文件哈希，内部保留原相对路径结构；检查原始记录中的相对引用时，以该归档目录为根，避免误读替换后的同名正式记录。

@@ -9,17 +9,18 @@ import {
 } from "./lib.mjs";
 import {
   LOGGING_MODES, durabilityPlan, readLoggingState, setLoggingState,
-  withLoggingRestored, assertLoggingMatch,
+  withLoggingRestored, assertLoggingMatch, formalPlan,
 } from "./logging.mjs";
 
 const cli = parseCliArguments(process.argv.slice(2));
 const env = loadBenchmarkEnv();
-const plan = durabilityPlan(env, cli);
-const group = String(cli["run-group"] ?? `durability-${randomUUID().slice(0, 8)}`);
+const formal = cli.formal === true;
+const plan = formal ? formalPlan(env, cli) : { ...durabilityPlan(env, cli), purpose: "verification" };
+const group = String(cli["run-group"] ?? `${formal ? plan.isFull ? "formal-4cpu" : "smoke-formal4cpu" : "durability"}-${randomUUID().slice(0, 8)}`);
 assert(/^[a-zA-Z0-9_-]+$/.test(group), "Invalid run group");
 
 if (cli["dry-run"] === true) {
-  console.log("Dry run only. No files, containers or MySQL parameters will be changed.");
+  console.log(`Dry run only (${plan.purpose}). No files, containers or MySQL parameters will be changed.`);
   console.log(`Rebuild ${env.MYSQL_DATABASE}: ${env.TABLE_COUNT} tables x ${env.TABLE_SIZE} rows before each combination.`);
   for (const combination of plan.combinations) {
     console.log(`${combination.scenario} c=${combination.concurrency}: redo=${combination.logging.flushLogAtTransactionCommit}, sync_binlog=${combination.logging.syncBinlog}, binlog ON, timeout=1; ${plan.warmupSeconds}s warmup + ${plan.repeats} x ${plan.durationSeconds}s, adaptive third run.`);
@@ -81,7 +82,8 @@ try {
           `--environment-path=${environmentPath}`, `--dataset-path=${datasetPath}`,
           `--container-name=${group}-load`,
           `--warmup-seconds=${plan.warmupSeconds}`, `--duration-seconds=${plan.durationSeconds}`,
-          `--runs=${plan.repeats}`,
+          `--runs=${plan.repeats}`, `--purpose=${plan.purpose}`,
+          ...(formal ? ["--record-resources"] : []),
         ], `${group}-load`);
         assertLoggingMatch(await readLoggingState(query), logging);
       }
@@ -103,16 +105,16 @@ try {
     writeJson(file, metadata);
   }
   console.log("\nOriginal logging parameters restored and verified.");
-  const full = plan.concurrency.length === 3 && plan.warmupSeconds === 60
+  const full = formal ? plan.isFull : plan.concurrency.length === 3 && plan.warmupSeconds === 60
     && plan.durationSeconds === 120 && plan.repeats === 2;
   const result = await runProcess(process.execPath, [
     path.join(PATHS.benchmarkRoot, "scripts/collect.mjs"),
-    `--run-group=${group}`, "--durability",
+    `--run-group=${group}`, formal ? "--formal" : "--durability",
     ...(!full ? ["--allow-partial"] : []),
-    ...(full && cli["no-publish"] !== true ? ["--publish"] : []),
+    ...(formal && plan.isFull && cli["no-publish"] !== true ? ["--publish"] : []),
   ], { echo: true });
   assert(result.code === 0, "Result collection failed");
-  if (!full) console.log("Short verification only; dashboard was not updated.");
+  if (!formal || !plan.isFull) console.log("Development/verification results saved only; final dashboard was not updated.");
   console.log(`Run group: ${group}`);
 } catch (error) {
   console.error(error.message);

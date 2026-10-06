@@ -5,11 +5,22 @@
     "name": "MySQL",
     "version": "8.4.11",
     "environmentLabel": "local Docker benchmark",
-    "testedAt": "2026-10-06T03:58:55.451Z"
+    "testedAt": "2026-10-06T08:28:36.841Z"
+  },
+  "runGroup": "formal-4cpu-cefdd934",
+  "formalExperiment": {
+    "runGroup": "formal-4cpu-cefdd934",
+    "purpose": "formal",
+    "loadGeneratorCpuLimit": 4
+  },
+  "durabilityComparison": {
+    "runGroup": "formal-4cpu-cefdd934",
+    "risk": "异步更新采用2/0，降低持久化保障；系统、VM或断电故障可能丢失已确认事务或binlog。",
+    "note": "四场景均为本轮4 CPU压测端的正式测量，不包含历史或内部验证数据。"
   },
   "environment": {
     "schemaVersion": 1,
-    "generatedAt": "2026-10-05T14:34:49.158Z",
+    "generatedAt": "2026-10-06T06:25:14.713Z",
     "environmentLabel": "local Docker benchmark",
     "exploratory": true,
     "container": {
@@ -22,9 +33,9 @@
       "platform": "linux/arm64",
       "mysqlCpuLimit": 4,
       "mysqlMemoryLimit": "6g",
-      "loadGeneratorCpuLimit": 1,
+      "loadGeneratorCpuLimit": 4,
       "loadGeneratorMemoryLimit": "1g",
-      "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+      "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
     },
     "mysql": {
       "version": "8.4.11",
@@ -32,6 +43,8 @@
       "maxConnections": 512,
       "flushLogAtTransactionCommit": 1,
       "syncBinlog": 1,
+      "logBinEnabled": true,
+      "flushLogAtTimeout": 1,
       "transactionIsolation": "REPEATABLE-READ"
     },
     "loadGenerator": {
@@ -57,7 +70,7 @@
   },
   "dataset": {
     "schemaVersion": 1,
-    "generatedAt": "2026-10-05T15:41:39.270Z",
+    "generatedAt": "2026-10-06T06:25:14.398Z",
     "database": "sbtest",
     "tableCount": 10,
     "tableSize": 100000,
@@ -65,13 +78,14 @@
     "actualRows": 1000000,
     "status": "ready",
     "command": "sysbench '/usr/share/sysbench/oltp_point_select.lua' '--db-driver=mysql' '--mysql-host=mysql' '--mysql-port=3306' '--mysql-user=root' '--mysql-password=***' '--mysql-db=sbtest' '--tables=10' '--table-size=100000' '--threads=4' '--time=1' '--report-interval=10' '--percentile=99' '--histogram=on' '--rand-type=uniform' '--rand-seed=42' '--mysql-ssl=off' 'prepare'",
-    "startedAt": "2026-10-05T15:41:30.643Z",
-    "finishedAt": "2026-10-05T15:41:37.230Z"
+    "startedAt": "2026-10-06T06:25:04.972Z",
+    "finishedAt": "2026-10-06T06:25:12.141Z"
   },
   "protocol": {
     "scenarios": [
       "point_select",
       "update_index",
+      "update_index_async",
       "read_write"
     ],
     "concurrency": [
@@ -89,13 +103,33 @@
     "peak": {
       "scenario": "point_select",
       "concurrency": 8,
-      "tps": 135335.59,
-      "qps": 135335.59,
-      "p95Ms": 0.039,
+      "tps": 195741.19,
+      "qps": 195741.19,
+      "p95Ms": 0.033,
       "p99Ms": 0.07,
       "queriesPerTransaction": 1,
       "stability": "unstable",
-      "attempts": 3
+      "attempts": 3,
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 400.0170157158782,
+          "meanQuotaPercent": 100.00425392896955,
+          "maxCpuPercent": 404.1309155766944,
+          "periods": 3463,
+          "throttledPeriods": 3463,
+          "throttledTimeSeconds": 877.2687060000001,
+          "coverageSeconds": 346.274
+        },
+        "loadgen": {
+          "meanCpuPercent": 139.9560049097473,
+          "meanQuotaPercent": 34.98900122743682,
+          "maxCpuPercent": 142.3870806709265,
+          "periods": 3462,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 346.25
+        }
+      }
     },
     "representativeComparison": null
   },
@@ -108,133 +142,102 @@
         {
           "scenario": "point_select",
           "concurrency": 1,
-          "tps": 42421.835,
-          "qps": 42421.835,
+          "tps": 43392.965,
+          "qps": 43392.965,
           "p95Ms": 0.027,
           "p99Ms": 0.04,
           "queriesPerTransaction": 1,
           "stability": "stable",
-          "attempts": 2
+          "attempts": 2,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 72.70964887177618,
+              "meanQuotaPercent": 18.177412217944045,
+              "maxCpuPercent": 73.13744510978044,
+              "periods": 2306,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.628
+            },
+            "loadgen": {
+              "meanCpuPercent": 27.78989108000763,
+              "meanQuotaPercent": 6.947472770001908,
+              "maxCpuPercent": 28.122566460123927,
+              "periods": 2306,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.628
+            }
+          }
         },
         {
           "scenario": "point_select",
           "concurrency": 8,
-          "tps": 135335.59,
-          "qps": 135335.59,
-          "p95Ms": 0.039,
+          "tps": 195741.19,
+          "qps": 195741.19,
+          "p95Ms": 0.033,
           "p99Ms": 0.07,
           "queriesPerTransaction": 1,
           "stability": "unstable",
-          "attempts": 3
+          "attempts": 3,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 400.0170157158782,
+              "meanQuotaPercent": 100.00425392896955,
+              "maxCpuPercent": 404.1309155766944,
+              "periods": 3463,
+              "throttledPeriods": 3463,
+              "throttledTimeSeconds": 877.2687060000001,
+              "coverageSeconds": 346.274
+            },
+            "loadgen": {
+              "meanCpuPercent": 139.9560049097473,
+              "meanQuotaPercent": 34.98900122743682,
+              "maxCpuPercent": 142.3870806709265,
+              "periods": 3462,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 346.25
+            }
+          }
         },
         {
           "scenario": "point_select",
           "concurrency": 32,
-          "tps": 116675,
-          "qps": 116675,
-          "p95Ms": 0.232,
-          "p99Ms": 0.6,
-          "queriesPerTransaction": 1,
-          "stability": "acceptable",
-          "attempts": 2
-        }
-      ],
-      "environment": {
-        "schemaVersion": 1,
-        "generatedAt": "2026-10-05T14:34:49.158Z",
-        "environmentLabel": "local Docker benchmark",
-        "exploratory": true,
-        "container": {
-          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
-          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
-          "imagePlatform": "linux/arm64",
-          "repositoryDigests": [
-            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
-          ],
-          "platform": "linux/arm64",
-          "mysqlCpuLimit": 4,
-          "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
-          "loadGeneratorMemoryLimit": "1g",
-          "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
-        },
-        "mysql": {
-          "version": "8.4.11",
-          "bufferPoolBytes": 3221225472,
-          "maxConnections": 512,
-          "flushLogAtTransactionCommit": 1,
-          "syncBinlog": 1,
-          "transactionIsolation": "REPEATABLE-READ"
-        },
-        "loadGenerator": {
-          "sysbenchVersion": "sysbench 1.0.20",
-          "image": "performance-profile/mysql-sysbench:1.0.0"
-        },
-        "runtime": {
-          "dockerServer": "29.4.0|linux/arm64",
-          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
-          "composeVersion": "5.1.2"
-        },
-        "host": {
-          "architecture": "arm64",
-          "model": "MacBookPro18,1",
-          "cpuCount": 10,
-          "memoryBytes": 17179869184
-        },
-        "limitations": [
-          "Docker on macOS runs Linux containers inside a virtual machine.",
-          "Results include OrbStack virtualization and local SSD overhead.",
-          "Values are exploratory and must not be treated as production capacity."
-        ]
-      },
-      "testedAt": "2026-10-05T15:37:52.442Z",
-      "runGroup": "mvp",
-      "sourceRole": "historical"
-    },
-    {
-      "scenario": "update_index",
-      "label": "索引更新（同步刷盘）",
-      "description": "随机更新一行并维护索引，代表写路径。",
-      "points": [
-        {
-          "scenario": "update_index",
-          "concurrency": 1,
-          "tps": 323.19,
-          "qps": 323.19,
-          "p95Ms": 5.855,
-          "p99Ms": 21.9,
-          "queriesPerTransaction": 1,
-          "stability": "unstable",
-          "attempts": 2
-        },
-        {
-          "scenario": "update_index",
-          "concurrency": 8,
-          "tps": 1307.725,
-          "qps": 1307.725,
-          "p95Ms": 15.4115,
-          "p99Ms": 43.78,
+          "tps": 168870.89500000002,
+          "qps": 168870.89500000002,
+          "p95Ms": 0.226,
+          "p99Ms": 0.565,
           "queriesPerTransaction": 1,
           "stability": "stable",
-          "attempts": 2
-        },
-        {
-          "scenario": "update_index",
-          "concurrency": 32,
-          "tps": 3058.1400000000003,
-          "qps": 3058.1400000000003,
-          "p95Ms": 37.906,
-          "p99Ms": 79.315,
-          "queriesPerTransaction": 1,
-          "stability": "acceptable",
-          "attempts": 2
+          "attempts": 2,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 399.96619129441194,
+              "meanQuotaPercent": 99.99154782360299,
+              "maxCpuPercent": 402.7104047384008,
+              "periods": 2310,
+              "throttledPeriods": 2310,
+              "throttledTimeSeconds": 818.728431,
+              "coverageSeconds": 231.04700000000003
+            },
+            "loadgen": {
+              "meanCpuPercent": 141.1147551342812,
+              "meanQuotaPercent": 35.2786887835703,
+              "maxCpuPercent": 143.00589394835404,
+              "periods": 2310,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 231.04500000000002
+            }
+          }
         }
       ],
-      "runGroup": "durability-db3dcd2c",
-      "sourceRole": "paired",
+      "runGroup": "formal-4cpu-cefdd934",
+      "sourceRole": "formal",
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:22:36.781Z",
+        "generatedAt": "2026-10-06T06:25:14.713Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -247,7 +250,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -282,52 +285,112 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "testedAt": "2026-10-06T03:53:19.251Z"
+      "testedAt": "2026-10-06T06:43:01.798Z"
     },
     {
-      "scenario": "update_index_async",
-      "label": "索引更新（异步刷盘）",
-      "description": "相同索引更新 SQL，redo=2、sync_binlog=0，降低提交持久化保障。",
+      "scenario": "update_index",
+      "label": "索引更新（同步刷盘）",
+      "description": "随机更新一行并维护索引，代表写路径。",
       "points": [
         {
-          "scenario": "update_index_async",
+          "scenario": "update_index",
           "concurrency": 1,
-          "tps": 3615.78,
-          "qps": 3615.78,
-          "p95Ms": 0.214,
-          "p99Ms": 1.55,
-          "queriesPerTransaction": 1,
-          "stability": "unstable",
-          "attempts": 3
-        },
-        {
-          "scenario": "update_index_async",
-          "concurrency": 8,
-          "tps": 10174.13,
-          "qps": 10174.13,
-          "p95Ms": 0.797,
-          "p99Ms": 16.41,
-          "queriesPerTransaction": 1,
-          "stability": "unstable",
-          "attempts": 3
-        },
-        {
-          "scenario": "update_index_async",
-          "concurrency": 32,
-          "tps": 15914.95,
-          "qps": 15914.95,
-          "p95Ms": 8.073,
-          "p99Ms": 27.42,
+          "tps": 315.4,
+          "qps": 315.4,
+          "p95Ms": 6.1035,
+          "p99Ms": 21.9,
           "queriesPerTransaction": 1,
           "stability": "acceptable",
-          "attempts": 2
+          "attempts": 2,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 54.58847872345036,
+              "meanQuotaPercent": 13.64711968086259,
+              "maxCpuPercent": 65.5477245508982,
+              "periods": 2308,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.747
+            },
+            "loadgen": {
+              "meanCpuPercent": 0.8708637598755345,
+              "meanQuotaPercent": 0.21771593996888364,
+              "maxCpuPercent": 1.2511873877469568,
+              "periods": 2183,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.747
+            }
+          }
+        },
+        {
+          "scenario": "update_index",
+          "concurrency": 8,
+          "tps": 1250.7649999999999,
+          "qps": 1250.7649999999999,
+          "p95Ms": 17.811,
+          "p99Ms": 47.095,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 100.44498932239438,
+              "meanQuotaPercent": 25.111247330598594,
+              "maxCpuPercent": 131.66177230280152,
+              "periods": 2308,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.857
+            },
+            "loadgen": {
+              "meanCpuPercent": 2.7443516493036753,
+              "meanQuotaPercent": 0.6860879123259188,
+              "maxCpuPercent": 4.517707713662503,
+              "periods": 2224,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.85500000000002
+            }
+          }
+        },
+        {
+          "scenario": "update_index",
+          "concurrency": 32,
+          "tps": 3409.135,
+          "qps": 3409.135,
+          "p95Ms": 32.5465,
+          "p99Ms": 72.555,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 145.76173717968152,
+              "meanQuotaPercent": 36.44043429492038,
+              "maxCpuPercent": 176.29776313161574,
+              "periods": 2309,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.90300000000002
+            },
+            "loadgen": {
+              "meanCpuPercent": 6.24702435602058,
+              "meanQuotaPercent": 1.561756089005145,
+              "maxCpuPercent": 9.240854134165366,
+              "periods": 2268,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.90800000000002
+            }
+          }
         }
       ],
-      "runGroup": "durability-db3dcd2c",
-      "sourceRole": "paired",
+      "runGroup": "formal-4cpu-cefdd934",
+      "sourceRole": "formal",
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:27:53.641Z",
+        "generatedAt": "2026-10-06T06:43:12.363Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -340,7 +403,160 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "testedAt": "2026-10-06T06:59:05.198Z"
+    },
+    {
+      "scenario": "update_index_async",
+      "label": "索引更新（异步刷盘）",
+      "description": "相同索引更新 SQL，redo=2、sync_binlog=0，降低提交持久化保障。",
+      "points": [
+        {
+          "scenario": "update_index_async",
+          "concurrency": 1,
+          "tps": 3475.28,
+          "qps": 3475.28,
+          "p95Ms": 0.23,
+          "p99Ms": 1.79,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 113.77677379423642,
+              "meanQuotaPercent": 28.444193448559105,
+              "maxCpuPercent": 126.11944888178914,
+              "periods": 3459,
+              "throttledPeriods": 1,
+              "throttledTimeSeconds": 0.028534,
+              "coverageSeconds": 345.756
+            },
+            "loadgen": {
+              "meanCpuPercent": 6.430677437174449,
+              "meanQuotaPercent": 1.6076693592936122,
+              "maxCpuPercent": 7.114917675064471,
+              "periods": 3448,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 345.759
+            }
+          }
+        },
+        {
+          "scenario": "update_index_async",
+          "concurrency": 8,
+          "tps": 10245.18,
+          "qps": 10245.18,
+          "p95Ms": 0.797,
+          "p99Ms": 15,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 262.72470844217384,
+              "meanQuotaPercent": 65.68117711054346,
+              "maxCpuPercent": 294.70501093656793,
+              "periods": 3462,
+              "throttledPeriods": 100,
+              "throttledTimeSeconds": 1.1053129999999998,
+              "coverageSeconds": 346.072
+            },
+            "loadgen": {
+              "meanCpuPercent": 19.276943882563717,
+              "meanQuotaPercent": 4.819235970640929,
+              "maxCpuPercent": 23.5949531218831,
+              "periods": 3183,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 346.06
+            }
+          }
+        },
+        {
+          "scenario": "update_index_async",
+          "concurrency": 32,
+          "tps": 15338.56,
+          "qps": 15338.56,
+          "p95Ms": 7.985,
+          "p99Ms": 27.17,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 307.3730175845333,
+              "meanQuotaPercent": 76.84325439613332,
+              "maxCpuPercent": 364.33102073365234,
+              "periods": 3459,
+              "throttledPeriods": 918,
+              "throttledTimeSeconds": 52.453300000000006,
+              "coverageSeconds": 345.929
+            },
+            "loadgen": {
+              "meanCpuPercent": 30.13819454281081,
+              "meanQuotaPercent": 7.534548635702702,
+              "maxCpuPercent": 41.16949591552102,
+              "periods": 3046,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 345.929
+            }
+          }
+        }
+      ],
+      "runGroup": "formal-4cpu-cefdd934",
+      "sourceRole": "formal",
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T06:59:17.167Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -375,7 +591,7 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "testedAt": "2026-10-06T03:58:55.451Z"
+      "testedAt": "2026-10-06T07:21:15.304Z"
     },
     {
       "scenario": "read_write",
@@ -385,40 +601,102 @@
         {
           "scenario": "read_write",
           "concurrency": 1,
-          "tps": 190.75,
-          "qps": 3815.08,
-          "p95Ms": 8.737,
-          "p99Ms": 19.29,
+          "tps": 208.18,
+          "qps": 4163.67,
+          "p95Ms": 8.13,
+          "p99Ms": 15.27,
           "queriesPerTransaction": 20,
           "stability": "unstable",
-          "attempts": 3
+          "attempts": 3,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 48.842072615014274,
+              "meanQuotaPercent": 12.210518153753569,
+              "maxCpuPercent": 67.61605751947273,
+              "periods": 3456,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 345.63100000000003
+            },
+            "loadgen": {
+              "meanCpuPercent": 8.11869240539657,
+              "meanQuotaPercent": 2.0296731013491427,
+              "maxCpuPercent": 9.43925289652417,
+              "periods": 3448,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 345.62699999999995
+            }
+          }
         },
         {
           "scenario": "read_write",
           "concurrency": 8,
-          "tps": 918.7550000000001,
-          "qps": 18375.14,
-          "p95Ms": 15.829999999999998,
-          "p99Ms": 38.95,
+          "tps": 929.37,
+          "qps": 18587.46,
+          "p95Ms": 16.408,
+          "p99Ms": 38.94,
           "queriesPerTransaction": 20,
-          "stability": "stable",
-          "attempts": 2
+          "stability": "unstable",
+          "attempts": 3,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 169.10401947751706,
+              "meanQuotaPercent": 42.276004869379264,
+              "maxCpuPercent": 203.64349041533546,
+              "periods": 3458,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 346.03999999999996
+            },
+            "loadgen": {
+              "meanCpuPercent": 38.51351647367189,
+              "meanQuotaPercent": 9.628379118417973,
+              "maxCpuPercent": 47.02640303574995,
+              "periods": 3447,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 346.037
+            }
+          }
         },
         {
           "scenario": "read_write",
           "concurrency": 32,
-          "tps": 1934,
-          "qps": 38679.95,
-          "p95Ms": 39.65,
-          "p99Ms": 77.925,
+          "tps": 1983.01,
+          "qps": 39660.185,
+          "p95Ms": 38.2535,
+          "p99Ms": 84.47,
           "queriesPerTransaction": 20,
-          "stability": "acceptable",
-          "attempts": 2
+          "stability": "stable",
+          "attempts": 2,
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 276.313857219706,
+              "meanQuotaPercent": 69.0784643049265,
+              "maxCpuPercent": 318.2755093887335,
+              "periods": 2305,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.50799999999998
+            },
+            "loadgen": {
+              "meanCpuPercent": 82.82513242547948,
+              "meanQuotaPercent": 20.70628310636987,
+              "maxCpuPercent": 106.45158777711204,
+              "periods": 2293,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 230.507
+            }
+          }
         }
       ],
+      "runGroup": "formal-4cpu-cefdd934",
+      "sourceRole": "formal",
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-05T14:34:49.158Z",
+        "generatedAt": "2026-10-06T07:21:27.009Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -431,9 +709,9 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
-          "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
         "mysql": {
           "version": "8.4.11",
@@ -441,6 +719,8 @@
           "maxConnections": 512,
           "flushLogAtTransactionCommit": 1,
           "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
           "transactionIsolation": "REPEATABLE-READ"
         },
         "loadGenerator": {
@@ -464,9 +744,7 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "testedAt": "2026-10-05T15:37:52.442Z",
-      "runGroup": "mvp",
-      "sourceRole": "historical"
+      "testedAt": "2026-10-06T08:28:36.841Z"
     }
   ],
   "comparisons": [],
@@ -477,34 +755,182 @@
       "concurrency": 1,
       "attempts": 2,
       "stability": "stable",
-      "spreadPercent": 0.0683374493347712,
+      "spreadPercent": 0.10907297991735407,
       "selected": {
-        "tps": 42421.835,
-        "qps": 42421.835,
+        "tps": 43392.965,
+        "qps": 43392.965,
         "p95Ms": 0.027,
         "p99Ms": 0.04,
         "queriesPerTransaction": 1
       },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 72.70964887177618,
+          "meanQuotaPercent": 18.177412217944045,
+          "maxCpuPercent": 73.13744510978044,
+          "periods": 2306,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.628
+        },
+        "loadgen": {
+          "meanCpuPercent": 27.78989108000763,
+          "meanQuotaPercent": 6.947472770001908,
+          "maxCpuPercent": 28.122566460123927,
+          "periods": 2306,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.628
+        }
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T06:25:14.713Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T06:30:19.487Z",
       "runs": [
         {
-          "runId": "mvp-point_select-c1-measured-r1",
+          "runId": "formal-4cpu-cefdd934-point_select-c1-measured-r1",
           "repeat": 1,
-          "tps": 42407.34,
-          "qps": 42407.34,
+          "tps": 43369.3,
+          "qps": 43369.3,
           "p95Ms": 0.027,
           "p99Ms": 0.04,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c1-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.342,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.342,
+              "meanCpuPercent": 72.58808413240624,
+              "meanQuotaPercent": 18.14702103310156,
+              "maxCpuPercent": 73.13744510978044,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.342,
+              "meanCpuPercent": 27.94452497789183,
+              "meanQuotaPercent": 6.986131244472958,
+              "maxCpuPercent": 28.122566460123927,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c1-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "mvp-point_select-c1-measured-r2",
+          "runId": "formal-4cpu-cefdd934-point_select-c1-measured-r2",
           "repeat": 2,
-          "tps": 42436.33,
-          "qps": 42436.33,
+          "tps": 43416.63,
+          "qps": 43416.63,
           "p95Ms": 0.027,
           "p99Ms": 0.04,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c1-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.286,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.286,
+              "meanCpuPercent": 72.83127266103429,
+              "meanQuotaPercent": 18.207818165258573,
+              "maxCpuPercent": 73.1297443068318,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.286,
+              "meanCpuPercent": 27.63518206894159,
+              "meanQuotaPercent": 6.908795517235397,
+              "maxCpuPercent": 27.83156843156843,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c1-measured-r2.resources.json"
+          }
         }
       ]
     },
@@ -514,44 +940,230 @@
       "concurrency": 8,
       "attempts": 3,
       "stability": "unstable",
-      "spreadPercent": 13.636363636363628,
+      "spreadPercent": 28.571428571428577,
       "selected": {
-        "tps": 135335.59,
-        "qps": 135335.59,
-        "p95Ms": 0.039,
+        "tps": 195741.19,
+        "qps": 195741.19,
+        "p95Ms": 0.033,
         "p99Ms": 0.07,
         "queriesPerTransaction": 1
       },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 400.0170157158782,
+          "meanQuotaPercent": 100.00425392896955,
+          "maxCpuPercent": 404.1309155766944,
+          "periods": 3463,
+          "throttledPeriods": 3463,
+          "throttledTimeSeconds": 877.2687060000001,
+          "coverageSeconds": 346.274
+        },
+        "loadgen": {
+          "meanCpuPercent": 139.9560049097473,
+          "meanQuotaPercent": 34.98900122743682,
+          "maxCpuPercent": 142.3870806709265,
+          "periods": 3462,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 346.25
+        }
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T06:30:29.842Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T06:37:38.174Z",
       "runs": [
         {
-          "runId": "mvp-point_select-c8-measured-r1",
+          "runId": "formal-4cpu-cefdd934-point_select-c8-measured-r1",
           "repeat": 1,
-          "tps": 135335.59,
-          "qps": 135335.59,
-          "p95Ms": 0.039,
+          "tps": 200045.65,
+          "qps": 200045.65,
+          "p95Ms": 0.032,
+          "p99Ms": 0.06,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.434,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.44,
+              "meanCpuPercent": 400.06213530838534,
+              "meanQuotaPercent": 100.01553382709633,
+              "maxCpuPercent": 404.1309155766944,
+              "throttledPeriods": 1154,
+              "periods": 1154,
+              "throttledTimeSeconds": 291.953701
+            },
+            "loadgen": {
+              "coverageSeconds": 115.434,
+              "meanCpuPercent": 140.56522255141465,
+              "meanQuotaPercent": 35.14130563785366,
+              "maxCpuPercent": 142.3870806709265,
+              "throttledPeriods": 0,
+              "periods": 1154,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r1.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-point_select-c8-measured-r2",
+          "repeat": 2,
+          "tps": 189927.42,
+          "qps": 189927.42,
+          "p95Ms": 0.035,
           "p99Ms": 0.08,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.585,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.598,
+              "meanCpuPercent": 400.0008555511341,
+              "meanQuotaPercent": 100.00021388778353,
+              "maxCpuPercent": 402.07700059276823,
+              "throttledPeriods": 1156,
+              "periods": 1156,
+              "throttledTimeSeconds": 292.683898
+            },
+            "loadgen": {
+              "coverageSeconds": 115.585,
+              "meanCpuPercent": 139.29809058268808,
+              "meanQuotaPercent": 34.82452264567202,
+              "maxCpuPercent": 140.96727200159648,
+              "throttledPeriods": 0,
+              "periods": 1156,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r2.resources.json"
+          }
         },
         {
-          "runId": "mvp-point_select-c8-measured-r2",
-          "repeat": 2,
-          "tps": 134497.63,
-          "qps": 134497.63,
-          "p95Ms": 0.039,
-          "p99Ms": 0.07,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r2.txt"
-        },
-        {
-          "runId": "mvp-point_select-c8-measured-r3",
+          "runId": "formal-4cpu-cefdd934-point_select-c8-measured-r3",
           "repeat": 3,
-          "tps": 136153.07,
-          "qps": 136153.07,
-          "p95Ms": 0.039,
+          "tps": 195741.19,
+          "qps": 195741.19,
+          "p95Ms": 0.033,
           "p99Ms": 0.07,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r3.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r3.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.231,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.236,
+              "meanCpuPercent": 399.98802717900656,
+              "meanQuotaPercent": 99.99700679475164,
+              "maxCpuPercent": 400.96736111111113,
+              "throttledPeriods": 1153,
+              "periods": 1153,
+              "throttledTimeSeconds": 292.631107
+            },
+            "loadgen": {
+              "coverageSeconds": 115.231,
+              "meanCpuPercent": 140.00564952139615,
+              "meanQuotaPercent": 35.00141238034904,
+              "maxCpuPercent": 141.02612864562525,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r3.resources.json"
+          }
         }
       ]
     },
@@ -560,156 +1172,183 @@
       "scenarioLabel": "主键点查",
       "concurrency": 32,
       "attempts": 2,
-      "stability": "acceptable",
-      "spreadPercent": 6.666666666666673,
+      "stability": "stable",
+      "spreadPercent": 1.7699115044247606,
       "selected": {
-        "tps": 116675,
-        "qps": 116675,
-        "p95Ms": 0.232,
-        "p99Ms": 0.6,
+        "tps": 168870.89500000002,
+        "qps": 168870.89500000002,
+        "p95Ms": 0.226,
+        "p99Ms": 0.565,
         "queriesPerTransaction": 1
       },
-      "runs": [
-        {
-          "runId": "mvp-point_select-c32-measured-r1",
-          "repeat": 1,
-          "tps": 117718.1,
-          "qps": 117718.1,
-          "p95Ms": 0.23,
-          "p99Ms": 0.58,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r1.txt"
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 399.96619129441194,
+          "meanQuotaPercent": 99.99154782360299,
+          "maxCpuPercent": 402.7104047384008,
+          "periods": 2310,
+          "throttledPeriods": 2310,
+          "throttledTimeSeconds": 818.728431,
+          "coverageSeconds": 231.04700000000003
         },
-        {
-          "runId": "mvp-point_select-c32-measured-r2",
-          "repeat": 2,
-          "tps": 115631.9,
-          "qps": 115631.9,
-          "p95Ms": 0.234,
-          "p99Ms": 0.62,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r2.txt"
+        "loadgen": {
+          "meanCpuPercent": 141.1147551342812,
+          "meanQuotaPercent": 35.2786887835703,
+          "maxCpuPercent": 143.00589394835404,
+          "periods": 2310,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 231.04500000000002
         }
-      ]
-    },
-    {
-      "scenario": "read_write",
-      "scenarioLabel": "读写混合",
-      "concurrency": 1,
-      "attempts": 3,
-      "stability": "unstable",
-      "spreadPercent": 53.67316341829085,
-      "selected": {
-        "tps": 190.75,
-        "qps": 3815.08,
-        "p95Ms": 8.737,
-        "p99Ms": 19.29,
-        "queriesPerTransaction": 20
       },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T06:37:49.004Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T06:43:01.798Z",
       "runs": [
         {
-          "runId": "mvp-read_write-c1-measured-r1",
+          "runId": "formal-4cpu-cefdd934-point_select-c32-measured-r1",
           "repeat": 1,
-          "tps": 175.88,
-          "qps": 3517.59,
-          "p95Ms": 9.734,
-          "p99Ms": 25.74,
+          "tps": 169203.57,
+          "qps": 169203.57,
+          "p95Ms": 0.226,
+          "p99Ms": 0.56,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c32-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.512,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.513,
+              "meanCpuPercent": 400.0500731519396,
+              "meanQuotaPercent": 100.0125182879849,
+              "maxCpuPercent": 402.7104047384008,
+              "throttledPeriods": 1155,
+              "periods": 1155,
+              "throttledTimeSeconds": 410.316301
+            },
+            "loadgen": {
+              "coverageSeconds": 115.512,
+              "meanCpuPercent": 140.69441703026527,
+              "meanQuotaPercent": 35.17360425756632,
+              "maxCpuPercent": 142.95734887396284,
+              "throttledPeriods": 0,
+              "periods": 1155,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c32-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "mvp-read_write-c1-measured-r2",
+          "runId": "formal-4cpu-cefdd934-point_select-c32-measured-r2",
           "repeat": 2,
-          "tps": 190.75,
-          "qps": 3815.08,
-          "p95Ms": 8.737,
-          "p99Ms": 19.29,
+          "tps": 168538.22,
+          "qps": 168538.22,
+          "p95Ms": 0.226,
+          "p99Ms": 0.57,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r2.txt"
-        },
-        {
-          "runId": "mvp-read_write-c1-measured-r3",
-          "repeat": 3,
-          "tps": 210.58,
-          "qps": 4211.63,
-          "p95Ms": 8.13,
-          "p99Ms": 15,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r3.txt"
-        }
-      ]
-    },
-    {
-      "scenario": "read_write",
-      "scenarioLabel": "读写混合",
-      "concurrency": 8,
-      "attempts": 2,
-      "stability": "stable",
-      "spreadPercent": 3.59435173299101,
-      "selected": {
-        "tps": 918.7550000000001,
-        "qps": 18375.14,
-        "p95Ms": 15.829999999999998,
-        "p99Ms": 38.95,
-        "queriesPerTransaction": 20
-      },
-      "runs": [
-        {
-          "runId": "mvp-read_write-c8-measured-r1",
-          "repeat": 1,
-          "tps": 912.07,
-          "qps": 18241.43,
-          "p95Ms": 15.545,
-          "p99Ms": 39.65,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r1.txt"
-        },
-        {
-          "runId": "mvp-read_write-c8-measured-r2",
-          "repeat": 2,
-          "tps": 925.44,
-          "qps": 18508.85,
-          "p95Ms": 16.115,
-          "p99Ms": 38.25,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r2.txt"
-        }
-      ]
-    },
-    {
-      "scenario": "read_write",
-      "scenarioLabel": "读写混合",
-      "concurrency": 32,
-      "attempts": 2,
-      "stability": "acceptable",
-      "spreadPercent": 5.402630734680793,
-      "selected": {
-        "tps": 1934,
-        "qps": 38679.95,
-        "p95Ms": 39.65,
-        "p99Ms": 77.925,
-        "queriesPerTransaction": 20
-      },
-      "runs": [
-        {
-          "runId": "mvp-read_write-c32-measured-r1",
-          "repeat": 1,
-          "tps": 1921.83,
-          "qps": 38436.6,
-          "p95Ms": 39.65,
-          "p99Ms": 80.03,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r1.txt"
-        },
-        {
-          "runId": "mvp-read_write-c32-measured-r2",
-          "repeat": 2,
-          "tps": 1946.17,
-          "qps": 38923.3,
-          "p95Ms": 39.65,
-          "p99Ms": 75.82,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c32-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.533,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.534,
+              "meanCpuPercent": 399.88232468364293,
+              "meanQuotaPercent": 99.97058117091073,
+              "maxCpuPercent": 402.4319707740916,
+              "throttledPeriods": 1155,
+              "periods": 1155,
+              "throttledTimeSeconds": 408.41213
+            },
+            "loadgen": {
+              "coverageSeconds": 115.533,
+              "meanCpuPercent": 141.53501683501685,
+              "meanQuotaPercent": 35.38375420875421,
+              "maxCpuPercent": 143.00589394835404,
+              "throttledPeriods": 0,
+              "periods": 1155,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c32-measured-r2.resources.json"
+          }
         }
       ]
     },
@@ -718,18 +1357,38 @@
       "scenarioLabel": "索引更新",
       "concurrency": 1,
       "attempts": 2,
-      "stability": "unstable",
-      "spreadPercent": 10.124075621151652,
+      "stability": "acceptable",
+      "spreadPercent": 7.214611872146127,
       "selected": {
-        "tps": 323.19,
-        "qps": 323.19,
-        "p95Ms": 5.855,
+        "tps": 315.4,
+        "qps": 315.4,
+        "p95Ms": 6.1035,
         "p99Ms": 21.9,
         "queriesPerTransaction": 1
       },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 54.58847872345036,
+          "meanQuotaPercent": 13.64711968086259,
+          "maxCpuPercent": 65.5477245508982,
+          "periods": 2308,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.747
+        },
+        "loadgen": {
+          "meanCpuPercent": 0.8708637598755345,
+          "meanQuotaPercent": 0.21771593996888364,
+          "maxCpuPercent": 1.2511873877469568,
+          "periods": 2183,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.747
+        }
+      },
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:22:36.781Z",
+        "generatedAt": "2026-10-06T06:43:12.363Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -742,7 +1401,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -777,28 +1436,104 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "runGroup": "durability-db3dcd2c",
-      "testedAt": "2026-10-06T03:27:42.883Z",
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T06:48:19.685Z",
       "runs": [
         {
-          "runId": "durability-db3dcd2c-update_index-c1-measured-r1",
+          "runId": "formal-4cpu-cefdd934-update_index-c1-measured-r1",
           "repeat": 1,
-          "tps": 306.83,
-          "qps": 306.83,
+          "tps": 306.64,
+          "qps": 306.64,
           "p95Ms": 6.433,
           "p99Ms": 22.69,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c1-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.453,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.456,
+              "meanCpuPercent": 54.894268812361425,
+              "meanQuotaPercent": 13.723567203090356,
+              "maxCpuPercent": 65.5477245508982,
+              "throttledPeriods": 0,
+              "periods": 1155,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.453,
+              "meanCpuPercent": 0.840810546282903,
+              "meanQuotaPercent": 0.21020263657072574,
+              "maxCpuPercent": 1.2124119028974156,
+              "throttledPeriods": 0,
+              "periods": 1081,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c1-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index-c1-measured-r2",
+          "runId": "formal-4cpu-cefdd934-update_index-c1-measured-r2",
           "repeat": 2,
-          "tps": 339.55,
-          "qps": 339.55,
-          "p95Ms": 5.277,
+          "tps": 324.16,
+          "qps": 324.16,
+          "p95Ms": 5.774,
           "p99Ms": 21.11,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c1-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.291,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.291,
+              "meanCpuPercent": 54.282250999644376,
+              "meanQuotaPercent": 13.570562749911094,
+              "maxCpuPercent": 60.670141801477925,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.294,
+              "meanCpuPercent": 0.9009584193453258,
+              "meanQuotaPercent": 0.22523960483633146,
+              "maxCpuPercent": 1.2511873877469568,
+              "throttledPeriods": 0,
+              "periods": 1102,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c1-measured-r2.resources.json"
+          }
         }
       ]
     },
@@ -807,18 +1542,38 @@
       "scenarioLabel": "索引更新",
       "concurrency": 8,
       "attempts": 2,
-      "stability": "stable",
-      "spreadPercent": 1.781635449977161,
+      "stability": "acceptable",
+      "spreadPercent": 8.981845206497514,
       "selected": {
-        "tps": 1307.725,
-        "qps": 1307.725,
-        "p95Ms": 15.4115,
-        "p99Ms": 43.78,
+        "tps": 1250.7649999999999,
+        "qps": 1250.7649999999999,
+        "p95Ms": 17.811,
+        "p99Ms": 47.095,
         "queriesPerTransaction": 1
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 100.44498932239438,
+          "meanQuotaPercent": 25.111247330598594,
+          "maxCpuPercent": 131.66177230280152,
+          "periods": 2308,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.857
+        },
+        "loadgen": {
+          "meanCpuPercent": 2.7443516493036753,
+          "meanQuotaPercent": 0.6860879123259188,
+          "maxCpuPercent": 4.517707713662503,
+          "periods": 2224,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.85500000000002
+        }
       },
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:35:10.128Z",
+        "generatedAt": "2026-10-06T06:48:30.947Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -831,7 +1586,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -866,28 +1621,104 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "runGroup": "durability-db3dcd2c",
-      "testedAt": "2026-10-06T03:40:20.246Z",
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T06:53:38.794Z",
       "runs": [
         {
-          "runId": "durability-db3dcd2c-update_index-c8-measured-r1",
+          "runId": "formal-4cpu-cefdd934-update_index-c8-measured-r1",
           "repeat": 1,
-          "tps": 1313.4,
-          "qps": 1313.4,
-          "p95Ms": 15.828,
-          "p99Ms": 44.17,
+          "tps": 1226.5,
+          "qps": 1226.5,
+          "p95Ms": 18.612,
+          "p99Ms": 49.21,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c8-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.525,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.525,
+              "meanCpuPercent": 104.6609236096083,
+              "meanQuotaPercent": 26.165230902402076,
+              "maxCpuPercent": 131.66177230280152,
+              "throttledPeriods": 0,
+              "periods": 1155,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.525,
+              "meanCpuPercent": 2.7324994589915605,
+              "meanQuotaPercent": 0.6831248647478901,
+              "maxCpuPercent": 4.517707713662503,
+              "throttledPeriods": 0,
+              "periods": 1114,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c8-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index-c8-measured-r2",
+          "runId": "formal-4cpu-cefdd934-update_index-c8-measured-r2",
           "repeat": 2,
-          "tps": 1302.05,
-          "qps": 1302.05,
-          "p95Ms": 14.995,
-          "p99Ms": 43.39,
+          "tps": 1275.03,
+          "qps": 1275.03,
+          "p95Ms": 17.01,
+          "p99Ms": 44.98,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c8-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.33,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.332,
+              "meanCpuPercent": 96.22199996531752,
+              "meanQuotaPercent": 24.05549999132938,
+              "maxCpuPercent": 123.71802755040926,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.33,
+              "meanCpuPercent": 2.75622387930287,
+              "meanQuotaPercent": 0.6890559698257175,
+              "maxCpuPercent": 3.9195452732349425,
+              "throttledPeriods": 0,
+              "periods": 1110,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c8-measured-r2.resources.json"
+          }
         }
       ]
     },
@@ -897,17 +1728,37 @@
       "concurrency": 32,
       "attempts": 2,
       "stability": "acceptable",
-      "spreadPercent": 5.687770998057644,
+      "spreadPercent": 9.000068913238215,
       "selected": {
-        "tps": 3058.1400000000003,
-        "qps": 3058.1400000000003,
-        "p95Ms": 37.906,
-        "p99Ms": 79.315,
+        "tps": 3409.135,
+        "qps": 3409.135,
+        "p95Ms": 32.5465,
+        "p99Ms": 72.555,
         "queriesPerTransaction": 1
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 145.76173717968152,
+          "meanQuotaPercent": 36.44043429492038,
+          "maxCpuPercent": 176.29776313161574,
+          "periods": 2309,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.90300000000002
+        },
+        "loadgen": {
+          "meanCpuPercent": 6.24702435602058,
+          "meanQuotaPercent": 1.561756089005145,
+          "maxCpuPercent": 9.240854134165366,
+          "periods": 2268,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.90800000000002
+        }
       },
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:47:55.244Z",
+        "generatedAt": "2026-10-06T06:53:49.697Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -920,7 +1771,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -955,28 +1806,104 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "runGroup": "durability-db3dcd2c",
-      "testedAt": "2026-10-06T03:53:19.251Z",
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T06:59:05.198Z",
       "runs": [
         {
-          "runId": "durability-db3dcd2c-update_index-c32-measured-r1",
+          "runId": "formal-4cpu-cefdd934-update_index-c32-measured-r1",
           "repeat": 1,
-          "tps": 2971.17,
-          "qps": 2971.17,
-          "p95Ms": 38.247,
-          "p99Ms": 80.03,
+          "tps": 3303.29,
+          "qps": 3303.29,
+          "p95Ms": 33.718,
+          "p99Ms": 75.82,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c32-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.492,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.492,
+              "meanCpuPercent": 147.87310203304125,
+              "meanQuotaPercent": 36.96827550826031,
+              "maxCpuPercent": 164.46899502487562,
+              "throttledPeriods": 0,
+              "periods": 1155,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.494,
+              "meanCpuPercent": 6.0706867889241,
+              "meanQuotaPercent": 1.517671697231025,
+              "maxCpuPercent": 9.240854134165366,
+              "throttledPeriods": 0,
+              "periods": 1135,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c32-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index-c32-measured-r2",
+          "runId": "formal-4cpu-cefdd934-update_index-c32-measured-r2",
           "repeat": 2,
-          "tps": 3145.11,
-          "qps": 3145.11,
-          "p95Ms": 37.565,
-          "p99Ms": 78.6,
+          "tps": 3514.98,
+          "qps": 3514.98,
+          "p95Ms": 31.375,
+          "p99Ms": 69.29,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c32-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.411,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.411,
+              "meanCpuPercent": 143.64889048704197,
+              "meanQuotaPercent": 35.91222262176049,
+              "maxCpuPercent": 176.29776313161574,
+              "throttledPeriods": 0,
+              "periods": 1154,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.414,
+              "meanCpuPercent": 6.4234841527024455,
+              "meanQuotaPercent": 1.6058710381756114,
+              "maxCpuPercent": 8.965036918778686,
+              "throttledPeriods": 0,
+              "periods": 1133,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c32-measured-r2.resources.json"
+          }
         }
       ]
     },
@@ -986,17 +1913,37 @@
       "concurrency": 1,
       "attempts": 3,
       "stability": "unstable",
-      "spreadPercent": 53.98773006134968,
+      "spreadPercent": 57.904411764705884,
       "selected": {
-        "tps": 3615.78,
-        "qps": 3615.78,
-        "p95Ms": 0.214,
-        "p99Ms": 1.55,
+        "tps": 3475.28,
+        "qps": 3475.28,
+        "p95Ms": 0.23,
+        "p99Ms": 1.79,
         "queriesPerTransaction": 1
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 113.77677379423642,
+          "meanQuotaPercent": 28.444193448559105,
+          "maxCpuPercent": 126.11944888178914,
+          "periods": 3459,
+          "throttledPeriods": 1,
+          "throttledTimeSeconds": 0.028534,
+          "coverageSeconds": 345.756
+        },
+        "loadgen": {
+          "meanCpuPercent": 6.430677437174449,
+          "meanQuotaPercent": 1.6076693592936122,
+          "maxCpuPercent": 7.114917675064471,
+          "periods": 3448,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 345.759
+        }
       },
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:27:53.641Z",
+        "generatedAt": "2026-10-06T06:59:17.167Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -1009,7 +1956,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -1044,38 +1991,152 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "runGroup": "durability-db3dcd2c",
-      "testedAt": "2026-10-06T03:35:00.188Z",
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T07:06:24.351Z",
       "runs": [
         {
-          "runId": "durability-db3dcd2c-update_index_async-c1-measured-r1",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c1-measured-r1",
           "repeat": 1,
-          "tps": 3377.6,
-          "qps": 3377.6,
-          "p95Ms": 0.226,
-          "p99Ms": 2.11,
+          "tps": 3266.75,
+          "qps": 3266.75,
+          "p95Ms": 0.234,
+          "p99Ms": 2.35,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.226,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.226,
+              "meanCpuPercent": 115.11298752017774,
+              "meanQuotaPercent": 28.778246880044435,
+              "maxCpuPercent": 120.47140007977663,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.229,
+              "meanCpuPercent": 6.15388747624296,
+              "meanQuotaPercent": 1.53847186906074,
+              "maxCpuPercent": 6.802157842157842,
+              "throttledPeriods": 0,
+              "periods": 1145,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index_async-c1-measured-r2",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c1-measured-r2",
           "repeat": 2,
-          "tps": 3615.78,
-          "qps": 3615.78,
-          "p95Ms": 0.214,
-          "p99Ms": 1.55,
+          "tps": 3475.28,
+          "qps": 3475.28,
+          "p95Ms": 0.23,
+          "p99Ms": 1.79,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.298,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.298,
+              "meanCpuPercent": 114.20315356727784,
+              "meanQuotaPercent": 28.55078839181946,
+              "maxCpuPercent": 126.11944888178914,
+              "throttledPeriods": 1,
+              "periods": 1153,
+              "throttledTimeSeconds": 0.028534
+            },
+            "loadgen": {
+              "coverageSeconds": 115.298,
+              "meanCpuPercent": 6.401273222432306,
+              "meanQuotaPercent": 1.6003183056080765,
+              "maxCpuPercent": 6.775356576862124,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r2.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index_async-c1-measured-r3",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c1-measured-r3",
           "repeat": 3,
-          "tps": 3781.85,
-          "qps": 3781.85,
-          "p95Ms": 0.206,
-          "p99Ms": 1.23,
+          "tps": 3693.8,
+          "qps": 3693.8,
+          "p95Ms": 0.214,
+          "p99Ms": 1.3,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r3.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r3.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.232,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.232,
+              "meanCpuPercent": 112.01400565815052,
+              "meanQuotaPercent": 28.00350141453763,
+              "maxCpuPercent": 115.26795844986017,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.232,
+              "meanCpuPercent": 6.736881248264372,
+              "meanQuotaPercent": 1.684220312066093,
+              "maxCpuPercent": 7.114917675064471,
+              "throttledPeriods": 0,
+              "periods": 1151,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r3.resources.json"
+          }
         }
       ]
     },
@@ -1085,17 +2146,37 @@
       "concurrency": 8,
       "attempts": 3,
       "stability": "unstable",
-      "spreadPercent": 14.71822931514622,
+      "spreadPercent": 19.396035455807564,
       "selected": {
-        "tps": 10174.13,
-        "qps": 10174.13,
+        "tps": 10245.18,
+        "qps": 10245.18,
         "p95Ms": 0.797,
-        "p99Ms": 16.41,
+        "p99Ms": 15,
         "queriesPerTransaction": 1
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 262.72470844217384,
+          "meanQuotaPercent": 65.68117711054346,
+          "maxCpuPercent": 294.70501093656793,
+          "periods": 3462,
+          "throttledPeriods": 100,
+          "throttledTimeSeconds": 1.1053129999999998,
+          "coverageSeconds": 346.072
+        },
+        "loadgen": {
+          "meanCpuPercent": 19.276943882563717,
+          "meanQuotaPercent": 4.819235970640929,
+          "maxCpuPercent": 23.5949531218831,
+          "periods": 3183,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 346.06
+        }
       },
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:40:30.352Z",
+        "generatedAt": "2026-10-06T07:06:34.486Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -1108,7 +2189,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -1143,38 +2224,152 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "runGroup": "durability-db3dcd2c",
-      "testedAt": "2026-10-06T03:47:44.730Z",
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T07:13:46.265Z",
       "runs": [
         {
-          "runId": "durability-db3dcd2c-update_index_async-c8-measured-r1",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c8-measured-r1",
           "repeat": 1,
-          "tps": 8889.45,
-          "qps": 8889.45,
-          "p95Ms": 0.904,
+          "tps": 9109.76,
+          "qps": 9109.76,
+          "p95Ms": 0.937,
           "p99Ms": 16.41,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r1.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.401,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.401,
+              "meanCpuPercent": 256.49439346279496,
+              "meanQuotaPercent": 64.12359836569874,
+              "maxCpuPercent": 286.44593893434444,
+              "throttledPeriods": 34,
+              "periods": 1154,
+              "throttledTimeSeconds": 0.52011
+            },
+            "loadgen": {
+              "coverageSeconds": 115.402,
+              "meanCpuPercent": 17.610470355799727,
+              "meanQuotaPercent": 4.402617588949932,
+              "maxCpuPercent": 19.99233532934132,
+              "throttledPeriods": 0,
+              "periods": 1051,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r1.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index_async-c8-measured-r2",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c8-measured-r2",
           "repeat": 2,
-          "tps": 10174.13,
-          "qps": 10174.13,
-          "p95Ms": 0.768,
+          "tps": 10245.18,
+          "qps": 10245.18,
+          "p95Ms": 0.797,
           "p99Ms": 15,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.341,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.351,
+              "meanCpuPercent": 264.79508196721315,
+              "meanQuotaPercent": 66.19877049180329,
+              "maxCpuPercent": 292.0856373429084,
+              "throttledPeriods": 28,
+              "periods": 1154,
+              "throttledTimeSeconds": 0.362484
+            },
+            "loadgen": {
+              "coverageSeconds": 115.341,
+              "meanCpuPercent": 19.610781075246443,
+              "meanQuotaPercent": 4.902695268811611,
+              "maxCpuPercent": 23.5949531218831,
+              "throttledPeriods": 0,
+              "periods": 1073,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r2.resources.json"
+          }
         },
         {
-          "runId": "durability-db3dcd2c-update_index_async-c8-measured-r3",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c8-measured-r3",
           "repeat": 3,
-          "tps": 10331.6,
-          "qps": 10331.6,
-          "p95Ms": 0.797,
-          "p99Ms": 16.71,
+          "tps": 11077.31,
+          "qps": 11077.31,
+          "p95Ms": 0.654,
+          "p99Ms": 13.7,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r3.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r3.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.317,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.32,
+              "meanCpuPercent": 266.88846947624,
+              "meanQuotaPercent": 66.72211736906,
+              "maxCpuPercent": 294.70501093656793,
+              "throttledPeriods": 38,
+              "periods": 1154,
+              "throttledTimeSeconds": 0.222719
+            },
+            "loadgen": {
+              "coverageSeconds": 115.317,
+              "meanCpuPercent": 20.610739093108563,
+              "meanQuotaPercent": 5.152684773277141,
+              "maxCpuPercent": 23.33115438108484,
+              "throttledPeriods": 0,
+              "periods": 1059,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r3.resources.json"
+          }
         }
       ]
     },
@@ -1182,19 +2377,39 @@
       "scenario": "update_index_async",
       "scenarioLabel": "索引更新（异步刷盘）",
       "concurrency": 32,
-      "attempts": 2,
-      "stability": "acceptable",
-      "spreadPercent": 5.39752005835157,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 11.884276655335704,
       "selected": {
-        "tps": 15914.95,
-        "qps": 15914.95,
-        "p95Ms": 8.073,
-        "p99Ms": 27.42,
+        "tps": 15338.56,
+        "qps": 15338.56,
+        "p95Ms": 7.985,
+        "p99Ms": 27.17,
         "queriesPerTransaction": 1
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 307.3730175845333,
+          "meanQuotaPercent": 76.84325439613332,
+          "maxCpuPercent": 364.33102073365234,
+          "periods": 3459,
+          "throttledPeriods": 918,
+          "throttledTimeSeconds": 52.453300000000006,
+          "coverageSeconds": 345.929
+        },
+        "loadgen": {
+          "meanCpuPercent": 30.13819454281081,
+          "meanQuotaPercent": 7.534548635702702,
+          "maxCpuPercent": 41.16949591552102,
+          "periods": 3046,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 345.929
+        }
       },
       "environment": {
         "schemaVersion": 1,
-        "generatedAt": "2026-10-06T03:53:30.963Z",
+        "generatedAt": "2026-10-06T07:13:56.801Z",
         "environmentLabel": "local Docker benchmark",
         "exploratory": true,
         "container": {
@@ -1207,7 +2422,7 @@
           "platform": "linux/arm64",
           "mysqlCpuLimit": 4,
           "mysqlMemoryLimit": "6g",
-          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorCpuLimit": 4,
           "loadGeneratorMemoryLimit": "1g",
           "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
         },
@@ -1242,266 +2457,1056 @@
           "Values are exploratory and must not be treated as production capacity."
         ]
       },
-      "runGroup": "durability-db3dcd2c",
-      "testedAt": "2026-10-06T03:58:55.451Z",
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T07:21:15.304Z",
       "runs": [
         {
-          "runId": "durability-db3dcd2c-update_index_async-c32-measured-r1",
+          "runId": "formal-4cpu-cefdd934-update_index_async-c32-measured-r1",
           "repeat": 1,
-          "tps": 15991.18,
-          "qps": 15991.18,
-          "p95Ms": 8.581,
-          "p99Ms": 28.16,
-          "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r1.txt"
-        },
-        {
-          "runId": "durability-db3dcd2c-update_index_async-c32-measured-r2",
-          "repeat": 2,
-          "tps": 15838.72,
-          "qps": 15838.72,
-          "p95Ms": 7.565,
+          "tps": 15116.4,
+          "qps": 15116.4,
+          "p95Ms": 8.13,
           "p99Ms": 26.68,
           "errors": 0,
-          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r2.txt"
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.335,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.335,
+              "meanCpuPercent": 300.08772618892795,
+              "meanQuotaPercent": 75.02193154723199,
+              "maxCpuPercent": 347.06931976860164,
+              "throttledPeriods": 302,
+              "periods": 1153,
+              "throttledTimeSeconds": 17.415423
+            },
+            "loadgen": {
+              "coverageSeconds": 115.335,
+              "meanCpuPercent": 28.473652403866996,
+              "meanQuotaPercent": 7.118413100966749,
+              "maxCpuPercent": 39.76579472843451,
+              "throttledPeriods": 0,
+              "periods": 973,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r1.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-update_index_async-c32-measured-r2",
+          "repeat": 2,
+          "tps": 16996.14,
+          "qps": 16996.14,
+          "p95Ms": 7.985,
+          "p99Ms": 27.17,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.303,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.303,
+              "meanCpuPercent": 320.736822112174,
+              "meanQuotaPercent": 80.1842055280435,
+              "maxCpuPercent": 364.33102073365234,
+              "throttledPeriods": 331,
+              "periods": 1153,
+              "throttledTimeSeconds": 19.090311
+            },
+            "loadgen": {
+              "coverageSeconds": 115.303,
+              "meanCpuPercent": 32.48146535649549,
+              "meanQuotaPercent": 8.120366339123873,
+              "maxCpuPercent": 41.16949591552102,
+              "throttledPeriods": 0,
+              "periods": 1075,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r2.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-update_index_async-c32-measured-r3",
+          "repeat": 3,
+          "tps": 15338.56,
+          "qps": 15338.56,
+          "p95Ms": 7.985,
+          "p99Ms": 27.17,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r3.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.291,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.291,
+              "meanCpuPercent": 301.29589386855866,
+              "meanQuotaPercent": 75.32397346713967,
+              "maxCpuPercent": 360.18784673717823,
+              "throttledPeriods": 285,
+              "periods": 1153,
+              "throttledTimeSeconds": 15.947566
+            },
+            "loadgen": {
+              "coverageSeconds": 115.291,
+              "meanCpuPercent": 29.45985723083328,
+              "meanQuotaPercent": 7.36496430770832,
+              "maxCpuPercent": 38.86590818363273,
+              "throttledPeriods": 0,
+              "periods": 998,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r3.resources.json"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 1,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 29.559363525091786,
+      "selected": {
+        "tps": 208.18,
+        "qps": 4163.67,
+        "p95Ms": 8.13,
+        "p99Ms": 15.27,
+        "queriesPerTransaction": 20
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 48.842072615014274,
+          "meanQuotaPercent": 12.210518153753569,
+          "maxCpuPercent": 67.61605751947273,
+          "periods": 3456,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 345.63100000000003
+        },
+        "loadgen": {
+          "meanCpuPercent": 8.11869240539657,
+          "meanQuotaPercent": 2.0296731013491427,
+          "maxCpuPercent": 9.43925289652417,
+          "periods": 3448,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 345.62699999999995
+        }
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T07:21:27.009Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T07:28:35.153Z",
+      "runs": [
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c1-measured-r1",
+          "repeat": 1,
+          "tps": 204.17,
+          "qps": 4083.31,
+          "p95Ms": 8.13,
+          "p99Ms": 19.29,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.225,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.226,
+              "meanCpuPercent": 54.428972627705555,
+              "meanQuotaPercent": 13.607243156926389,
+              "maxCpuPercent": 67.2261938061938,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.225,
+              "meanCpuPercent": 7.889050987198959,
+              "meanQuotaPercent": 1.9722627467997398,
+              "maxCpuPercent": 8.974925134757436,
+              "throttledPeriods": 0,
+              "periods": 1151,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r1.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c1-measured-r2",
+          "repeat": 2,
+          "tps": 210.65,
+          "qps": 4213.07,
+          "p95Ms": 7.842,
+          "p99Ms": 14.46,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.175,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.177,
+              "meanCpuPercent": 47.581850543077174,
+              "meanQuotaPercent": 11.895462635769293,
+              "maxCpuPercent": 67.61605751947273,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.175,
+              "meanCpuPercent": 8.23964401996961,
+              "meanQuotaPercent": 2.0599110049924025,
+              "maxCpuPercent": 9.43925289652417,
+              "throttledPeriods": 0,
+              "periods": 1147,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r2.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c1-measured-r3",
+          "repeat": 3,
+          "tps": 208.18,
+          "qps": 4163.67,
+          "p95Ms": 8.13,
+          "p99Ms": 15.27,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r3.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.227,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.228,
+              "meanCpuPercent": 44.51493387023987,
+              "meanQuotaPercent": 11.128733467559968,
+              "maxCpuPercent": 54.47024760383387,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.227,
+              "meanCpuPercent": 8.227432806547077,
+              "meanQuotaPercent": 2.056858201636769,
+              "maxCpuPercent": 9.262080670926517,
+              "throttledPeriods": 0,
+              "periods": 1150,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r3.resources.json"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 8,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 18.393234672304438,
+      "selected": {
+        "tps": 929.37,
+        "qps": 18587.46,
+        "p95Ms": 16.408,
+        "p99Ms": 38.94,
+        "queriesPerTransaction": 20
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 169.10401947751706,
+          "meanQuotaPercent": 42.276004869379264,
+          "maxCpuPercent": 203.64349041533546,
+          "periods": 3458,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 346.03999999999996
+        },
+        "loadgen": {
+          "meanCpuPercent": 38.51351647367189,
+          "meanQuotaPercent": 9.628379118417973,
+          "maxCpuPercent": 47.02640303574995,
+          "periods": 3447,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 346.037
+        }
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T07:28:45.801Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T07:35:56.165Z",
+      "runs": [
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c8-measured-r1",
+          "repeat": 1,
+          "tps": 866.96,
+          "qps": 17339.13,
+          "p95Ms": 19.645,
+          "p99Ms": 45.79,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.33,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.331,
+              "meanCpuPercent": 172.330578075279,
+              "meanQuotaPercent": 43.08264451881975,
+              "maxCpuPercent": 192.84750499001996,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.33,
+              "meanCpuPercent": 35.30177057140379,
+              "meanQuotaPercent": 8.825442642850948,
+              "maxCpuPercent": 43.085332269008184,
+              "throttledPeriods": 0,
+              "periods": 1150,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r1.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c8-measured-r2",
+          "repeat": 2,
+          "tps": 934,
+          "qps": 18679.91,
+          "p95Ms": 15.545,
+          "p99Ms": 38.25,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.351,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.353,
+              "meanCpuPercent": 168.61629866583442,
+              "meanQuotaPercent": 42.154074666458605,
+              "maxCpuPercent": 203.64349041533546,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.351,
+              "meanCpuPercent": 40.192726547667554,
+              "meanQuotaPercent": 10.048181636916889,
+              "maxCpuPercent": 45.80502392344498,
+              "throttledPeriods": 0,
+              "periods": 1145,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r2.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c8-measured-r3",
+          "repeat": 3,
+          "tps": 929.37,
+          "qps": 18587.46,
+          "p95Ms": 16.408,
+          "p99Ms": 38.94,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r3.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.356,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.356,
+              "meanCpuPercent": 166.36586826866395,
+              "meanQuotaPercent": 41.591467067165986,
+              "maxCpuPercent": 196.03791110225234,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.356,
+              "meanCpuPercent": 40.045401192829154,
+              "meanQuotaPercent": 10.011350298207288,
+              "maxCpuPercent": 47.02640303574995,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r3.resources.json"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 0.016137084533117015,
+      "selected": {
+        "tps": 1983.01,
+        "qps": 39660.185,
+        "p95Ms": 38.2535,
+        "p99Ms": 84.47,
+        "queriesPerTransaction": 20
+      },
+      "resources": {
+        "mysql": {
+          "meanCpuPercent": 276.313857219706,
+          "meanQuotaPercent": 69.0784643049265,
+          "maxCpuPercent": 318.2755093887335,
+          "periods": 2305,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.50799999999998
+        },
+        "loadgen": {
+          "meanCpuPercent": 82.82513242547948,
+          "meanQuotaPercent": 20.70628310636987,
+          "maxCpuPercent": 106.45158777711204,
+          "periods": 2293,
+          "throttledPeriods": 0,
+          "throttledTimeSeconds": 0,
+          "coverageSeconds": 230.507
+        }
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T08:23:22.616Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "formal-4cpu-cefdd934",
+      "testedAt": "2026-10-06T08:28:36.841Z",
+      "runs": [
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c32-measured-r1",
+          "repeat": 1,
+          "tps": 1983.17,
+          "qps": 39663.39,
+          "p95Ms": 38.942,
+          "p99Ms": 84.47,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c32-measured-r1.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.288,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.288,
+              "maxGapSeconds": 5.08,
+              "meanCpuPercent": 276.35009888279785,
+              "meanQuotaPercent": 69.08752472069946,
+              "maxCpuPercent": 317.7939672393128,
+              "throttledPeriods": 0,
+              "periods": 1153,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.288,
+              "maxGapSeconds": 5.08,
+              "meanCpuPercent": 81.88457515092638,
+              "meanQuotaPercent": 20.471143787731595,
+              "maxCpuPercent": 106.45158777711204,
+              "throttledPeriods": 0,
+              "periods": 1143,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c32-measured-r1.resources.json"
+          }
+        },
+        {
+          "runId": "formal-4cpu-cefdd934-read_write-c32-measured-r2",
+          "repeat": 2,
+          "tps": 1982.85,
+          "qps": 39656.98,
+          "p95Ms": 37.565,
+          "p99Ms": 84.47,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c32-measured-r2.txt",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 24,
+            "coverageSeconds": 115.219,
+            "expectedSeconds": 120,
+            "limits": {
+              "mysql": {
+                "cpus": 4,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 115.22,
+              "maxGapSeconds": 5.038,
+              "meanCpuPercent": 276.2775941676792,
+              "meanQuotaPercent": 69.0693985419198,
+              "maxCpuPercent": 318.2755093887335,
+              "throttledPeriods": 0,
+              "periods": 1152,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 115.219,
+              "maxGapSeconds": 5.038,
+              "meanCpuPercent": 83.76625296175109,
+              "meanQuotaPercent": 20.941563240437773,
+              "maxCpuPercent": 103.2376747902517,
+              "throttledPeriods": 0,
+              "periods": 1150,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage.",
+            "rawPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c32-measured-r2.resources.json"
+          }
         }
       ]
     }
   ],
   "rawResults": [
     {
-      "runId": "mvp-point_select-c1-measured-r1",
+      "runId": "formal-4cpu-cefdd934-point_select-c1-measured-r1",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 1,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c1-measured-r1.txt"
     },
     {
-      "runId": "mvp-point_select-c1-measured-r2",
+      "runId": "formal-4cpu-cefdd934-point_select-c1-measured-r2",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 1,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c1-measured-r2.txt"
     },
     {
-      "runId": "mvp-point_select-c8-measured-r1",
+      "runId": "formal-4cpu-cefdd934-point_select-c8-measured-r1",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 8,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r1.txt"
     },
     {
-      "runId": "mvp-point_select-c8-measured-r2",
+      "runId": "formal-4cpu-cefdd934-point_select-c8-measured-r2",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 8,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r2.txt"
     },
     {
-      "runId": "mvp-point_select-c8-measured-r3",
+      "runId": "formal-4cpu-cefdd934-point_select-c8-measured-r3",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 8,
       "repeat": 3,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r3.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c8-measured-r3.txt"
     },
     {
-      "runId": "mvp-point_select-c32-measured-r1",
+      "runId": "formal-4cpu-cefdd934-point_select-c32-measured-r1",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 32,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c32-measured-r1.txt"
     },
     {
-      "runId": "mvp-point_select-c32-measured-r2",
+      "runId": "formal-4cpu-cefdd934-point_select-c32-measured-r2",
       "status": "passed",
       "scenario": "point_select",
       "concurrency": 32,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-point_select-c32-measured-r2.txt"
     },
     {
-      "runId": "mvp-read_write-c1-measured-r1",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 1,
-      "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r1.txt"
-    },
-    {
-      "runId": "mvp-read_write-c1-measured-r2",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 1,
-      "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r2.txt"
-    },
-    {
-      "runId": "mvp-read_write-c1-measured-r3",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 1,
-      "repeat": 3,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r3.txt"
-    },
-    {
-      "runId": "mvp-read_write-c8-measured-r1",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 8,
-      "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r1.txt"
-    },
-    {
-      "runId": "mvp-read_write-c8-measured-r2",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 8,
-      "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r2.txt"
-    },
-    {
-      "runId": "mvp-read_write-c32-measured-r1",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 32,
-      "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r1.txt"
-    },
-    {
-      "runId": "mvp-read_write-c32-measured-r2",
-      "status": "passed",
-      "scenario": "read_write",
-      "concurrency": 32,
-      "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r2.txt"
-    },
-    {
-      "runId": "durability-db3dcd2c-update_index-c1-measured-r1",
+      "runId": "formal-4cpu-cefdd934-update_index-c1-measured-r1",
       "status": "passed",
       "scenario": "update_index",
       "concurrency": 1,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c1-measured-r1.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index-c1-measured-r2",
+      "runId": "formal-4cpu-cefdd934-update_index-c1-measured-r2",
       "status": "passed",
       "scenario": "update_index",
       "concurrency": 1,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c1-measured-r2.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index-c8-measured-r1",
+      "runId": "formal-4cpu-cefdd934-update_index-c8-measured-r1",
       "status": "passed",
       "scenario": "update_index",
       "concurrency": 8,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c8-measured-r1.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index-c8-measured-r2",
+      "runId": "formal-4cpu-cefdd934-update_index-c8-measured-r2",
       "status": "passed",
       "scenario": "update_index",
       "concurrency": 8,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c8-measured-r2.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index-c32-measured-r1",
+      "runId": "formal-4cpu-cefdd934-update_index-c32-measured-r1",
       "status": "passed",
       "scenario": "update_index",
       "concurrency": 32,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c32-measured-r1.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index-c32-measured-r2",
+      "runId": "formal-4cpu-cefdd934-update_index-c32-measured-r2",
       "status": "passed",
       "scenario": "update_index",
       "concurrency": 32,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index-c32-measured-r2.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c1-measured-r1",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c1-measured-r1",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 1,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r1.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c1-measured-r2",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c1-measured-r2",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 1,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r2.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c1-measured-r3",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c1-measured-r3",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 1,
       "repeat": 3,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r3.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c1-measured-r3.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c8-measured-r1",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c8-measured-r1",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 8,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r1.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c8-measured-r2",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c8-measured-r2",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 8,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r2.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c8-measured-r3",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c8-measured-r3",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 8,
       "repeat": 3,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r3.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c8-measured-r3.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c32-measured-r1",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c32-measured-r1",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 32,
       "repeat": 1,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r1.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r1.txt"
     },
     {
-      "runId": "durability-db3dcd2c-update_index_async-c32-measured-r2",
+      "runId": "formal-4cpu-cefdd934-update_index_async-c32-measured-r2",
       "status": "passed",
       "scenario": "update_index_async",
       "concurrency": 32,
       "repeat": 2,
-      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r2.txt"
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r2.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-update_index_async-c32-measured-r3",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 32,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-update_index_async-c32-measured-r3.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c1-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r1.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c1-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r2.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c1-measured-r3",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c1-measured-r3.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c8-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r1.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c8-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r2.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c8-measured-r3",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c8-measured-r3.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c32-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c32-measured-r1.txt"
+    },
+    {
+      "runId": "formal-4cpu-cefdd934-read_write-c32-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/formal-4cpu-cefdd934-read_write-c32-measured-r2.txt"
     }
   ],
   "limitations": [
     "Docker on macOS runs Linux containers inside a virtual machine.",
     "Results include OrbStack virtualization and local SSD overhead.",
     "Values are exploratory and must not be treated as production capacity."
-  ],
-  "durabilityComparison": {
-    "runGroup": "durability-db3dcd2c",
-    "risk": "异步刷盘降低持久化保障；VM、系统或断电故障可能丢失已确认事务或 binlog。",
-    "note": "新同步/异步更新同批测量；点查和读写混合来自历史批次，仅作背景参照。"
-  }
+  ]
 }

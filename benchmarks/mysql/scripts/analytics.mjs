@@ -3,8 +3,9 @@ import {
   SCENARIO_ORDER,
   SCENARIOS,
   assert,
+  FORMAL_SCENARIOS,
 } from "./lib.mjs";
-import { LOGGING_MODES, assertLoggingMatch } from "./logging.mjs";
+import { LOGGING_MODES, assertLoggingMatch, loggingMode } from "./logging.mjs";
 
 function numericValues(runs, field) {
   return runs
@@ -284,6 +285,65 @@ export function validateDurabilityRuns(runs) {
     assertLoggingMatch(run.environment?.mysql ?? {}, LOGGING_MODES[run.scenario]);
     assert(run.status === "passed" && run.metrics?.errors === 0, `Invalid run ${run.runId}`);
   }
+}
+
+export function validateFormalRuns(runs, requireComplete = true) {
+  assert(runs.length > 0 && new Set(runs.map((run) => run.runGroup)).size === 1, "Formal result group must be unique");
+  const first = runs[0].environment;
+  for (const run of runs) {
+    assert(run.purpose === "formal", "Verification/legacy results cannot be published");
+    assert(run.restorationVerified === true && run.status === "passed" && run.metrics?.errors === 0,
+      "Formal result is invalid or logging restoration is missing");
+    assertLoggingMatch(run.environment?.mysql ?? {}, loggingMode(run.scenario));
+    const c = run.environment?.container ?? {};
+    assert(c.loadGeneratorCpuLimit === 4 && c.mysqlCpuLimit === 4
+      && c.mysqlMemoryLimit === "6g" && c.loadGeneratorMemoryLimit === "1g"
+      && run.environment.mysql.bufferPoolBytes === 3221225472 && c.platform === "linux/arm64",
+    "Formal resource configuration mismatch");
+    assert(c.mysqlImage === first.container.mysqlImage && c.imageId === first.container.imageId
+      && run.environment.mysql.version === first.mysql.version
+      && run.environment.loadGenerator?.sysbenchVersion === first.loadGenerator?.sysbenchVersion,
+    "Cannot mix formal software versions/images");
+    const protocol = run.protocol;
+    assert(protocol.warmupSeconds === 60 && protocol.repeatCount === 2
+      && protocol.adaptiveThresholdPercent === 10, "Formal protocol mismatch");
+    if (run.kind === "measured") {
+      assert(protocol.durationSeconds === 120 && run.resources?.valid === true
+        && run.resources.coverageSeconds >= 96
+        && run.resources.coverageSeconds <= 130
+        && run.resources.limits.loadgen.cpus === 4 && run.resources.limits.mysql.cpus === 4
+        && run.resources.limits.loadgen.memoryBytes === 1024 ** 3
+        && run.resources.limits.mysql.memoryBytes === 6 * 1024 ** 3,
+      `Formal resource evidence/protocol is incomplete: ${run.runId}`);
+    }
+  }
+  if (requireComplete) {
+    for (const scenario of FORMAL_SCENARIOS) {
+      for (const concurrency of CONCURRENCY_LEVELS) {
+        const measured = runs.filter((r) => r.kind === "measured" && r.scenario === scenario && r.concurrency === concurrency);
+        assert(measured.length >= 2 && measured.length <= 3, `Incomplete formal combination ${scenario} c${concurrency}`);
+      }
+    }
+  }
+}
+
+export function summarizeRunResources(runs) {
+  const valid = runs.filter((r) => r.resources?.valid);
+  if (valid.length !== runs.length || !valid.length) return null;
+  const summarize = (name) => {
+    const values = valid.map((r) => r.resources[name]);
+    const coverage = values.reduce((sum, row) => sum + row.coverageSeconds, 0);
+    const meanCpuPercent = values.reduce((sum, row) => sum + row.meanCpuPercent * row.coverageSeconds, 0) / coverage;
+    return {
+      meanCpuPercent, meanQuotaPercent: meanCpuPercent / 4,
+      maxCpuPercent: Math.max(...values.map((v) => v.maxCpuPercent)),
+      periods: values.reduce((sum, row) => sum + row.periods, 0),
+      throttledPeriods: values.reduce((sum, row) => sum + row.throttledPeriods, 0),
+      throttledTimeSeconds: values.reduce((sum, row) => sum + row.throttledTimeSeconds, 0),
+      coverageSeconds: coverage,
+    };
+  };
+  return { mysql: summarize("mysql"), loadgen: summarize("loadgen") };
 }
 
 export function mergeDurabilityReport(previous, comparison) {

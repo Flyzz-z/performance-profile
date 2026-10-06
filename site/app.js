@@ -9,6 +9,7 @@ const escape = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<",
 const setText = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
 const badge = (value) => `<span class="status status-${["stable", "acceptable", "unstable", "failed"].includes(value) ? value : "missing"}">${stabilityLabel(value)}</span>`;
 const scenarioName = (series) => `<span class="scenario-name"><i class="swatch" style="background:${series.color}"></i>${escape(series.label)}</span>`;
+const quotaPercent = (value) => typeof value === "number" && Number.isFinite(value) ? `${formatNumber(value)}%` : MISSING;
 let report;
 let state;
 let charts = [];
@@ -29,8 +30,7 @@ function renderIndex() {
   setText("index-buffer", `Buffer Pool ${formatMemory(mysql.bufferPoolBytes)}`);
   const peak = peakPoint(report);
   setText("index-peak", peak ? formatNumber(peak.qps) : "暂无有效数据");
-  setText("index-peak-scope", peak ? `${peak.label} · 并发 ${peak.concurrency} · ${stabilityLabel(peak.stability)}${
-    peak.sourceRole === "historical" ? ` · 历史 ${formatDate(peak.testedAt).split(" ")[0]}` : ""}` : "未记录指标");
+  setText("index-peak-scope", peak ? `${peak.label} · 并发 ${peak.concurrency} · ${stabilityLabel(peak.stability)}` : "未记录指标");
   setText("index-tested-at", formatDate(data.component.testedAt));
 }
 
@@ -40,14 +40,12 @@ function renderEnvironment() {
   const mysql = data.environment?.mysql ?? {};
   const protocol = data.protocol ?? {};
   const dataset = data.dataset ?? {};
-  if (data.durabilityComparison) {
-    setText("dashboard-scope", "同资源 / 同数据规模 · 日志策略对照；历史曲线仅作背景参照");
-    setText("durability-risk", `${data.durabilityComparison.risk} ${data.durabilityComparison.note}`);
-    document.getElementById("durability-risk").hidden = false;
-  } else {
-    setText("dashboard-scope", "读、写、混合负载 · 同环境 / 同数据集");
-    document.getElementById("durability-risk").hidden = true;
-  }
+  const formal = data.formalExperiment?.purpose === "formal";
+  setText("dashboard-scope", formal
+    ? "sysbench 4 CPU / 1 GiB · 四场景正式实验 · 同轮 / 同数据规模"
+    : "读、写、混合负载");
+  document.querySelectorAll("[data-resource-column]").forEach((node) => { node.hidden = !formal; });
+  setText("resource-unit-note", formal ? "CPU为各自4 CPU配额占比；限流计数见逐次资料" : "");
   setText("cpu-limit", typeof container.mysqlCpuLimit === "number" ? `${formatNumber(container.mysqlCpuLimit)} CPU` : MISSING);
   setText("memory-limit", formatMemory(container.mysqlMemoryLimit));
   setText("buffer-pool", formatMemory(mysql.bufferPoolBytes));
@@ -120,9 +118,11 @@ function renderDashboard() {
     ? visibleSeries.map((series) => {
       const point = series.points.find((p) => p.concurrency === state.selectedConcurrency);
       return `<tr data-scenario="${series.id}"><td>${scenarioName(series)}</td><td>${formatNumber(point?.qps)}</td><td>${formatNumber(point?.tps)}</td>
-        <td>${formatLatency(point?.p95Ms)}</td><td>${formatLatency(point?.p99Ms)}</td><td>${formatNumber(point?.queriesPerTransaction)}</td><td>${badge(point?.stability)}</td></tr>`;
+        <td>${formatLatency(point?.p95Ms)}</td><td>${formatLatency(point?.p99Ms)}</td><td>${formatNumber(point?.queriesPerTransaction)}</td>
+        ${report.data.formalExperiment?.purpose === "formal" ? `<td>${quotaPercent(point?.resources?.mysql?.meanQuotaPercent)}</td><td>${quotaPercent(point?.resources?.loadgen?.meanQuotaPercent)}</td>` : ""}
+        <td>${badge(point?.stability)}</td></tr>`;
     }).join("")
-    : '<tr><td colspan="7">未选择场景</td></tr>';
+    : `<tr><td colspan="${report.data.formalExperiment?.purpose === "formal" ? 9 : 7}">未选择场景</td></tr>`;
 }
 
 function renderResults() {
@@ -136,7 +136,6 @@ function renderResults() {
     const runs = validRuns(combination?.runs);
     const logging = combination?.environment?.mysql ?? series.environment?.mysql ?? {};
     const context = `<p class="run-context">报告日期 ${escape(formatDate(combination?.testedAt ?? series.testedAt))}
-      · ${series.sourceRole === "historical" ? "历史背景参照" : series.sourceRole === "paired" ? "同批日志策略对照" : "原测试"}
       · redo ${escape(text(logging.flushLogAtTransactionCommit))} / sync_binlog ${escape(text(logging.syncBinlog))}
       · binlog ${logging.logBinEnabled === undefined ? MISSING : logging.logBinEnabled ? "ON" : "OFF"}</p>`;
     return `<details class="result-detail" data-scenario="${series.id}" data-level="${point.concurrency}">
@@ -148,9 +147,14 @@ function renderResults() {
         <th>运行</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>错误</th><th>原始输出</th></tr></thead><tbody>
       ${runs.length ? runs.map((run) => {
         const link = artifactUrl(run.rawOutputPath);
+        const resources = run.resources;
+        const resourceLink = artifactUrl(resources?.rawPath);
+        const evidence = resources ? `<br><span class="resource-detail">CPU配额占比 DB ${formatNumber(resources.mysql?.meanQuotaPercent)}% / 压测 ${formatNumber(resources.loadgen?.meanQuotaPercent)}%
+          · 限流周期 DB ${formatNumber(resources.mysql?.throttledPeriods)} / 压测 ${formatNumber(resources.loadgen?.throttledPeriods)}
+          ${resourceLink ? ` · <a class="resource-link" href="${escape(resourceLink)}" target="_blank" rel="noreferrer">资源采样</a>` : ""}</span>` : "";
         return `<tr><td>第 ${escape(run.repeat)} 次</td><td>${formatNumber(run.qps)}</td><td>${formatNumber(run.tps)}</td>
           <td>${formatLatency(run.p95Ms)}</td><td>${formatLatency(run.p99Ms)}</td><td>${formatNumber(run.errors)}</td>
-          <td>${link ? `<a class="run-link" href="${escape(link)}" target="_blank" rel="noreferrer">原始输出</a>` : MISSING}</td></tr>`;
+          <td>${link ? `<a class="run-link" href="${escape(link)}" target="_blank" rel="noreferrer">原始输出</a>` : MISSING}${evidence}</td></tr>`;
       }).join("") : '<tr><td colspan="7">未记录逐次运行</td></tr>'}
       </tbody></table></div></details>`;
   }).join("") : '<p class="muted">暂无有效结果</p>';

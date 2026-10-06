@@ -10,6 +10,7 @@
     "mysql:benchmark": "node benchmarks/mysql/scripts/run.mjs",
     "mysql:collect": "node benchmarks/mysql/scripts/collect.mjs",
     "mysql:durability": "node benchmarks/mysql/scripts/durability.mjs",
+    "mysql:formal": "node benchmarks/mysql/scripts/durability.mjs --formal",
     "mysql:mvp": "npm run mysql:prepare && npm run mysql:benchmark && npm run mysql:collect",
     "test:mysql": "node --test benchmarks/mysql/scripts/test/*.test.mjs",
     "test:site": "node --test site/test/report.test.mjs",

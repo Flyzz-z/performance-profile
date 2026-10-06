@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 1,
+  "intervalMs": 5000,
+  "samples": [
+    {
+      "sampledAt": "2026-10-06T08:24:32.605Z",
+      "mysql": {
+        "timeMs": 1791275072610,
+        "cpuUsageNs": 198728732000,
+        "periods": 903,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275072610,
+        "cpuUsageNs": 9753408000,
+        "periods": 35,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:24:37.611Z",
+      "mysql": {
+        "timeMs": 1791275077618,
+        "cpuUsageNs": 211644800000,
+        "periods": 953,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275077618,
+        "cpuUsageNs": 13975508000,
+        "periods": 85,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:24:42.618Z",
+      "mysql": {
+        "timeMs": 1791275082625,
+        "cpuUsageNs": 227453425000,
+        "periods": 1003,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275082625,
+        "cpuUsageNs": 19305539000,
+        "periods": 135,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:24:47.628Z",
+      "mysql": {
+        "timeMs": 1791275087634,
+        "cpuUsageNs": 243215399000,
+        "periods": 1053,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275087634,
+        "cpuUsageNs": 24249309000,
+        "periods": 186,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:24:52.634Z",
+      "mysql": {
+        "timeMs": 1791275092640,
+        "cpuUsageNs": 259124165000,
+        "periods": 1103,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275092640,
+        "cpuUsageNs": 29363889000,
+        "periods": 236,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:24:57.640Z",
+      "mysql": {
+        "timeMs": 1791275097647,
+        "cpuUsageNs": 273266332000,
+        "periods": 1153,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275097646,
+        "cpuUsageNs": 33673764000,
+        "periods": 286,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:02.649Z",
+      "mysql": {
+        "timeMs": 1791275102653,
+        "cpuUsageNs": 283386163000,
+        "periods": 1203,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275102653,
+        "cpuUsageNs": 35692464000,
+        "periods": 332,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:07.735Z",
+      "mysql": {
+        "timeMs": 1791275107733,
+        "cpuUsageNs": 298121539000,
+        "periods": 1254,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275107733,
+        "cpuUsageNs": 40357228000,
+        "periods": 383,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:12.742Z",
+      "mysql": {
+        "timeMs": 1791275112748,
+        "cpuUsageNs": 313685369000,
+        "periods": 1304,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275112748,
+        "cpuUsageNs": 45359988000,
+        "periods": 433,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:17.755Z",
+      "mysql": {
+        "timeMs": 1791275117754,
+        "cpuUsageNs": 328431412000,
+        "periods": 1354,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275117755,
+        "cpuUsageNs": 49926993000,
+        "periods": 483,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:22.763Z",
+      "mysql": {
+        "timeMs": 1791275122768,
+        "cpuUsageNs": 343551486000,
+        "periods": 1404,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275122767,
+        "cpuUsageNs": 54644392000,
+        "periods": 533,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:27.772Z",
+      "mysql": {
+        "timeMs": 1791275127776,
+        "cpuUsageNs": 358532499000,
+        "periods": 1455,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275127776,
+        "cpuUsageNs": 59332322000,
+        "periods": 583,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:32.780Z",
+      "mysql": {
+        "timeMs": 1791275132783,
+        "cpuUsageNs": 373046646000,
+        "periods": 1505,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275132783,
+        "cpuUsageNs": 63580476000,
+        "periods": 633,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:37.785Z",
+      "mysql": {
+        "timeMs": 1791275137789,
+        "cpuUsageNs": 380336352000,
+        "periods": 1555,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275137789,
+        "cpuUsageNs": 64859384000,
+        "periods": 680,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:42.792Z",
+      "mysql": {
+        "timeMs": 1791275142796,
+        "cpuUsageNs": 390246131000,
+        "periods": 1605,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275142796,
+        "cpuUsageNs": 66889964000,
+        "periods": 729,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:47.799Z",
+      "mysql": {
+        "timeMs": 1791275147803,
+        "cpuUsageNs": 404369717000,
+        "periods": 1655,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275147803,
+        "cpuUsageNs": 71066003000,
+        "periods": 779,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:52.836Z",
+      "mysql": {
+        "timeMs": 1791275152841,
+        "cpuUsageNs": 419543861000,
+        "periods": 1705,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275152836,
+        "cpuUsageNs": 75652990000,
+        "periods": 830,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:25:57.842Z",
+      "mysql": {
+        "timeMs": 1791275157844,
+        "cpuUsageNs": 435053567000,
+        "periods": 1755,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275157844,
+        "cpuUsageNs": 80471992000,
+        "periods": 880,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:26:02.851Z",
+      "mysql": {
+        "timeMs": 1791275162853,
+        "cpuUsageNs": 450520722000,
+        "periods": 1805,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275162852,
+        "cpuUsageNs": 85240358000,
+        "periods": 930,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:26:07.865Z",
+      "mysql": {
+        "timeMs": 1791275167867,
+        "cpuUsageNs": 465658528000,
+        "periods": 1855,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275167867,
+        "cpuUsageNs": 89648357000,
+        "periods": 980,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:26:12.876Z",
+      "mysql": {
+        "timeMs": 1791275172876,
+        "cpuUsageNs": 476649649000,
+        "periods": 1906,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275172878,
+        "cpuUsageNs": 92201763000,
+        "periods": 1030,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:26:17.882Z",
+      "mysql": {
+        "timeMs": 1791275177884,
+        "cpuUsageNs": 487266793000,
+        "periods": 1956,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275177883,
+        "cpuUsageNs": 94904136000,
+        "periods": 1078,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:26:22.892Z",
+      "mysql": {
+        "timeMs": 1791275182889,
+        "cpuUsageNs": 502452546000,
+        "periods": 2006,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275182894,
+        "cpuUsageNs": 99650452000,
+        "periods": 1128,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    },
+    {
+      "sampledAt": "2026-10-06T08:26:27.896Z",
+      "mysql": {
+        "timeMs": 1791275187898,
+        "cpuUsageNs": 517327234000,
+        "periods": 2056,
+        "throttledPeriods": 1,
+        "throttledTimeNs": 7878000
+      },
+      "loadgen": {
+        "timeMs": 1791275187898,
+        "cpuUsageNs": 104156497000,
+        "periods": 1178,
+        "throttledPeriods": 21,
+        "throttledTimeNs": 9189337000
+      }
+    }
+  ],
+  "summary": {
+    "valid": true,
+    "status": "complete",
+    "sampleCount": 24,
+    "coverageSeconds": 115.288,
+    "expectedSeconds": 120,
+    "limits": {
+      "mysql": {
+        "cpus": 4,
+        "memoryBytes": 6442450944
+      },
+      "loadgen": {
+        "cpus": 4,
+        "memoryBytes": 1073741824
+      }
+    },
+    "mysql": {
+      "coverageSeconds": 115.288,
+      "maxGapSeconds": 5.08,
+      "meanCpuPercent": 276.35009888279785,
+      "meanQuotaPercent": 69.08752472069946,
+      "maxCpuPercent": 317.7939672393128,
+      "throttledPeriods": 0,
+      "periods": 1153,
+      "throttledTimeSeconds": 0
+    },
+    "loadgen": {
+      "coverageSeconds": 115.288,
+      "maxGapSeconds": 5.08,
+      "meanCpuPercent": 81.88457515092638,
+      "meanQuotaPercent": 20.471143787731595,
+      "maxCpuPercent": 106.45158777711204,
+      "throttledPeriods": 0,
+      "periods": 1143,
+      "throttledTimeSeconds": 0
+    },
+    "errors": [],
+    "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+  }
+}

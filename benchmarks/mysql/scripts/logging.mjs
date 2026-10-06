@@ -1,9 +1,30 @@
-import { assert, DURABILITY_SCENARIOS } from "./lib.mjs";
+import { assert, DURABILITY_SCENARIOS, FORMAL_SCENARIOS } from "./lib.mjs";
 
 export const LOGGING_MODES = {
   update_index: { logBinEnabled: true, flushLogAtTransactionCommit: 1, syncBinlog: 1, flushLogAtTimeout: 1 },
   update_index_async: { logBinEnabled: true, flushLogAtTransactionCommit: 2, syncBinlog: 0, flushLogAtTimeout: 1 },
 };
+
+export function loggingMode(scenario) {
+  assert(FORMAL_SCENARIOS.includes(scenario), "Unknown formal scenario");
+  return scenario === "update_index_async" ? LOGGING_MODES.update_index_async : LOGGING_MODES.update_index;
+}
+
+export function formalPlan(env, cli = {}) {
+  assert(Number(env.LOADGEN_CPUS) === 4, "Formal experiment requires sysbench 4 CPU");
+  const base = durabilityPlan(env, cli);
+  const scenarios = cli.scenario ? String(cli.scenario).split(",") : FORMAL_SCENARIOS;
+  assert(scenarios.length > 0 && scenarios.every((s) => FORMAL_SCENARIOS.includes(s))
+    && new Set(scenarios).size === scenarios.length, "Invalid formal scenario selection");
+  const isFull = scenarios.length === 4 && base.concurrency.length === 3
+    && base.warmupSeconds === 60 && base.durationSeconds === 120
+    && base.repeats === 2 && Number(env.VARIANCE_THRESHOLD_PERCENT) === 10;
+  return {
+    ...base, scenarios, isFull, purpose: isFull ? "formal" : "verification",
+    combinations: scenarios.flatMap((scenario) => base.concurrency.map((concurrency) =>
+      ({ scenario, concurrency, logging: loggingMode(scenario) }))),
+  };
+}
 
 export function assertLoggingMatch(actual, expected) {
   for (const key of Object.keys(expected)) {

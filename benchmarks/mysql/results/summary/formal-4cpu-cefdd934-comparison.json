@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-06T08:28:37.988Z",
+  "runGroup": "formal-4cpu-cefdd934",
+  "methodology": {
+    "readScenario": "point_select",
+    "writeScenario": "update_index",
+    "mixedScenario": "read_write",
+    "note": "TPS is not compared across different transaction semantics without also considering QPS and queries per transaction."
+  },
+  "comparisons": []
+}

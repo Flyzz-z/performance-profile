@@ -1,0 +1,1507 @@
+{
+  "schemaVersion": 1,
+  "component": {
+    "id": "mysql",
+    "name": "MySQL",
+    "version": "8.4.11",
+    "environmentLabel": "local Docker benchmark",
+    "testedAt": "2026-10-06T03:58:55.451Z"
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-10-05T14:34:49.158Z",
+    "environmentLabel": "local Docker benchmark",
+    "exploratory": true,
+    "container": {
+      "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "imagePlatform": "linux/arm64",
+      "repositoryDigests": [
+        "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+      ],
+      "platform": "linux/arm64",
+      "mysqlCpuLimit": 4,
+      "mysqlMemoryLimit": "6g",
+      "loadGeneratorCpuLimit": 1,
+      "loadGeneratorMemoryLimit": "1g",
+      "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+    },
+    "mysql": {
+      "version": "8.4.11",
+      "bufferPoolBytes": 3221225472,
+      "maxConnections": 512,
+      "flushLogAtTransactionCommit": 1,
+      "syncBinlog": 1,
+      "transactionIsolation": "REPEATABLE-READ"
+    },
+    "loadGenerator": {
+      "sysbenchVersion": "sysbench 1.0.20",
+      "image": "performance-profile/mysql-sysbench:1.0.0"
+    },
+    "runtime": {
+      "dockerServer": "29.4.0|linux/arm64",
+      "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+      "composeVersion": "5.1.2"
+    },
+    "host": {
+      "architecture": "arm64",
+      "model": "MacBookPro18,1",
+      "cpuCount": 10,
+      "memoryBytes": 17179869184
+    },
+    "limitations": [
+      "Docker on macOS runs Linux containers inside a virtual machine.",
+      "Results include OrbStack virtualization and local SSD overhead.",
+      "Values are exploratory and must not be treated as production capacity."
+    ]
+  },
+  "dataset": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-10-05T15:41:39.270Z",
+    "database": "sbtest",
+    "tableCount": 10,
+    "tableSize": 100000,
+    "expectedRows": 1000000,
+    "actualRows": 1000000,
+    "status": "ready",
+    "command": "sysbench '/usr/share/sysbench/oltp_point_select.lua' '--db-driver=mysql' '--mysql-host=mysql' '--mysql-port=3306' '--mysql-user=root' '--mysql-password=***' '--mysql-db=sbtest' '--tables=10' '--table-size=100000' '--threads=4' '--time=1' '--report-interval=10' '--percentile=99' '--histogram=on' '--rand-type=uniform' '--rand-seed=42' '--mysql-ssl=off' 'prepare'",
+    "startedAt": "2026-10-05T15:41:30.643Z",
+    "finishedAt": "2026-10-05T15:41:37.230Z"
+  },
+  "protocol": {
+    "scenarios": [
+      "point_select",
+      "update_index",
+      "read_write"
+    ],
+    "concurrency": [
+      1,
+      8,
+      32
+    ],
+    "warmupSeconds": 60,
+    "durationSeconds": 120,
+    "initialRuns": 2,
+    "maximumRuns": 3,
+    "varianceThresholdPercent": 10
+  },
+  "headline": {
+    "peak": {
+      "scenario": "point_select",
+      "concurrency": 8,
+      "tps": 135335.59,
+      "qps": 135335.59,
+      "p95Ms": 0.039,
+      "p99Ms": 0.07,
+      "queriesPerTransaction": 1,
+      "stability": "unstable",
+      "attempts": 3
+    },
+    "representativeComparison": null
+  },
+  "series": [
+    {
+      "scenario": "point_select",
+      "label": "主键点查",
+      "description": "按主键读取随机单行，代表纯读路径。",
+      "points": [
+        {
+          "scenario": "point_select",
+          "concurrency": 1,
+          "tps": 42421.835,
+          "qps": 42421.835,
+          "p95Ms": 0.027,
+          "p99Ms": 0.04,
+          "queriesPerTransaction": 1,
+          "stability": "stable",
+          "attempts": 2
+        },
+        {
+          "scenario": "point_select",
+          "concurrency": 8,
+          "tps": 135335.59,
+          "qps": 135335.59,
+          "p95Ms": 0.039,
+          "p99Ms": 0.07,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3
+        },
+        {
+          "scenario": "point_select",
+          "concurrency": 32,
+          "tps": 116675,
+          "qps": 116675,
+          "p95Ms": 0.232,
+          "p99Ms": 0.6,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ],
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-05T14:34:49.158Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "testedAt": "2026-10-05T15:37:52.442Z",
+      "runGroup": "mvp",
+      "sourceRole": "historical"
+    },
+    {
+      "scenario": "update_index",
+      "label": "索引更新（同步刷盘）",
+      "description": "随机更新一行并维护索引，代表写路径。",
+      "points": [
+        {
+          "scenario": "update_index",
+          "concurrency": 1,
+          "tps": 323.19,
+          "qps": 323.19,
+          "p95Ms": 5.855,
+          "p99Ms": 21.9,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 2
+        },
+        {
+          "scenario": "update_index",
+          "concurrency": 8,
+          "tps": 1307.725,
+          "qps": 1307.725,
+          "p95Ms": 15.4115,
+          "p99Ms": 43.78,
+          "queriesPerTransaction": 1,
+          "stability": "stable",
+          "attempts": 2
+        },
+        {
+          "scenario": "update_index",
+          "concurrency": 32,
+          "tps": 3058.1400000000003,
+          "qps": 3058.1400000000003,
+          "p95Ms": 37.906,
+          "p99Ms": 79.315,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ],
+      "runGroup": "durability-db3dcd2c",
+      "sourceRole": "paired",
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:22:36.781Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "testedAt": "2026-10-06T03:53:19.251Z"
+    },
+    {
+      "scenario": "update_index_async",
+      "label": "索引更新（异步刷盘）",
+      "description": "相同索引更新 SQL，redo=2、sync_binlog=0，降低提交持久化保障。",
+      "points": [
+        {
+          "scenario": "update_index_async",
+          "concurrency": 1,
+          "tps": 3615.78,
+          "qps": 3615.78,
+          "p95Ms": 0.214,
+          "p99Ms": 1.55,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3
+        },
+        {
+          "scenario": "update_index_async",
+          "concurrency": 8,
+          "tps": 10174.13,
+          "qps": 10174.13,
+          "p95Ms": 0.797,
+          "p99Ms": 16.41,
+          "queriesPerTransaction": 1,
+          "stability": "unstable",
+          "attempts": 3
+        },
+        {
+          "scenario": "update_index_async",
+          "concurrency": 32,
+          "tps": 15914.95,
+          "qps": 15914.95,
+          "p95Ms": 8.073,
+          "p99Ms": 27.42,
+          "queriesPerTransaction": 1,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ],
+      "runGroup": "durability-db3dcd2c",
+      "sourceRole": "paired",
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:27:53.641Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 2,
+          "syncBinlog": 0,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "testedAt": "2026-10-06T03:58:55.451Z"
+    },
+    {
+      "scenario": "read_write",
+      "label": "读写混合",
+      "description": "标准读写混合负载，接近典型 OLTP 访问模式。",
+      "points": [
+        {
+          "scenario": "read_write",
+          "concurrency": 1,
+          "tps": 190.75,
+          "qps": 3815.08,
+          "p95Ms": 8.737,
+          "p99Ms": 19.29,
+          "queriesPerTransaction": 20,
+          "stability": "unstable",
+          "attempts": 3
+        },
+        {
+          "scenario": "read_write",
+          "concurrency": 8,
+          "tps": 918.7550000000001,
+          "qps": 18375.14,
+          "p95Ms": 15.829999999999998,
+          "p99Ms": 38.95,
+          "queriesPerTransaction": 20,
+          "stability": "stable",
+          "attempts": 2
+        },
+        {
+          "scenario": "read_write",
+          "concurrency": 32,
+          "tps": 1934,
+          "qps": 38679.95,
+          "p95Ms": 39.65,
+          "p99Ms": 77.925,
+          "queriesPerTransaction": 20,
+          "stability": "acceptable",
+          "attempts": 2
+        }
+      ],
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-05T14:34:49.158Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "df548068c45487f6eb294495249bf5b787742c6b35f5e76e59f8e39edd5ac5c5"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "testedAt": "2026-10-05T15:37:52.442Z",
+      "runGroup": "mvp",
+      "sourceRole": "historical"
+    }
+  ],
+  "comparisons": [],
+  "stability": [
+    {
+      "scenario": "point_select",
+      "scenarioLabel": "主键点查",
+      "concurrency": 1,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 0.0683374493347712,
+      "selected": {
+        "tps": 42421.835,
+        "qps": 42421.835,
+        "p95Ms": 0.027,
+        "p99Ms": 0.04,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-point_select-c1-measured-r1",
+          "repeat": 1,
+          "tps": 42407.34,
+          "qps": 42407.34,
+          "p95Ms": 0.027,
+          "p99Ms": 0.04,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-point_select-c1-measured-r2",
+          "repeat": 2,
+          "tps": 42436.33,
+          "qps": 42436.33,
+          "p95Ms": 0.027,
+          "p99Ms": 0.04,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "point_select",
+      "scenarioLabel": "主键点查",
+      "concurrency": 8,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 13.636363636363628,
+      "selected": {
+        "tps": 135335.59,
+        "qps": 135335.59,
+        "p95Ms": 0.039,
+        "p99Ms": 0.07,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-point_select-c8-measured-r1",
+          "repeat": 1,
+          "tps": 135335.59,
+          "qps": 135335.59,
+          "p95Ms": 0.039,
+          "p99Ms": 0.08,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-point_select-c8-measured-r2",
+          "repeat": 2,
+          "tps": 134497.63,
+          "qps": 134497.63,
+          "p95Ms": 0.039,
+          "p99Ms": 0.07,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r2.txt"
+        },
+        {
+          "runId": "mvp-point_select-c8-measured-r3",
+          "repeat": 3,
+          "tps": 136153.07,
+          "qps": 136153.07,
+          "p95Ms": 0.039,
+          "p99Ms": 0.07,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r3.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "point_select",
+      "scenarioLabel": "主键点查",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 6.666666666666673,
+      "selected": {
+        "tps": 116675,
+        "qps": 116675,
+        "p95Ms": 0.232,
+        "p99Ms": 0.6,
+        "queriesPerTransaction": 1
+      },
+      "runs": [
+        {
+          "runId": "mvp-point_select-c32-measured-r1",
+          "repeat": 1,
+          "tps": 117718.1,
+          "qps": 117718.1,
+          "p95Ms": 0.23,
+          "p99Ms": 0.58,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-point_select-c32-measured-r2",
+          "repeat": 2,
+          "tps": 115631.9,
+          "qps": 115631.9,
+          "p95Ms": 0.234,
+          "p99Ms": 0.62,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 1,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 53.67316341829085,
+      "selected": {
+        "tps": 190.75,
+        "qps": 3815.08,
+        "p95Ms": 8.737,
+        "p99Ms": 19.29,
+        "queriesPerTransaction": 20
+      },
+      "runs": [
+        {
+          "runId": "mvp-read_write-c1-measured-r1",
+          "repeat": 1,
+          "tps": 175.88,
+          "qps": 3517.59,
+          "p95Ms": 9.734,
+          "p99Ms": 25.74,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-read_write-c1-measured-r2",
+          "repeat": 2,
+          "tps": 190.75,
+          "qps": 3815.08,
+          "p95Ms": 8.737,
+          "p99Ms": 19.29,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r2.txt"
+        },
+        {
+          "runId": "mvp-read_write-c1-measured-r3",
+          "repeat": 3,
+          "tps": 210.58,
+          "qps": 4211.63,
+          "p95Ms": 8.13,
+          "p99Ms": 15,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r3.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 8,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 3.59435173299101,
+      "selected": {
+        "tps": 918.7550000000001,
+        "qps": 18375.14,
+        "p95Ms": 15.829999999999998,
+        "p99Ms": 38.95,
+        "queriesPerTransaction": 20
+      },
+      "runs": [
+        {
+          "runId": "mvp-read_write-c8-measured-r1",
+          "repeat": 1,
+          "tps": 912.07,
+          "qps": 18241.43,
+          "p95Ms": 15.545,
+          "p99Ms": 39.65,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-read_write-c8-measured-r2",
+          "repeat": 2,
+          "tps": 925.44,
+          "qps": 18508.85,
+          "p95Ms": 16.115,
+          "p99Ms": 38.25,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "read_write",
+      "scenarioLabel": "读写混合",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 5.402630734680793,
+      "selected": {
+        "tps": 1934,
+        "qps": 38679.95,
+        "p95Ms": 39.65,
+        "p99Ms": 77.925,
+        "queriesPerTransaction": 20
+      },
+      "runs": [
+        {
+          "runId": "mvp-read_write-c32-measured-r1",
+          "repeat": 1,
+          "tps": 1921.83,
+          "qps": 38436.6,
+          "p95Ms": 39.65,
+          "p99Ms": 80.03,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r1.txt"
+        },
+        {
+          "runId": "mvp-read_write-c32-measured-r2",
+          "repeat": 2,
+          "tps": 1946.17,
+          "qps": 38923.3,
+          "p95Ms": 39.65,
+          "p99Ms": 75.82,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "scenarioLabel": "索引更新",
+      "concurrency": 1,
+      "attempts": 2,
+      "stability": "unstable",
+      "spreadPercent": 10.124075621151652,
+      "selected": {
+        "tps": 323.19,
+        "qps": 323.19,
+        "p95Ms": 5.855,
+        "p99Ms": 21.9,
+        "queriesPerTransaction": 1
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:22:36.781Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "durability-db3dcd2c",
+      "testedAt": "2026-10-06T03:27:42.883Z",
+      "runs": [
+        {
+          "runId": "durability-db3dcd2c-update_index-c1-measured-r1",
+          "repeat": 1,
+          "tps": 306.83,
+          "qps": 306.83,
+          "p95Ms": 6.433,
+          "p99Ms": 22.69,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r1.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index-c1-measured-r2",
+          "repeat": 2,
+          "tps": 339.55,
+          "qps": 339.55,
+          "p95Ms": 5.277,
+          "p99Ms": 21.11,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "scenarioLabel": "索引更新",
+      "concurrency": 8,
+      "attempts": 2,
+      "stability": "stable",
+      "spreadPercent": 1.781635449977161,
+      "selected": {
+        "tps": 1307.725,
+        "qps": 1307.725,
+        "p95Ms": 15.4115,
+        "p99Ms": 43.78,
+        "queriesPerTransaction": 1
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:35:10.128Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "durability-db3dcd2c",
+      "testedAt": "2026-10-06T03:40:20.246Z",
+      "runs": [
+        {
+          "runId": "durability-db3dcd2c-update_index-c8-measured-r1",
+          "repeat": 1,
+          "tps": 1313.4,
+          "qps": 1313.4,
+          "p95Ms": 15.828,
+          "p99Ms": 44.17,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r1.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index-c8-measured-r2",
+          "repeat": 2,
+          "tps": 1302.05,
+          "qps": 1302.05,
+          "p95Ms": 14.995,
+          "p99Ms": 43.39,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index",
+      "scenarioLabel": "索引更新",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 5.687770998057644,
+      "selected": {
+        "tps": 3058.1400000000003,
+        "qps": 3058.1400000000003,
+        "p95Ms": 37.906,
+        "p99Ms": 79.315,
+        "queriesPerTransaction": 1
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:47:55.244Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "durability-db3dcd2c",
+      "testedAt": "2026-10-06T03:53:19.251Z",
+      "runs": [
+        {
+          "runId": "durability-db3dcd2c-update_index-c32-measured-r1",
+          "repeat": 1,
+          "tps": 2971.17,
+          "qps": 2971.17,
+          "p95Ms": 38.247,
+          "p99Ms": 80.03,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r1.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index-c32-measured-r2",
+          "repeat": 2,
+          "tps": 3145.11,
+          "qps": 3145.11,
+          "p95Ms": 37.565,
+          "p99Ms": 78.6,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r2.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index_async",
+      "scenarioLabel": "索引更新（异步刷盘）",
+      "concurrency": 1,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 53.98773006134968,
+      "selected": {
+        "tps": 3615.78,
+        "qps": 3615.78,
+        "p95Ms": 0.214,
+        "p99Ms": 1.55,
+        "queriesPerTransaction": 1
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:27:53.641Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 2,
+          "syncBinlog": 0,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "durability-db3dcd2c",
+      "testedAt": "2026-10-06T03:35:00.188Z",
+      "runs": [
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c1-measured-r1",
+          "repeat": 1,
+          "tps": 3377.6,
+          "qps": 3377.6,
+          "p95Ms": 0.226,
+          "p99Ms": 2.11,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r1.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c1-measured-r2",
+          "repeat": 2,
+          "tps": 3615.78,
+          "qps": 3615.78,
+          "p95Ms": 0.214,
+          "p99Ms": 1.55,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r2.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c1-measured-r3",
+          "repeat": 3,
+          "tps": 3781.85,
+          "qps": 3781.85,
+          "p95Ms": 0.206,
+          "p99Ms": 1.23,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r3.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index_async",
+      "scenarioLabel": "索引更新（异步刷盘）",
+      "concurrency": 8,
+      "attempts": 3,
+      "stability": "unstable",
+      "spreadPercent": 14.71822931514622,
+      "selected": {
+        "tps": 10174.13,
+        "qps": 10174.13,
+        "p95Ms": 0.797,
+        "p99Ms": 16.41,
+        "queriesPerTransaction": 1
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:40:30.352Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 2,
+          "syncBinlog": 0,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "durability-db3dcd2c",
+      "testedAt": "2026-10-06T03:47:44.730Z",
+      "runs": [
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c8-measured-r1",
+          "repeat": 1,
+          "tps": 8889.45,
+          "qps": 8889.45,
+          "p95Ms": 0.904,
+          "p99Ms": 16.41,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r1.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c8-measured-r2",
+          "repeat": 2,
+          "tps": 10174.13,
+          "qps": 10174.13,
+          "p95Ms": 0.768,
+          "p99Ms": 15,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r2.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c8-measured-r3",
+          "repeat": 3,
+          "tps": 10331.6,
+          "qps": 10331.6,
+          "p95Ms": 0.797,
+          "p99Ms": 16.71,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r3.txt"
+        }
+      ]
+    },
+    {
+      "scenario": "update_index_async",
+      "scenarioLabel": "索引更新（异步刷盘）",
+      "concurrency": 32,
+      "attempts": 2,
+      "stability": "acceptable",
+      "spreadPercent": 5.39752005835157,
+      "selected": {
+        "tps": 15914.95,
+        "qps": 15914.95,
+        "p95Ms": 8.073,
+        "p99Ms": 27.42,
+        "queriesPerTransaction": 1
+      },
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-06T03:53:30.963Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": true,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 4,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 1,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "6e4e34292832c5a738e4b7d86ea048b03e80b4e1a12470082aa49bc20d95cbd8"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 2,
+          "syncBinlog": 0,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "runGroup": "durability-db3dcd2c",
+      "testedAt": "2026-10-06T03:58:55.451Z",
+      "runs": [
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c32-measured-r1",
+          "repeat": 1,
+          "tps": 15991.18,
+          "qps": 15991.18,
+          "p95Ms": 8.581,
+          "p99Ms": 28.16,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r1.txt"
+        },
+        {
+          "runId": "durability-db3dcd2c-update_index_async-c32-measured-r2",
+          "repeat": 2,
+          "tps": 15838.72,
+          "qps": 15838.72,
+          "p95Ms": 7.565,
+          "p99Ms": 26.68,
+          "errors": 0,
+          "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r2.txt"
+        }
+      ]
+    }
+  ],
+  "rawResults": [
+    {
+      "runId": "mvp-point_select-c1-measured-r1",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-point_select-c1-measured-r2",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c1-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-point_select-c8-measured-r1",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-point_select-c8-measured-r2",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-point_select-c8-measured-r3",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 8,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c8-measured-r3.txt"
+    },
+    {
+      "runId": "mvp-point_select-c32-measured-r1",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-point_select-c32-measured-r2",
+      "status": "passed",
+      "scenario": "point_select",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-point_select-c32-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-read_write-c1-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-read_write-c1-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-read_write-c1-measured-r3",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 1,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c1-measured-r3.txt"
+    },
+    {
+      "runId": "mvp-read_write-c8-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-read_write-c8-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c8-measured-r2.txt"
+    },
+    {
+      "runId": "mvp-read_write-c32-measured-r1",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r1.txt"
+    },
+    {
+      "runId": "mvp-read_write-c32-measured-r2",
+      "status": "passed",
+      "scenario": "read_write",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/mvp-read_write-c32-measured-r2.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index-c1-measured-r1",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r1.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index-c1-measured-r2",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c1-measured-r2.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index-c8-measured-r1",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r1.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index-c8-measured-r2",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c8-measured-r2.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index-c32-measured-r1",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r1.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index-c32-measured-r2",
+      "status": "passed",
+      "scenario": "update_index",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index-c32-measured-r2.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c1-measured-r1",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 1,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r1.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c1-measured-r2",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 1,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r2.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c1-measured-r3",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 1,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c1-measured-r3.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c8-measured-r1",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 8,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r1.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c8-measured-r2",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 8,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r2.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c8-measured-r3",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 8,
+      "repeat": 3,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c8-measured-r3.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c32-measured-r1",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 32,
+      "repeat": 1,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r1.txt"
+    },
+    {
+      "runId": "durability-db3dcd2c-update_index_async-c32-measured-r2",
+      "status": "passed",
+      "scenario": "update_index_async",
+      "concurrency": 32,
+      "repeat": 2,
+      "rawOutputPath": "benchmarks/mysql/results/raw/durability-db3dcd2c-update_index_async-c32-measured-r2.txt"
+    }
+  ],
+  "limitations": [
+    "Docker on macOS runs Linux containers inside a virtual machine.",
+    "Results include OrbStack virtualization and local SSD overhead.",
+    "Values are exploratory and must not be treated as production capacity."
+  ],
+  "durabilityComparison": {
+    "runGroup": "durability-db3dcd2c",
+    "risk": "异步刷盘降低持久化保障；VM、系统或断电故障可能丢失已确认事务或 binlog。",
+    "note": "新同步/异步更新同批测量；点查和读写混合来自历史批次，仅作背景参照。"
+  }
+}

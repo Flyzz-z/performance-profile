@@ -28,10 +28,9 @@
           <div><span>数据集</span><strong id="dataset-size"></strong><small id="dataset-detail"></small></div>
         </section>
         <div class="protocol-strip" id="protocol-strip"></div>
-        <p class="durability-risk" id="durability-risk" hidden></p>
         <section class="dashboard" aria-labelledby="dashboard-title">
           <div class="section-heading">
-            <div><h2 id="dashboard-title">性能看板</h2><p class="muted" id="dashboard-scope">读、写、混合负载 · 同环境 / 同数据集</p></div>
+            <div><h2 id="dashboard-title">性能看板</h2><p class="muted" id="dashboard-scope">读、写、混合负载</p></div>
             <span id="result-count" class="muted"></span>
           </div>
           <div class="dashboard-toolbar">
@@ -42,8 +41,9 @@
           <div class="selected-values">
             <div class="table-caption"><h3>并发 <span id="selected-concurrency"></span></h3><span class="muted">汇总值 · 延迟按事件 / 事务计量</span></div>
             <div class="table-scroll">
-              <table aria-label="选中并发的指标"><thead><tr><th>场景</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>查询 / 事件</th><th>稳定性</th></tr></thead><tbody id="selected-body"></tbody></table>
+              <table aria-label="选中并发的指标"><thead><tr><th>场景</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>查询 / 事件</th><th data-resource-column hidden>MySQL CPU</th><th data-resource-column hidden>压测 CPU</th><th>稳定性</th></tr></thead><tbody id="selected-body"></tbody></table>
             </div>
+            <p class="muted" id="resource-unit-note"></p>
           </div>
         </section>
         <section class="section-band" aria-labelledby="results-title">
@@ -60,7 +60,7 @@
             <li>p95 为延迟直方图近似值；p99 为 sysbench 原生分位数输出。两者均按测试事件 / 事务计量。</li>
             <li>点查与索引更新每事件 1 条查询，标准读写混合每事件 20 条查询。TPS 不等同于单条 SQL 的执行速度。</li>
             <li>macOS 上的 Linux 容器运行于 OrbStack 虚拟机，结果包含虚拟化和本地存储影响，不代表生产容量。</li>
-            <li>资源字段为记录的配置上限；未采集实时 CPU 或 I/O 瓶颈，不将观察到的拐点视作已证实的瓶颈。</li>
+            <li>资源上限与实际使用量分开记录；CPU采样为正式测量辅助证据，不代表定位到某个MySQL内部瓶颈或生产容量。</li>
           </ul>
         </section>
       </div>

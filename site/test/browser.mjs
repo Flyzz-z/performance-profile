@@ -10,6 +10,9 @@ const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../.
 const data = JSON.parse(readFileSync(path.join(project, "site/data/mysql.json")));
 const seriesCount = data.series.length;
 const expectedPeak = peakPoint(projectReport(data));
+const readSeries = data.series.find((s) => s.scenario === "point_select");
+const read8 = readSeries.points.find((p) => p.concurrency === 8);
+const read1 = readSeries.points.find((p) => p.concurrency === 1);
 let playwright;
 try {
   playwright = await import("playwright");
@@ -48,6 +51,15 @@ async function noOverflow(page) {
   assert.equal(sizes.chartOverflow, false);
 }
 
+async function noProcessNotice(page) {
+  assert.equal(await page.locator("#durability-risk").count(), 0);
+  const content = await page.locator("body").innerText();
+  for (const phrase of ["降低持久化保障", "丢失已确认事务", "历史背景参照", "历史曲线", "历史批次",
+    "本轮正式测量", "同批日志策略对照"]) {
+    assert.ok(!content.includes(phrase), `Unexpected process notice: ${phrase}`);
+  }
+}
+
 try {
   for (let retry = 0; retry < 100; retry += 1) {
     try { if ((await fetch(`${url}/mysql.html`)).ok) break; } catch {}
@@ -57,6 +69,7 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await ready(page);
+  await noProcessNotice(page);
   assert.equal(await page.locator(".chart-panel").count(), 4);
   assert.equal(await page.locator(".chart-dot").count(), data.series.flatMap((s) => s.points).length * 4);
   assert.equal(await page.locator("#comparison-grid").count(), 0);
@@ -77,8 +90,8 @@ try {
   await page.getByRole("button", { name: "并发 8", exact: true }).click();
   assert.equal(await page.locator("#selected-concurrency").textContent(), "8");
   const read = page.locator('#selected-body tr[data-scenario="point_select"]');
-  assert.ok((await read.textContent()).includes("135,335.59"));
-  assert.ok((await read.textContent()).includes("不稳定"));
+  assert.ok((await read.textContent()).includes(formatNumber(read8.qps)));
+  assert.ok((await read.textContent()).includes(stabilityLabel(read8.stability)));
   await page.getByRole("button", { name: "TPS 线性刻度", exact: true }).click();
   assert.equal(await page.getByRole("button", { name: "TPS 线性刻度", exact: true }).getAttribute("aria-pressed"), "true");
   assert.match(await page.locator('[data-metric="tps"] svg').getAttribute("aria-label"), /线性/);
@@ -95,9 +108,9 @@ try {
   await page.keyboard.press("Enter");
   assert.equal(await page.locator("#selected-concurrency").textContent(), "1");
   assert.equal(await keyboardButton.evaluate((node) => document.activeElement === node), true);
-  assert.ok((await page.locator("#selected-body").textContent()).includes("0.027 ms"));
+  assert.ok((await page.locator("#selected-body").textContent()).includes(formatLatency(read1.p95Ms)));
   await page.locator('[data-metric="qps"] .chart-dot[data-scenario="point_select"][data-concurrency="8"]').hover();
-  assert.ok((await page.locator(".chart-tooltip").textContent()).includes("135,335.59"));
+  assert.ok((await page.locator(".chart-tooltip").textContent()).includes(formatNumber(read8.qps)));
   const tooltipBox = await page.locator(".chart-tooltip").boundingBox();
   const chartBox = await page.locator('[data-metric="qps"] .chart').boundingBox();
   assert.ok(tooltipBox.x >= chartBox.x && tooltipBox.x + tooltipBox.width <= chartBox.x + chartBox.width + 1);
@@ -110,12 +123,28 @@ try {
     const response = await page.request.get(new URL(await link.getAttribute("href"), `${url}/mysql.html`).href);
     assert.equal(response.status(), 200);
   }
+  await noProcessNotice(page);
+  assert.ok((await page.locator(".run-context").first().textContent()).includes(
+    formatDate(data.stability[0].testedAt ?? data.series[0].testedAt)));
+  if (data.formalExperiment?.purpose === "formal") {
+    assert.equal(await page.locator('[data-resource-column]:visible').count(), 2);
+    assert.ok((await page.locator("#dashboard-scope").textContent()).includes("sysbench 4 CPU"));
+    assert.equal(await page.locator("a.resource-link").count(), data.rawResults.length);
+    for (const link of await page.locator("a.resource-link").all()) {
+      const response = await page.request.get(new URL(await link.getAttribute("href"), `${url}/mysql.html`).href);
+      assert.equal(response.status(), 200);
+      const resource = await response.json();
+      assert.equal(resource.summary.valid, true);
+      assert.ok(resource.summary.coverageSeconds >= 96);
+      assert.equal(resource.summary.limits.loadgen.cpus, 4);
+    }
+  }
   for (const detail of await page.locator(".result-detail").all()) await detail.locator("summary").click();
   for (const group of await page.locator(".environment-detail").all()) await group.locator("summary").click();
   const environmentText = await page.locator("#environment-groups").textContent();
   for (const expected of [
     "4 CPU", "6 GiB", "3 GiB", "512", "REPEATABLE-READ", "sysbench 1.0.20",
-    "1 CPU", "1 GiB", "OrbStack", "10 CPU", "16 GiB", "MacBookPro18,1", "sha256:",
+    `${data.environment.container.loadGeneratorCpuLimit} CPU`, "1 GiB", "OrbStack", "10 CPU", "16 GiB", "MacBookPro18,1", "sha256:",
   ]) assert.ok(environmentText.includes(expected), expected);
   await noOverflow(page);
   for (const group of await page.locator(".environment-detail").all()) await group.locator("summary").click();
@@ -145,11 +174,12 @@ try {
   await ready(touchPage);
   await touchPage.locator('[data-metric="qps"] .chart-dot[data-scenario="point_select"][data-concurrency="1"]').tap();
   assert.equal(await touchPage.locator("#selected-concurrency").textContent(), "1");
-  assert.ok((await touchPage.locator("#selected-body").textContent()).includes("42,421.84"));
+  assert.ok((await touchPage.locator("#selected-body").textContent()).includes(formatNumber(read1.qps)));
   await noOverflow(touchPage);
   await touchPage.close();
 
   await ready(page, "index.html");
+  await noProcessNotice(page);
   assert.equal(await page.locator("#index-peak").textContent(), formatNumber(expectedPeak.qps));
   assert.ok((await page.locator("#index-peak-scope").textContent()).includes(`并发 ${expectedPeak.concurrency} · ${stabilityLabel(expectedPeak.stability)}`));
   assert.ok((await page.locator("#index-resources").textContent()).includes("4 CPU / 6 GiB"));
@@ -211,17 +241,42 @@ try {
   synchronous.environment = { mysql: { flushLogAtTransactionCommit: 1, syncBinlog: 1, flushLogAtTimeout: 1, logBinEnabled: true } };
   four.series.push({ ...structuredClone(synchronous), scenario: "update_index_async", label: "索引更新（异步刷盘）",
     environment: { mysql: { flushLogAtTransactionCommit: 2, syncBinlog: 0, flushLogAtTimeout: 1, logBinEnabled: true } } });
-  four.durabilityComparison = { risk: "异步降低持久化保障", note: "历史背景参照" };
+  four.durabilityComparison = { risk: "异步刷盘降低持久化保障；VM、系统或断电故障可能丢失已确认事务或 binlog。",
+    note: "新同步/异步更新同批测量；点查和读写混合来自历史批次，仅作背景参照。" };
   await page.route("**/data/mysql.json", (request) => request.fulfill({ json: four }));
   await ready(page);
   assert.equal(await page.locator("#scenario-controls input").count(), 4);
   assert.equal(await page.locator('.chart-dot[data-scenario="update_index_async"]').count(), 12);
-  assert.ok((await page.locator("#durability-risk").textContent()).includes("降低持久化保障"));
+  await noProcessNotice(page);
   const asyncEnvironment = page.locator(".environment-detail").filter({ hasText: "索引更新（异步刷盘） · 日志配置" });
   await asyncEnvironment.locator("summary").click();
   assert.ok((await asyncEnvironment.textContent()).includes("sync_binlog0"));
   await noOverflow(page);
   await page.screenshot({ path: path.join(screenshotDirectory, "four-series-fixture.png"), fullPage: true });
+  await page.unroute("**/data/mysql.json");
+  const formalFixture = structuredClone(four);
+  formalFixture.formalExperiment = { purpose: "formal", runGroup: "fixture-formal4" };
+  formalFixture.environment.container.loadGeneratorCpuLimit = 4;
+  formalFixture.durabilityComparison.note = "四场景同轮正式测量，不包含历史或验证";
+  for (const series of formalFixture.series) {
+    series.sourceRole = "formal";
+    for (const point of series.points) point.resources = {
+      mysql: { meanQuotaPercent: 95 }, loadgen: { meanQuotaPercent: 38 },
+    };
+  }
+  await page.route("**/data/mysql.json", (request) => request.fulfill({ json: formalFixture }));
+  await ready(page);
+  await noProcessNotice(page);
+  assert.equal(await page.locator('[data-resource-column]:visible').count(), 2);
+  assert.ok((await page.locator("#selected-body").textContent()).includes("95%"));
+  assert.ok((await page.locator("#selected-body").textContent()).includes("38%"));
+  assert.ok((await page.locator("#dashboard-scope").textContent()).includes("sysbench 4 CPU"));
+  assert.ok(!(await page.locator("#dashboard-scope").textContent()).includes("历史曲线"));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.screenshot({ path: path.join(screenshotDirectory, "formal-presentation-desktop.png"), fullPage: true });
+  await page.setViewportSize({ width: 375, height: 812 });
+  await noOverflow(page);
+  await page.screenshot({ path: path.join(screenshotDirectory, "formal-presentation-mobile.png"), fullPage: true });
   await page.unroute("**/data/mysql.json");
   assert.deepEqual(errors, []);
   console.log("Browser checks passed: four viewports, touch/keyboard, all metrics, filters, raw links, environment and failure states.");

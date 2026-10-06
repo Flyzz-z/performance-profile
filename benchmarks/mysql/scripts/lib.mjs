@@ -58,6 +58,7 @@ export const SCENARIO_ORDER = [
 
 export const CONCURRENCY_LEVELS = [1, 8, 32];
 export const DURABILITY_SCENARIOS = ["update_index", "update_index_async"];
+export const FORMAL_SCENARIOS = ["point_select", "update_index", "update_index_async", "read_write"];
 
 export function nowIso() {
   return new Date().toISOString();

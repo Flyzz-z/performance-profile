@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { shouldRunThirdRun } from "./analytics.mjs";
 import { LOGGING_MODES, readLoggingState, assertLoggingMatch } from "./logging.mjs";
+import { startResourceCapture } from "./resources.mjs";
 import {
   CONCURRENCY_LEVELS,
   PATHS,
@@ -51,6 +52,9 @@ const skipWarmup = cli["skip-warmup"] === true;
 const dryRun = cli["dry-run"] === true;
 const verbose = cli.verbose === true;
 const containerName = cli["container-name"] ? String(cli["container-name"]) : undefined;
+const purpose = cli.purpose === "formal" ? "formal" : "verification";
+const recordResources = cli["record-resources"] === true;
+assert(!recordResources || containerName, "Resource sampling requires a named load container");
 assert(/^[a-zA-Z0-9_-]+$/.test(runGroup), "Invalid run group");
 assert(!containerName || /^[a-zA-Z0-9_-]+$/.test(containerName), "Invalid container name");
 
@@ -110,7 +114,7 @@ if (dryRun) {
 
 ensureDirectories();
 mkdirSync(PATHS.rawDir, { recursive: true });
-await waitForMysql(env);
+const mysqlId = await waitForMysql(env);
 const environmentSnapshot = readJson(environmentPath);
 if (scenarios.includes("update_index_async")) {
   assertLoggingMatch(await readLoggingState((sql) => mysqlQuery(env, sql)), LOGGING_MODES.update_index_async);
@@ -146,10 +150,17 @@ async function runOnce({
   console.log(
     `Running ${scenario} c=${concurrency} ${kind} r=${repeat} for ${runDurationSeconds}s...`,
   );
-  const result = await composeServiceShell(env, "sysbench", shellCommand, {
-    echo: verbose,
-    containerName,
-  });
+  const capture = kind === "measured" && recordResources ? await startResourceCapture({
+    mysqlId, loadName: containerName, expectedSeconds: runDurationSeconds,
+    cpus: Number(env.LOADGEN_CPUS), intervalMs: runDurationSeconds < 20 ? 1000 : 5000,
+  }) : null;
+  let result;
+  let resourceData;
+  try {
+    result = await composeServiceShell(env, "sysbench", shellCommand, { echo: verbose, containerName });
+  } finally {
+    if (capture) resourceData = await capture.stop();
+  }
   const finishedAt = nowIso();
 
   writeFileSync(outputPath, `${result.stdout.replace(/[ \t]+$/gm, "").trimEnd()}\n`, "utf8");
@@ -165,12 +176,14 @@ async function runOnce({
 
   const status =
     result.code === 0 && metrics && metrics.errors === 0
+      && !(purpose === "formal" && kind === "measured" && !resourceData?.summary.valid)
       ? "passed"
       : "failed";
   const metadata = {
     schemaVersion: 1,
     runId,
     runGroup,
+    purpose,
     scenario,
     scenarioLabel: SCENARIOS[scenario].label,
     concurrency,
@@ -198,13 +211,19 @@ async function runOnce({
       path.resolve(PATHS.projectRoot, String(cli["dataset-path"]))) } : {}),
     metrics,
     parseError,
+    ...(resourceData ? {
+      resources: { ...resourceData.summary, rawPath: path.relative(PATHS.projectRoot, path.join(PATHS.rawDir, `${runId}.resources.json`)) },
+    } : {}),
   };
+  if (resourceData) writeJson(path.join(PATHS.rawDir, `${runId}.resources.json`), resourceData);
   writeJson(metadataPath, metadata);
 
   assert(
     result.code === 0,
     `${runId} failed with exit code ${result.code}`,
   );
+  assert(purpose !== "formal" || kind !== "measured" || resourceData?.summary.valid,
+    `${runId} has insufficient resource evidence: ${JSON.stringify(resourceData?.summary)}`);
   assert(
     !parseError,
     `${runId} output could not be parsed: ${parseError}`,
