@@ -1,12 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseCpuStats, summarizeResources } from "../resources.mjs";
+import { parseCpuStats, summarizeResources, isTransientStartupFailure } from "../resources.mjs";
 import { formalPlan, loggingMode } from "../logging.mjs";
 import { validateFormalRuns } from "../analytics.mjs";
 import { FORMAL_SCENARIOS } from "../lib.mjs";
 
 const cpu = (timeMs, cpuUsageNs, throttledPeriods = 0, throttledTimeNs = 0) =>
   ({ timeMs, cpuUsageNs, periods: timeMs / 100, throttledPeriods, throttledTimeNs });
+
+test("startup retries do not hide active sampling failures or extend the quality window",()=>{
+  assert.equal(isTransientStartupFailure(Error("Docker stats timeout"),0,5000),true);
+  assert.equal(isTransientStartupFailure(Error("Docker stats timeout"),1,5000),false);
+  assert.equal(isTransientStartupFailure(Error("Docker stats timeout"),0,20000),false);
+  assert.equal(isTransientStartupFailure(Error("Actual MySQL CPU limit mismatch"),0,5000),false);
+  const limits={mysql:{cpus:8},loadgen:{cpus:4}};
+  const samples=Array.from({length:19},(_,i)=>({mysql:cpu(i*5000,i*1e9),loadgen:cpu(i*5000,i*1e9)}));
+  assert.equal(summarizeResources(samples,limits,120).valid,false);
+});
 
 test("CPU stats require real usage and throttling counters", () => {
   const stats = { read: "2026-10-06T04:00:00Z",
@@ -45,14 +55,26 @@ test("a suspended VM or long sampling gap is not valid duration coverage", () =>
   assert.equal(summarizeResources(samples, limits, 120).valid, false);
 });
 
-test("formal matrix has twelve combinations and subsets are verification", () => {
-  const env = { LOADGEN_CPUS: 4, WARMUP_SECONDS: 60, DURATION_SECONDS: 120, VARIANCE_THRESHOLD_PERCENT: 10 };
+test("ninety second sampling requires 72 seconds coverage and bounded gaps", () => {
+  const limits={mysql:{cpus:8},loadgen:{cpus:4}};
+  const samples=end=>Array.from({length:end/5000+1},(_,i)=>({mysql:cpu(i*5000,i*1e9),loadgen:cpu(i*5000,i*1e9)}));
+  assert.equal(summarizeResources(samples(70000),limits,90).valid,false);
+  assert.equal(summarizeResources(samples(75000),limits,90).valid,true);
+  assert.equal(summarizeResources(samples(100000),limits,90).valid,true);
+  assert.equal(summarizeResources(samples(105000),limits,90).valid,false);
+});
+
+test("expanded formal matrix has eighteen combinations and subsets are verification", () => {
+  const env = { MYSQL_CPUS: 8, LOADGEN_CPUS: 4, WARMUP_SECONDS: 30, DURATION_SECONDS: 90, VARIANCE_THRESHOLD_PERCENT: 30 };
   const plan = formalPlan(env);
-  assert.equal(plan.combinations.length, 12);
+  assert.equal(plan.combinations.length, 18);
+  assert.deepEqual(plan.concurrency,[1,8,16]);
   assert.equal(plan.purpose, "formal");
   assert.equal(formalPlan(env, { scenario: "point_select" }).purpose, "verification");
   assert.equal(formalPlan(env, { "duration-seconds": 10 }).isFull, false);
   assert.throws(() => formalPlan({ ...env, LOADGEN_CPUS: 1 }), /4 CPU/);
+  assert.throws(() => formalPlan({ ...env, MYSQL_CPUS: 4 }), /8 CPU/);
+  assert.equal(formalPlan(env,{"warmup-seconds":60}).purpose,"verification");
 });
 
 function formalRows() {

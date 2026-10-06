@@ -43,6 +43,8 @@ npm run test:site:browser
 
 开发兼容代码仍识别归档资料的 `historical/paired` 标记，但这些资料不参与当前正式发布。每个正式组合展开后显示报告日期和实际日志参数。没有历史报告选择或独立比值面板。
 
-最终4 CPU正式报告的四场景都为 `sourceRole=formal`，不再展示旧背景曲线。CPU列表示各自4 CPU配额占比，不是单核百分比；逐次结果提供限流计数和原始资源采样链接。旧报告和verification不属于最终站点数据。
+正式报告的场景都为 `sourceRole=formal`。场景、并发及CPU限额从报告读取；当前六场景使用1/8/16并发，CPU列按MySQL 8 CPU、压测端4 CPU分别归一化。旧报告仍按自身字段展示，逐次结果提供限流计数、资源采样和表结构清单，INSERT显示各次预热及测量行数。
+
+独立缓存实验使用 `bufferPoolExperiment`：两组 `groups.selected` 提供QPS、p95/p99、近似页面命中率和缺页读取速率，`dataset`提供实际冻结数据与主键页占用，各组 `environment`保存真实缓存与资源配置。独立区域不随主场景并发筛选变化，不参与六场景曲线或索引页峰值。逐次窗口原始计数和采样可以追溯；命中率为页面请求口径。
 
 最终报告只由 `npm run mysql:formal` 的完整正式运行发布，旧/短collector不能覆盖。资源原始记录通过本地Docker Stats API采集，不是额外诊断场景；CPU平均值按实际采样覆盖时间加权。

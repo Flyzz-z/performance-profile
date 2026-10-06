@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-06T16:01:37.634Z",
+  "database": "sbtest",
+  "tableCount": 10,
+  "tableSize": 100000,
+  "expectedRows": 1000000,
+  "actualRows": 1000000,
+  "secondaryIndex": true,
+  "tables": [
+    {
+      "name": "sbtest1",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_1",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest2",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_2",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest3",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_3",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest4",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_4",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest5",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_5",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest6",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_6",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest7",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_7",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest8",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_8",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest9",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_9",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    },
+    {
+      "name": "sbtest10",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_10",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "dataBytes": 22593536,
+      "indexBytes": 1589248
+    }
+  ],
+  "dataBytes": 225935360,
+  "indexBytes": 15892480,
+  "pageBytes": 16384,
+  "sqlMode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION",
+  "status": "ready",
+  "command": "sysbench '/usr/share/sysbench/oltp_point_select.lua' '--db-driver=mysql' '--mysql-host=mysql' '--mysql-port=3306' '--mysql-user=root' '--mysql-password=***' '--mysql-db=sbtest' '--tables=10' '--table-size=100000' '--threads=4' '--time=1' '--report-interval=10' '--percentile=99' '--histogram=on' '--rand-type=uniform' '--rand-seed=42' '--mysql-ssl=off' '--create-secondary=on' '--auto-inc=on' 'prepare'",
+  "startedAt": "2026-10-06T16:01:20.242Z",
+  "finishedAt": "2026-10-06T16:01:28.081Z"
+}

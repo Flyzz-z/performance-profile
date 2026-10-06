@@ -20,6 +20,8 @@ import {
 
 const env = loadBenchmarkEnv();
 const cli = parseCliArguments(process.argv.slice(2));
+if (cli["table-size"]) env.TABLE_SIZE = String(cli["table-size"]);
+const secondaryIndex = cli["no-secondary-index"] !== true;
 const prefix = cli["manifest-prefix"] ? String(cli["manifest-prefix"]) : "";
 assert(!prefix || /^[a-zA-Z0-9_-]+$/.test(prefix), "Invalid manifest prefix");
 const containerName = cli["container-name"] ? String(cli["container-name"]) : undefined;
@@ -47,6 +49,7 @@ const prepareArguments = createSysbenchArguments({
   concurrency: 4,
   durationSeconds: 1,
 });
+prepareArguments.splice(-1, 0, `--create-secondary=${secondaryIndex ? "on" : "off"}`, "--auto-inc=on");
 const prepareCommand = createSysbenchShellCommand(prepareArguments);
 const prepareStartedAt = nowIso();
 const prepareResult = await composeServiceShell(
@@ -76,6 +79,18 @@ assert(
   actualRows === expectedRows,
   `Expected ${expectedRows} rows but found ${actualRows}`,
 );
+
+const tables = [];
+for (let index = 1; index <= tableCount; index++) {
+  const name = `sbtest${index}`;
+  await mysqlQuery(env, `ANALYZE TABLE \`${database}\`.${name};`);
+  const columns = await mysqlQuery(env, `SELECT COLUMN_NAME,COLUMN_TYPE,COLUMN_KEY,EXTRA FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${database}' AND TABLE_NAME='${name}' ORDER BY ORDINAL_POSITION;`);
+  const indexes = await mysqlQuery(env, `SELECT INDEX_NAME,COLUMN_NAME,NON_UNIQUE FROM information_schema.STATISTICS WHERE TABLE_SCHEMA='${database}' AND TABLE_NAME='${name}' ORDER BY INDEX_NAME,SEQ_IN_INDEX;`);
+  const [dataBytes, indexBytes] = (await mysqlQuery(env, `SELECT DATA_LENGTH,INDEX_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA='${database}' AND TABLE_NAME='${name}';`)).split(/\s+/).map(Number);
+  tables.push({ name, columns: columns.split("\n").map(row => row.split("\t")), indexes: indexes.split("\n").map(row => row.split("\t")), dataBytes, indexBytes });
+  assert(indexes.includes("PRIMARY\tid\t0") && (indexes.includes("\tk\t1") === secondaryIndex), `Unexpected indexes for ${name}`);
+  assert(columns.includes("auto_increment"), `Missing auto_increment for ${name}`);
+}
 
 const versionResult = await runProcess("docker", [
   "version",
@@ -194,6 +209,12 @@ const datasetManifest = {
   tableSize,
   expectedRows,
   actualRows,
+  secondaryIndex,
+  tables,
+  dataBytes: tables.reduce((sum, table) => sum + table.dataBytes, 0),
+  indexBytes: tables.reduce((sum, table) => sum + table.indexBytes, 0),
+  pageBytes: Number(await mysqlQuery(env, "SELECT @@innodb_page_size;")),
+  sqlMode: await mysqlQuery(env, "SELECT @@sql_mode;"),
   status: "ready",
   command: prepareCommand.replace(env.MYSQL_ROOT_PASSWORD, "***"),
   startedAt: prepareStartedAt,

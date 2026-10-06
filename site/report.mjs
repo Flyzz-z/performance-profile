@@ -3,6 +3,8 @@ export const SCENARIOS = [
   { id: "point_select", label: "主键点查", color: "#1769aa", kind: "READ" },
   { id: "update_index", label: "索引更新", color: "#c66a13", kind: "WRITE" },
   { id: "update_index_async", label: "索引更新（异步刷盘）", color: "#a14572", kind: "WRITE" },
+  { id: "update_no_secondary_index", label: "无二级索引更新", color: "#008b91", kind: "WRITE" },
+  { id: "insert", label: "单行插入", color: "#b43e3e", kind: "WRITE" },
   { id: "read_write", label: "读写混合", color: "#1d7a4d", kind: "MIXED" },
 ];
 export const METRICS = [
@@ -156,7 +158,7 @@ export function projectReport(data) {
     throw new Error("结果格式不兼容");
   }
   const levels = new Set((data.protocol?.concurrency ?? []).filter((v) => Number.isInteger(v) && v > 0));
-  const series = SCENARIOS.filter((definition) => definition.id !== "update_index_async"
+  const series = SCENARIOS.filter((definition) => !["update_index_async", "update_no_secondary_index", "insert"].includes(definition.id)
     || data.series.some((item) => item.scenario === definition.id)).map((definition) => {
     const source = data.series.find((item) => item.scenario === definition.id);
     const points = (Array.isArray(source?.points) ? source.points : [])

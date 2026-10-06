@@ -73,11 +73,12 @@ try {
   assert.equal(await page.locator(".chart-panel").count(), 4);
   assert.equal(await page.locator(".chart-dot").count(), data.series.flatMap((s) => s.points).length * 4);
   assert.equal(await page.locator("#comparison-grid").count(), 0);
-  assert.equal(await page.locator("#cpu-limit").textContent(), "4 CPU");
+  assert.equal(await page.locator("#cpu-limit").textContent(), `${data.environment.container.mysqlCpuLimit} CPU`);
   assert.equal(await page.locator("#memory-limit").textContent(), "6 GiB");
   assert.equal(await page.locator("#buffer-pool").textContent(), "3 GiB");
   assert.equal(await page.locator("#report-time").textContent(), formatDate(data.component.testedAt));
-  assert.equal(await page.locator("#selected-concurrency").textContent(), "32");
+  const highestConcurrency = Math.max(...data.protocol.concurrency);
+  assert.equal(await page.locator("#selected-concurrency").textContent(), String(highestConcurrency));
   for (const metric of ["qps", "tps", "p95Ms", "p99Ms"]) {
     const panel = page.locator(`[data-metric="${metric}"]`);
     for (const series of data.series) {
@@ -135,7 +136,7 @@ try {
       assert.equal(response.status(), 200);
       const resource = await response.json();
       assert.equal(resource.summary.valid, true);
-      assert.ok(resource.summary.coverageSeconds >= 96);
+      assert.ok(resource.summary.coverageSeconds >= data.protocol.durationSeconds * .8);
       assert.equal(resource.summary.limits.loadgen.cpus, 4);
     }
   }
@@ -143,12 +144,12 @@ try {
   for (const group of await page.locator(".environment-detail").all()) await group.locator("summary").click();
   const environmentText = await page.locator("#environment-groups").textContent();
   for (const expected of [
-    "4 CPU", "6 GiB", "3 GiB", "512", "REPEATABLE-READ", "sysbench 1.0.20",
+    `${data.environment.container.mysqlCpuLimit} CPU`, "6 GiB", "3 GiB", "512", "REPEATABLE-READ", "sysbench 1.0.20",
     `${data.environment.container.loadGeneratorCpuLimit} CPU`, "1 GiB", "OrbStack", "10 CPU", "16 GiB", "MacBookPro18,1", "sha256:",
   ]) assert.ok(environmentText.includes(expected), expected);
   await noOverflow(page);
   for (const group of await page.locator(".environment-detail").all()) await group.locator("summary").click();
-  await page.getByRole("button", { name: "并发 32", exact: true }).click();
+  await page.getByRole("button", { name: `并发 ${highestConcurrency}`, exact: true }).click();
 
   for (const [width, height] of [[1440, 900], [1024, 768], [390, 844], [375, 812]]) {
     await page.setViewportSize({ width, height });
@@ -182,7 +183,7 @@ try {
   await noProcessNotice(page);
   assert.equal(await page.locator("#index-peak").textContent(), formatNumber(expectedPeak.qps));
   assert.ok((await page.locator("#index-peak-scope").textContent()).includes(`并发 ${expectedPeak.concurrency} · ${stabilityLabel(expectedPeak.stability)}`));
-  assert.ok((await page.locator("#index-resources").textContent()).includes("4 CPU / 6 GiB"));
+  assert.ok((await page.locator("#index-resources").textContent()).includes(`${data.environment.container.mysqlCpuLimit} CPU / 6 GiB`));
   await noOverflow(page);
   await page.screenshot({ path: path.join(screenshotDirectory, "index-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -232,10 +233,11 @@ try {
   assert.equal(await page.locator('[data-metric="qps"] .chart-dot[data-scenario="update_index"][data-concurrency="1"]').getAttribute("data-value"), "0");
   assert.equal(await page.locator('.chart-dot[data-scenario="point_select"][data-concurrency="8"]').count(), 0);
   await page.locator(".result-detail").first().locator("summary").click();
-  assert.equal(await page.locator(".result-detail").first().locator("a.run-link").count(), 2);
+  assert.equal(await page.locator(".result-detail").first().locator("a.run-link").count(), data.stability[0].runs.length);
   await page.unroute("**/data/mysql.json");
   const four = structuredClone(data);
-  four.series = four.series.filter((s) => s.scenario !== "update_index_async");
+  four.series = four.series.filter((s) => ["point_select","update_index","read_write"].includes(s.scenario));
+  delete four.bufferPoolExperiment;
   const synchronous = four.series.find((s) => s.scenario === "update_index");
   synchronous.label = "索引更新（同步刷盘）";
   synchronous.environment = { mysql: { flushLogAtTransactionCommit: 1, syncBinlog: 1, flushLogAtTimeout: 1, logBinEnabled: true } };
@@ -277,6 +279,40 @@ try {
   await page.setViewportSize({ width: 375, height: 812 });
   await noOverflow(page);
   await page.screenshot({ path: path.join(screenshotDirectory, "formal-presentation-mobile.png"), fullPage: true });
+  await page.unroute("**/data/mysql.json");
+  const expanded = structuredClone(formalFixture);
+  expanded.environment.container.mysqlCpuLimit = 8;
+  expanded.protocol.concurrency = [1,8,16];
+  expanded.protocol.warmupSeconds = 30;
+  for (const [scenario,label] of [["update_no_secondary_index","无二级索引更新"],["insert","单行插入"]]) {
+    expanded.series.push({...structuredClone(expanded.series.find(s=>s.scenario==="update_index")),scenario,label});
+  }
+  for(const series of expanded.series) {
+    series.points.forEach(point=>{if(point.concurrency===32)point.concurrency=16;});
+  }
+  expanded.stability = expanded.stability.map(row=>({...row,concurrency:row.concurrency===32?16:row.concurrency}));
+  for (const scenario of ["update_no_secondary_index","insert"]) {
+    expanded.stability.push(...expanded.stability.filter(row=>row.scenario==="update_index").map(row=>({...structuredClone(row),scenario,dataset:{tables:[{}],secondaryIndex:scenario!=="update_no_secondary_index"},runs:row.runs.map(run=>({...run,...(scenario==="insert"?{rowCounts:{beforeWarmup:1000000,afterWarmup:1001000,before:1001000,after:1011000}}:{})}))})));
+  }
+  expanded.bufferPoolExperiment = {concurrency:16,dataset:{...data.dataset,actualRows:6000000,tableSize:600000,dataBytes:1.5*1024**3},datasetPath:data.stability[0].runs[0].datasetPath ?? "benchmarks/mysql/results/dataset.json",protocol:{warmupSeconds:30,durationSeconds:90,varianceThresholdPercent:30},groups:[1,2].map(gib=>({gib,bytes:gib*1024**3,attempts:2,stability:"stable",environment:{...expanded.environment,mysql:{...expanded.environment.mysql,bufferPoolBytes:gib*1024**3,bufferPoolInstances:1,bufferPoolChunkBytes:128*1024**2}},selected:{qps:gib*100000,p95Ms:.2,p99Ms:.3,hitPercent:gib===1?90:99.99,readsPerSecond:gib===1?10000:10},resources:{mysql:{meanQuotaPercent:40},loadgen:{meanQuotaPercent:30}},runs:[]}))};
+  await page.route("**/data/mysql.json", request=>request.fulfill({json:expanded}));
+  await ready(page);
+  assert.equal(await page.locator("#scenario-controls input").count(),6);
+  assert.equal(await page.locator(".chart-dot").count(),72);
+  assert.equal(await page.locator("#cpu-limit").textContent(),"8 CPU");
+  assert.equal(await page.locator("#selected-concurrency").textContent(),"16");
+  assert.equal(await page.locator(".cache-bar-row").count(),8);
+  const insertDetail = page.locator('.result-detail[data-scenario="insert"]').first();
+  await insertDetail.locator("summary").click();
+  assert.ok((await insertDetail.textContent()).includes("预热前 1,000,000"));
+  assert.ok((await page.locator('.result-detail[data-scenario="update_no_secondary_index"]').first().textContent()).includes("k 二级索引 无"));
+  const cacheBefore = await page.locator("#buffer-pool-results").textContent();
+  await page.getByRole("button",{name:"并发 8",exact:true}).click();
+  assert.equal(await page.locator("#buffer-pool-results").textContent(),cacheBefore);
+  for(const width of [1440,390,375]) {
+    await page.setViewportSize({width,height:900});await noOverflow(page);
+    await page.screenshot({path:path.join(screenshotDirectory,`expanded-fixture-${width}.png`),fullPage:true});
+  }
   await page.unroute("**/data/mysql.json");
   assert.deepEqual(errors, []);
   console.log("Browser checks passed: four viewports, touch/keyboard, all metrics, filters, raw links, environment and failure states.");

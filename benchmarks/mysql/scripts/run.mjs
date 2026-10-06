@@ -2,7 +2,7 @@
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { shouldRunThirdRun } from "./analytics.mjs";
+import { measureRepeats } from "./protocol.mjs";
 import { LOGGING_MODES, readLoggingState, assertLoggingMatch } from "./logging.mjs";
 import { startResourceCapture } from "./resources.mjs";
 import {
@@ -21,6 +21,7 @@ import {
   parseCliArguments,
   parseSysbenchOutput,
   readJson,
+  runProcess,
   redactSecrets,
   waitForMysql,
   writeJson,
@@ -74,7 +75,7 @@ assert(repeatCount >= 1 && repeatCount <= 3, "runs must be between 1 and 3");
 const combinations = scenarios.flatMap((scenario) =>
   concurrencies.map((concurrency) => ({ scenario, concurrency })),
 );
-const environmentPath = cli["environment-path"]
+let environmentPath = cli["environment-path"]
   ? path.resolve(PATHS.projectRoot, String(cli["environment-path"]))
   : path.join(PATHS.resultsDir, "environment.json");
 
@@ -115,7 +116,16 @@ if (dryRun) {
 ensureDirectories();
 mkdirSync(PATHS.rawDir, { recursive: true });
 const mysqlId = await waitForMysql(env);
-const environmentSnapshot = readJson(environmentPath);
+let environmentSnapshot = readJson(environmentPath);
+let datasetPath = cli["dataset-path"] ? path.resolve(PATHS.projectRoot, String(cli["dataset-path"])) : undefined;
+if (datasetPath) env.TABLE_SIZE = String(readJson(datasetPath).tableSize);
+const bufferPoolExperiment = cli["buffer-pool"] === true;
+const rowCount = async () => Number(await mysqlQuery(env, `SELECT ${Array.from({length: Number(env.TABLE_COUNT)}, (_,i) => `(SELECT COUNT(*) FROM \`${env.MYSQL_DATABASE}\`.sbtest${i+1})`).join("+")};`));
+const pageCounters = async () => {
+  const values = await mysqlQuery(env, "SHOW GLOBAL STATUS WHERE Variable_name IN ('Innodb_buffer_pool_read_requests','Innodb_buffer_pool_reads');");
+  return { timeMs: Date.now(), ...Object.fromEntries(values.split("\n").map(row => {const [key,value]=row.split("\t"); return [key,Number(value)];})) };
+};
+let insertStart;
 if (scenarios.includes("update_index_async")) {
   assertLoggingMatch(await readLoggingState((sql) => mysqlQuery(env, sql)), LOGGING_MODES.update_index_async);
 }
@@ -152,16 +162,35 @@ async function runOnce({
   );
   const capture = kind === "measured" && recordResources ? await startResourceCapture({
     mysqlId, loadName: containerName, expectedSeconds: runDurationSeconds,
-    cpus: Number(env.LOADGEN_CPUS), intervalMs: runDurationSeconds < 20 ? 1000 : 5000,
+    cpus: Number(env.LOADGEN_CPUS), mysqlCpus: Number(env.MYSQL_CPUS), intervalMs: runDurationSeconds < 20 ? 1000 : 5000,
   }) : null;
   let result;
   let resourceData;
+  const rowsBefore = scenario === "insert" ? await rowCount() : undefined;
+  const pagesBefore = bufferPoolExperiment ? await pageCounters() : undefined;
+  const pageSamples = pagesBefore ? [pagesBefore] : [];
+  let samplingPages = true;
+  let pageTimer;
+  let pageWake;
+  let pageSampleError;
+  const pageLoop = bufferPoolExperiment ? (async () => {
+    while (samplingPages) {
+      await new Promise(resolve=>{pageWake=resolve;pageTimer=setTimeout(resolve,10000);});
+      if (samplingPages) pageSamples.push(await pageCounters());
+    }
+  })().catch(error=>{pageSampleError=error;}) : null;
   try {
     result = await composeServiceShell(env, "sysbench", shellCommand, { echo: verbose, containerName });
   } finally {
     if (capture) resourceData = await capture.stop();
+    samplingPages = false;
+    clearTimeout(pageTimer);
+    pageWake?.();
+    if (pageLoop) await pageLoop;
   }
   const finishedAt = nowIso();
+  const pagesAfter = bufferPoolExperiment ? await pageCounters() : undefined;
+  const rowsAfter = scenario === "insert" ? await rowCount() : undefined;
 
   writeFileSync(outputPath, `${result.stdout.replace(/[ \t]+$/gm, "").trimEnd()}\n`, "utf8");
   writeFileSync(stderrPath, result.stderr, "utf8");
@@ -207,8 +236,9 @@ async function runOnce({
       environmentPath,
     ),
     environment: environmentSnapshot,
-    ...(cli["dataset-path"] ? { datasetPath: path.relative(PATHS.projectRoot,
-      path.resolve(PATHS.projectRoot, String(cli["dataset-path"]))) } : {}),
+    ...(datasetPath ? { datasetPath: path.relative(PATHS.projectRoot, datasetPath) } : {}),
+    ...(scenario === "insert" ? { rowCounts: { before: rowsBefore, after: rowsAfter, ...insertStart } } : {}),
+    ...(bufferPoolExperiment ? { bufferPool: { before: pagesBefore, after: pagesAfter, samples: [...pageSamples,pagesAfter] } } : {}),
     metrics,
     parseError,
     ...(resourceData ? {
@@ -217,6 +247,7 @@ async function runOnce({
   };
   if (resourceData) writeJson(path.join(PATHS.rawDir, `${runId}.resources.json`), resourceData);
   writeJson(metadataPath, metadata);
+  assert(!pageSampleError, `Buffer Pool sampling failed: ${pageSampleError?.message}`);
 
   assert(
     result.code === 0,
@@ -232,6 +263,7 @@ async function runOnce({
     metrics.errors === 0,
     `${runId} reported ${metrics.errors} errors`,
   );
+  if (scenario === "insert") assert(rowsAfter - rowsBefore === metrics.transactions && metrics.queries === metrics.transactions, "INSERT growth/event mismatch");
 
   console.log(
     `  ${status}: TPS ${metrics.tps.toFixed(2)}, QPS ${metrics.qps.toFixed(2)}, p95 ${metrics.p95Ms.toFixed(2)} ms, p99 ${metrics.p99Ms.toFixed(2)} ms`,
@@ -241,7 +273,7 @@ async function runOnce({
 
 for (const combination of combinations) {
   const { scenario, concurrency } = combination;
-  if (!skipWarmup && warmupSeconds > 0) {
+  if (scenario !== "insert" && !skipWarmup && warmupSeconds > 0) {
     await runOnce({
       ...combination,
       kind: "warmup",
@@ -250,35 +282,25 @@ for (const combination of combinations) {
     });
   }
 
-  const measuredRuns = [];
-  for (let repeat = 1; repeat <= repeatCount; repeat += 1) {
-    measuredRuns.push(
-      await runOnce({
-        ...combination,
-        kind: "measured",
-        repeat,
-        runDurationSeconds: durationSeconds,
-      }),
-    );
+  async function prepareInsert(repeat) {
+    if (repeat > 1) {
+      const prefix = `${runGroup}-insert-c${concurrency}-repeat${repeat}`;
+      const result = await runProcess(process.execPath, [path.join(PATHS.benchmarkRoot,"scripts/prepare.mjs"), `--manifest-prefix=${prefix}`, `--container-name=${containerName?.replace(/-load$/, "-prepare") ?? prefix + "-prepare"}`], {echo:true});
+      assert(result.code === 0, "INSERT repeat preparation failed");
+      environmentPath = path.join(PATHS.resultsDir, `${prefix}-environment.json`);
+      datasetPath = path.join(PATHS.resultsDir, `${prefix}-dataset.json`);
+      environmentSnapshot = readJson(environmentPath);
+    }
+    const beforeWarmup = await rowCount();
+    assert(beforeWarmup === Number(env.TABLE_COUNT) * Number(env.TABLE_SIZE), "INSERT repeat initial row count mismatch");
+    const warmup = await runOnce({...combination, kind:"warmup", repeat, runDurationSeconds:warmupSeconds});
+    insertStart = { beforeWarmup, afterWarmup: warmup.rowCounts.after, warmupEvents: warmup.metrics.transactions };
   }
-
-  if (
-    repeatCount === 2 &&
-    measuredRuns.length === 2 &&
-    shouldRunThirdRun(measuredRuns, thresholdPercent)
-  ) {
-    console.log(
-      `${scenario} c=${concurrency} exceeded the ${thresholdPercent}% variance threshold; running a third measurement.`,
-    );
-    measuredRuns.push(
-      await runOnce({
-        ...combination,
-        kind: "measured",
-        repeat: 3,
-        runDurationSeconds: durationSeconds,
-      }),
-    );
-  }
+  await measureRepeats({repeatCount,thresholdPercent,
+    beforeRepeat:scenario === "insert" ? prepareInsert : undefined,
+    measure: repeat => runOnce({...combination,kind:"measured",repeat,runDurationSeconds:durationSeconds}),
+    onThird:()=>console.log(`${scenario} c=${concurrency} exceeded the ${thresholdPercent}% variance threshold; running a third measurement.`),
+  });
 }
 
 console.log("All requested benchmark runs completed.");

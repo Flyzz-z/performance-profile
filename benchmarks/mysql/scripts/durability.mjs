@@ -16,7 +16,7 @@ const cli = parseCliArguments(process.argv.slice(2));
 const env = loadBenchmarkEnv();
 const formal = cli.formal === true;
 const plan = formal ? formalPlan(env, cli) : { ...durabilityPlan(env, cli), purpose: "verification" };
-const group = String(cli["run-group"] ?? `${formal ? plan.isFull ? "formal-4cpu" : "smoke-formal4cpu" : "durability"}-${randomUUID().slice(0, 8)}`);
+const group = String(cli["run-group"] ?? `${formal ? plan.isFull ? "formal-8cpu" : "smoke-formal8cpu" : "durability"}-${randomUUID().slice(0, 8)}`);
 assert(/^[a-zA-Z0-9_-]+$/.test(group), "Invalid run group");
 
 if (cli["dry-run"] === true) {
@@ -25,6 +25,7 @@ if (cli["dry-run"] === true) {
   for (const combination of plan.combinations) {
     console.log(`${combination.scenario} c=${combination.concurrency}: redo=${combination.logging.flushLogAtTransactionCommit}, sync_binlog=${combination.logging.syncBinlog}, binlog ON, timeout=1; ${plan.warmupSeconds}s warmup + ${plan.repeats} x ${plan.durationSeconds}s, adaptive third run.`);
   }
+  if (formal && plan.isFull) console.log("Independent Buffer Pool experiment: 1/2 GiB, shared ~1.5 GiB dataset, c16, 30s warmup + 2 x 90s, adaptive third run above 30%; publish only after both experiments pass.");
   console.log("Verify logging, restore original parameters before collecting/publishing. Do not run other benchmarks concurrently.");
   process.exit(0);
 }
@@ -71,6 +72,7 @@ try {
         assert(!existsSync(environmentPath) && !existsSync(datasetPath), `Refusing to overwrite ${prefix}`);
         await execute("prepare.mjs", [
           `--manifest-prefix=${prefix}`, `--container-name=${group}-prepare`,
+          ...(scenario === "update_no_secondary_index" ? ["--no-secondary-index"] : []),
         ], `${group}-prepare`);
         const actual = await setLoggingState(query, logging);
         const environment = readJson(environmentPath);
@@ -88,11 +90,11 @@ try {
         assertLoggingMatch(await readLoggingState(query), logging);
       }
     } finally {
-      if (activeContainer) {
-        const result = await runProcess("docker", ["inspect", activeContainer]);
+      for (const name of [activeContainer,`${group}-prepare`,`${group}-load`].filter(Boolean)) {
+        const result = await runProcess("docker", ["inspect", name]);
         if (result.code === 0) {
-          const stopped = await runProcess("docker", ["rm", "-f", activeContainer]);
-          assert(stopped.code === 0, `Failed to stop owned load container ${activeContainer}`);
+          const stopped = await runProcess("docker", ["rm", "-f", name]);
+          assert(stopped.code === 0, `Failed to stop owned load container ${name}`);
         }
       }
     }
@@ -105,6 +107,7 @@ try {
     writeJson(file, metadata);
   }
   console.log("\nOriginal logging parameters restored and verified.");
+  if (formal && plan.isFull) await execute("buffer-pool.mjs", [`--run-group=${group}`], `${group}-load`);
   const full = formal ? plan.isFull : plan.concurrency.length === 3 && plan.warmupSeconds === 60
     && plan.durationSeconds === 120 && plan.repeats === 2;
   const result = await runProcess(process.execPath, [

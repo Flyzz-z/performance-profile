@@ -16,7 +16,7 @@ function dockerJson(socketPath, route) {
         try { resolve(JSON.parse(body)); } catch (error) { reject(error); }
       });
     });
-    request.setTimeout(3000, () => request.destroy(new Error("Docker stats timeout")));
+    request.setTimeout(5000, () => request.destroy(new Error("Docker stats timeout")));
     request.on("error", reject);
   });
 }
@@ -34,6 +34,10 @@ export function parseCpuStats(stats) {
   assert(Object.values(values).every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0),
     "Missing CPU or throttling counters");
   return values;
+}
+
+export function isTransientStartupFailure(error, sampleCount, elapsedMs) {
+  return sampleCount === 0 && elapsedMs < 20000 && /timeout|HTTP 5\d\d/.test(error.message);
 }
 
 export function summarizeResources(samples, limits, expectedSeconds, errors = [], intervalMs = 5000) {
@@ -80,13 +84,15 @@ export function summarizeResources(samples, limits, expectedSeconds, errors = []
   };
 }
 
-export async function startResourceCapture({ mysqlId, loadName, expectedSeconds, cpus, intervalMs = 5000 }) {
+export async function startResourceCapture({ mysqlId, loadName, expectedSeconds, cpus, mysqlCpus = 4, intervalMs = 5000 }) {
   const context = await runProcess("docker", ["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"]);
   const host = context.stdout.trim();
   assert(context.code === 0 && host.startsWith("unix://"), "Resource sampling requires the local Docker socket");
   const socket = host.slice("unix://".length);
   const samples = [];
   const errors = [];
+  const startupRetries = [];
+  const startedAt = Date.now();
   let active = true;
   let timer;
   let wake;
@@ -98,12 +104,17 @@ export async function startResourceCapture({ mysqlId, loadName, expectedSeconds,
         if (!loadId) {
           const load = await dockerJson(socket, `/containers/${encodeURIComponent(loadName)}/json`);
           const mysql = await dockerJson(socket, `/containers/${mysqlId}/json`);
+          if (!load.State.Running) {
+            const pending = new Error("Load container is not running yet");
+            pending.status = 404;
+            throw pending;
+          }
           assert(load.HostConfig.NanoCpus === cpus * 1e9 && load.HostConfig.Memory === 1024 ** 3,
             "Actual sysbench resource limit mismatch");
-          assert(mysql.HostConfig.NanoCpus === 4e9, "Actual MySQL CPU limit mismatch");
+          assert(mysql.HostConfig.NanoCpus === mysqlCpus * 1e9 && mysql.HostConfig.Memory === 6 * 1024 ** 3, "Actual MySQL resource limit mismatch");
           loadId = load.Id;
           limits = {
-            mysql: { cpus: 4, memoryBytes: mysql.HostConfig.Memory },
+            mysql: { cpus: mysqlCpus, memoryBytes: mysql.HostConfig.Memory },
             loadgen: { cpus, memoryBytes: load.HostConfig.Memory },
           };
         }
@@ -113,7 +124,10 @@ export async function startResourceCapture({ mysqlId, loadName, expectedSeconds,
         ]);
         samples.push({ sampledAt: new Date().toISOString(), mysql: parseCpuStats(mysql), loadgen: parseCpuStats(loadgen) });
       } catch (error) {
-        if (active && error.status !== 404) {
+        if (active && error.status !== 404 && isTransientStartupFailure(error,samples.length,Date.now()-startedAt)) {
+          startupRetries.push(error.message);
+          loadId = undefined;
+        } else if (active && error.status !== 404) {
           errors.push(error.message);
           break;
         }
@@ -131,9 +145,9 @@ export async function startResourceCapture({ mysqlId, loadName, expectedSeconds,
       wake?.();
       await loop;
       return {
-        schemaVersion: 1, intervalMs, samples,
+        schemaVersion: 1, intervalMs, samples, startupRetries,
         summary: summarizeResources(samples, limits ?? {
-          mysql: { cpus: 4 }, loadgen: { cpus },
+          mysql: { cpus: mysqlCpus }, loadgen: { cpus },
         }, expectedSeconds, errors, intervalMs),
       };
     },

@@ -24,4 +24,4 @@ MySQL 本地 Docker 测试页面：
 npm run site
 ```
 
-打开 `http://127.0.0.1:4173/`。结果明确标记为 `local Docker benchmark`，不代表生产服务器性能。
+打开 [组件索引](http://127.0.0.1:4173/) 或 [MySQL 结果页面](http://127.0.0.1:4173/mysql.html)。结果明确标记为 `local Docker benchmark`，不代表生产服务器性能。

@@ -48,6 +48,14 @@ export const SCENARIOS = {
     script: "oltp_read_write.lua",
     description: "标准读写混合负载，接近典型 OLTP 访问模式。",
   },
+  update_no_secondary_index: {
+    id: "update_no_secondary_index", label: "无二级索引更新",
+    script: "oltp_update_index.lua", description: "保留主键，更新k但不维护k二级索引。",
+  },
+  insert: {
+    id: "insert", label: "单行插入", script: "oltp_insert.lua",
+    description: "自增主键单行插入，维护k二级索引。",
+  },
 };
 
 export const SCENARIO_ORDER = [
@@ -59,6 +67,8 @@ export const SCENARIO_ORDER = [
 export const CONCURRENCY_LEVELS = [1, 8, 32];
 export const DURABILITY_SCENARIOS = ["update_index", "update_index_async"];
 export const FORMAL_SCENARIOS = ["point_select", "update_index", "update_index_async", "read_write"];
+export const EXPANDED_SCENARIOS = ["point_select", "update_index", "update_index_async", "update_no_secondary_index", "insert", "read_write"];
+export const EXPANDED_CONCURRENCY = [1, 8, 16];
 
 export function nowIso() {
   return new Date().toISOString();

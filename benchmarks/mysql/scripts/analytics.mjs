@@ -141,10 +141,10 @@ function successfulMeasuredRuns(runs) {
   );
 }
 
-export function aggregateCombinations(runs, scenarios = SCENARIO_ORDER) {
+export function aggregateCombinations(runs, scenarios = SCENARIO_ORDER, concurrencyLevels = CONCURRENCY_LEVELS) {
   const combinations = [];
   for (const scenario of scenarios) {
-    for (const concurrency of CONCURRENCY_LEVELS) {
+    for (const concurrency of concurrencyLevels) {
       const matching = successfulMeasuredRuns(runs)
         .filter(
           (run) =>
@@ -330,12 +330,16 @@ export function validateFormalRuns(runs, requireComplete = true) {
 export function summarizeRunResources(runs) {
   const valid = runs.filter((r) => r.resources?.valid);
   if (valid.length !== runs.length || !valid.length) return null;
+  for (const name of ["mysql","loadgen"]) {
+    const quota = valid[0].resources.limits[name].cpus;
+    assert(Number.isFinite(quota) && quota > 0 && valid.every(run=>run.resources.limits[name].cpus === quota), "Cannot combine different CPU quotas");
+  }
   const summarize = (name) => {
     const values = valid.map((r) => r.resources[name]);
     const coverage = values.reduce((sum, row) => sum + row.coverageSeconds, 0);
     const meanCpuPercent = values.reduce((sum, row) => sum + row.meanCpuPercent * row.coverageSeconds, 0) / coverage;
     return {
-      meanCpuPercent, meanQuotaPercent: meanCpuPercent / 4,
+      meanCpuPercent, meanQuotaPercent: meanCpuPercent / valid[0].resources.limits[name].cpus,
       maxCpuPercent: Math.max(...values.map((v) => v.maxCpuPercent)),
       periods: values.reduce((sum, row) => sum + row.periods, 0),
       throttledPeriods: values.reduce((sum, row) => sum + row.throttledPeriods, 0),

@@ -42,10 +42,10 @@ function renderEnvironment() {
   const dataset = data.dataset ?? {};
   const formal = data.formalExperiment?.purpose === "formal";
   setText("dashboard-scope", formal
-    ? "sysbench 4 CPU / 1 GiB · 四场景正式实验 · 同轮 / 同数据规模"
+    ? `sysbench ${formatNumber(container.loadGeneratorCpuLimit)} CPU / ${formatMemory(container.loadGeneratorMemoryLimit)} · ${report.series.length} 场景正式实验`
     : "读、写、混合负载");
   document.querySelectorAll("[data-resource-column]").forEach((node) => { node.hidden = !formal; });
-  setText("resource-unit-note", formal ? "CPU为各自4 CPU配额占比；限流计数见逐次资料" : "");
+  setText("resource-unit-note", formal ? `CPU为各自配额占比：MySQL ${formatNumber(container.mysqlCpuLimit)} CPU / 压测 ${formatNumber(container.loadGeneratorCpuLimit)} CPU` : "");
   setText("cpu-limit", typeof container.mysqlCpuLimit === "number" ? `${formatNumber(container.mysqlCpuLimit)} CPU` : MISSING);
   setText("memory-limit", formatMemory(container.mysqlMemoryLimit));
   setText("buffer-pool", formatMemory(mysql.bufferPoolBytes));
@@ -125,6 +125,38 @@ function renderDashboard() {
     : `<tr><td colspan="${report.data.formalExperiment?.purpose === "formal" ? 9 : 7}">未选择场景</td></tr>`;
 }
 
+function renderBufferPool() {
+  const experiment = report.data.bufferPoolExperiment;
+  const section = document.getElementById("buffer-pool-experiment");
+  section.hidden = !experiment;
+  if (!experiment) return;
+  const groups = experiment.groups;
+  const dataset = experiment.dataset;
+  const environment = groups[0].environment;
+  const fields = [
+    {key:"qps",label:"查询吞吐",unit:"QPS",format:formatNumber},
+    {key:"p99Ms",label:"p99 延迟",unit:"ms",format:formatLatency},
+    {key:"hitPercent",label:"页面命中率",unit:"%",format:value=>`${formatNumber(value)}%`},
+    {key:"readsPerSecond",label:"缺页读取",unit:"pages/s",format:formatNumber},
+  ];
+  document.getElementById("buffer-pool-results").innerHTML = `
+    <p class="run-context">并发 ${experiment.concurrency} · ${formatNumber(dataset.actualRows)} 行 / ${dataset.tableCount} 表
+      · 主键页占用 ${formatMemory(dataset.dataBytes)} · 预热 ${experiment.protocol.warmupSeconds}s / 测量 ${experiment.protocol.durationSeconds}s</p>
+    <div class="cache-metrics">${fields.map(field=>{
+      const max = Math.max(...groups.map(group=>group.selected[field.key]),Number.EPSILON);
+      return `<article class="cache-metric" aria-label="${field.label}"><h3>${field.label}<small>${field.unit}</small></h3>${groups.map(group=>
+        `<div class="cache-bar-row"><span>${group.gib} GiB</span><div class="cache-bar-track"><i style="width:${group.selected[field.key]/max*100}%;background:${group.gib===1?"#008b91":"#b43e3e"}"></i></div><strong>${field.format(group.selected[field.key])}</strong></div>`).join("")}</article>`;
+    }).join("")}</div>
+    <div class="table-scroll"><table aria-label="Buffer Pool 两组指标"><thead><tr><th>缓存</th><th>QPS</th><th>p95</th><th>p99</th><th>页命中率</th><th>缺页 / 秒</th><th>MySQL CPU</th><th>压测 CPU</th><th>稳定性</th></tr></thead><tbody>
+    ${groups.map(group=>`<tr><td>${group.gib} GiB</td><td>${formatNumber(group.selected.qps)}</td><td>${formatLatency(group.selected.p95Ms)}</td><td>${formatLatency(group.selected.p99Ms)}</td><td>${formatNumber(group.selected.hitPercent)}%</td><td>${formatNumber(group.selected.readsPerSecond)}</td><td>${quotaPercent(group.resources.mysql.meanQuotaPercent)}</td><td>${quotaPercent(group.resources.loadgen.meanQuotaPercent)}</td><td>${badge(group.stability)}</td></tr>`).join("")}</tbody></table></div>
+    ${groups.map(group=>`<details class="cache-run-detail environment-detail"><summary>${group.gib} GiB · ${group.attempts} 次测量 · ${stabilityLabel(group.stability)}</summary>
+      <p class="run-context">MySQL ${group.environment.container.mysqlCpuLimit} CPU / ${formatMemory(group.environment.container.mysqlMemoryLimit)} · 压测 ${group.environment.container.loadGeneratorCpuLimit} CPU / ${formatMemory(group.environment.container.loadGeneratorMemoryLimit)} · ${escape(group.environment.container.platform)} · ${escape(group.environment.mysql.version)}
+      · Buffer Pool ${formatMemory(group.bytes)} / ${group.environment.mysql.bufferPoolInstances} 实例 / chunk ${formatMemory(group.environment.mysql.bufferPoolChunkBytes)}
+      · redo ${group.environment.mysql.flushLogAtTransactionCommit} / sync_binlog ${group.environment.mysql.syncBinlog}</p>
+      <div class="table-scroll"><table><thead><tr><th>运行</th><th>QPS</th><th>p95</th><th>p99</th><th>页请求</th><th>缺页读取</th><th>命中率</th><th>资料</th></tr></thead><tbody>${group.runs.map(run=>`<tr><td>${run.repeat}</td><td>${formatNumber(run.metrics.qps)}</td><td>${formatLatency(run.metrics.p95Ms)}</td><td>${formatLatency(run.metrics.p99Ms)}</td><td>${formatNumber(run.pageMetrics.requests)}</td><td>${formatNumber(run.pageMetrics.reads)}</td><td>${formatNumber(run.pageMetrics.hitPercent)}%</td><td><a class="cache-raw-link" href="${escape(artifactUrl(run.rawOutputPath))}" target="_blank" rel="noreferrer">原始输出</a> · <a class="cache-resource-link" href="${escape(artifactUrl(run.resources.rawPath))}" target="_blank" rel="noreferrer">资源采样</a></td></tr>`).join("")}</tbody></table></div></details>`).join("")}
+    <details class="environment-detail"><summary>缓存实验环境与数据清单</summary><div class="environment-groups">${environmentGroups({...report.data,environment,dataset,protocol:{...experiment.protocol,concurrency:[16]},series:[],durabilityComparison:null}).map(group=>`<dl><dt>${escape(group.name)}</dt>${group.rows.map(row=>`<div><dt>${escape(row.label)}</dt><dd>${escape(row.value)}</dd></div>`).join("")}</dl>`).join("")}</div><a href="${escape(artifactUrl(experiment.datasetPath))}" target="_blank" rel="noreferrer">数据与表结构</a></details>`;
+}
+
 function renderResults() {
   const { data } = report;
   const validRuns = (rows) => (Array.isArray(rows) ? rows : [])
@@ -135,9 +167,11 @@ function renderResults() {
     const combination = (data.stability ?? []).find((s) => s.scenario === series.id && s.concurrency === point.concurrency);
     const runs = validRuns(combination?.runs);
     const logging = combination?.environment?.mysql ?? series.environment?.mysql ?? {};
+    const structure = combination?.dataset;
     const context = `<p class="run-context">报告日期 ${escape(formatDate(combination?.testedAt ?? series.testedAt))}
       · redo ${escape(text(logging.flushLogAtTransactionCommit))} / sync_binlog ${escape(text(logging.syncBinlog))}
-      · binlog ${logging.logBinEnabled === undefined ? MISSING : logging.logBinEnabled ? "ON" : "OFF"}</p>`;
+      · binlog ${logging.logBinEnabled === undefined ? MISSING : logging.logBinEnabled ? "ON" : "OFF"}
+      ${structure?.tables ? ` · 主键 id / 自增 · k 二级索引 ${structure.secondaryIndex ? "有" : "无"}` : ""}</p>`;
     return `<details class="result-detail" data-scenario="${series.id}" data-level="${point.concurrency}">
       <summary><span class="detail-heading">${scenarioName(series)} · 并发 ${point.concurrency}</span>
         <span class="detail-stats"><span>QPS <strong>${formatNumber(point.qps)}</strong></span><span>TPS <strong>${formatNumber(point.tps)}</strong></span>
@@ -154,7 +188,9 @@ function renderResults() {
           ${resourceLink ? ` · <a class="resource-link" href="${escape(resourceLink)}" target="_blank" rel="noreferrer">资源采样</a>` : ""}</span>` : "";
         return `<tr><td>第 ${escape(run.repeat)} 次</td><td>${formatNumber(run.qps)}</td><td>${formatNumber(run.tps)}</td>
           <td>${formatLatency(run.p95Ms)}</td><td>${formatLatency(run.p99Ms)}</td><td>${formatNumber(run.errors)}</td>
-          <td>${link ? `<a class="run-link" href="${escape(link)}" target="_blank" rel="noreferrer">原始输出</a>` : MISSING}${evidence}</td></tr>`;
+          <td>${link ? `<a class="run-link" href="${escape(link)}" target="_blank" rel="noreferrer">原始输出</a>` : MISSING}${evidence}
+          ${run.rowCounts ? `<br>行数：预热前 ${formatNumber(run.rowCounts.beforeWarmup)} → 预热后 ${formatNumber(run.rowCounts.afterWarmup)} → 测量后 ${formatNumber(run.rowCounts.after)}` : ""}
+          ${artifactUrl(run.datasetPath) ? ` · <a href="${escape(artifactUrl(run.datasetPath))}" target="_blank" rel="noreferrer">表结构与数据清单</a>` : ""}</td></tr>`;
       }).join("") : '<tr><td colspan="7">未记录逐次运行</td></tr>'}
       </tbody></table></div></details>`;
   }).join("") : '<p class="muted">暂无有效结果</p>';
@@ -185,6 +221,7 @@ async function loadData() {
       renderControls();
       renderDashboard();
       renderResults();
+      renderBufferPool();
     } else renderIndex();
     status.hidden = true;
   } catch (error) {
