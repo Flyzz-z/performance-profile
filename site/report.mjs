@@ -5,7 +5,7 @@ export const SCENARIOS = [
   { id: "update_index_async", label: "索引更新（异步刷盘）", color: "#a14572", kind: "WRITE" },
   { id: "update_no_secondary_index", label: "无二级索引更新", color: "#008b91", kind: "WRITE" },
   { id: "insert", label: "单行插入", color: "#b43e3e", kind: "WRITE" },
-  { id: "read_write", label: "读写混合", color: "#1d7a4d", kind: "MIXED" },
+  { id: "read_write", label: "读写混合（读:写 = 7:2）", color: "#1d7a4d", kind: "MIXED" },
 ];
 export const METRICS = [
   { key: "qps", label: "查询吞吐", symbol: "QPS", unit: "queries/s" },
@@ -171,7 +171,8 @@ export function projectReport(data) {
         };
       })
       .sort((a, b) => a.concurrency - b.concurrency);
-    return { ...definition, label: typeof source?.label === "string" ? source.label : definition.label,
+    return { ...definition, label: definition.id === "read_write" ? definition.label
+      : typeof source?.label === "string" ? source.label : definition.label,
       points, environment: source?.environment ?? data.environment,
       testedAt: source?.testedAt ?? data.component.testedAt,
       runGroup: source?.runGroup, sourceRole: source?.sourceRole };

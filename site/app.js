@@ -157,6 +157,34 @@ function renderBufferPool() {
     <details class="environment-detail"><summary>缓存实验环境与数据清单</summary><div class="environment-groups">${environmentGroups({...report.data,environment,dataset,protocol:{...experiment.protocol,concurrency:[16]},series:[],durabilityComparison:null}).map(group=>`<dl><dt>${escape(group.name)}</dt>${group.rows.map(row=>`<div><dt>${escape(row.label)}</dt><dd>${escape(row.value)}</dd></div>`).join("")}</dl>`).join("")}</div><a href="${escape(artifactUrl(experiment.datasetPath))}" target="_blank" rel="noreferrer">数据与表结构</a></details>`;
 }
 
+function renderHotUpdate() {
+  const experiment = report.data.hotUpdateExperiment;
+  document.getElementById("hot-update-experiment").hidden = !experiment;
+  if (!experiment) return;
+  const groups = experiment.groups;
+  const fields = [
+    { label: "事务吞吐", unit: "TPS", value: g => g.metrics.tps, format: formatNumber },
+    { label: "p99 延迟", unit: "ms", value: g => g.metrics.p99Ms, format: formatLatency },
+    { label: "行锁等待速率", unit: "次 / 秒", value: g => g.locks.waitsPerSecond, format: formatNumber },
+    { label: "平均每次等待", unit: "ms", value: g => g.locks.meanWaitMs, format: formatLatency },
+  ];
+  const link = (file, label) => `<a class="hot-artifact-link" href="${escape(artifactUrl(file))}" target="_blank" rel="noreferrer">${label}</a>`;
+  document.getElementById("hot-update-results").innerHTML = `
+    <p class="run-context">${escape(formatDate(experiment.testedAt))} · 16 并发 · 预热 30s / 测量 60s · 每组 1 次</p>
+    <p class="run-context">10 表 / 共 100 万行 · 分散更新：100 万条活动记录 · 热点更新：每表 id=1，共 10 条活动记录</p>
+    <div class="cache-metrics">${fields.map(field => {
+      const max = Math.max(...groups.map(field.value), Number.EPSILON);
+      return `<article class="cache-metric"><h3>${field.label}<small>${field.unit}</small></h3>${groups.map(g =>
+        `<div class="cache-bar-row hot-bar-row"><span>${escape(g.label)}</span><div class="cache-bar-track"><i style="width:${field.value(g) / max * 100}%;background:${g.id === "hot" ? "#b43e3e" : "#008b91"}"></i></div><strong>${field.format(field.value(g))}</strong></div>`).join("")}</article>`;
+    }).join("")}</div>
+    <div class="table-scroll"><table aria-label="热点更新两组指标"><thead><tr><th>更新范围</th><th>TPS</th><th>p95 (ms)</th><th>p99 (ms)</th><th>等待次数</th><th>等待 / 秒</th><th>累计等待 (ms)</th><th>平均等待 (ms)</th><th>MySQL CPU</th><th>压测 CPU</th><th>失败数</th></tr></thead><tbody>
+    ${groups.map(g => `<tr data-hot-group="${g.id}"><td>${escape(g.label)}</td><td>${formatNumber(g.metrics.tps)}</td><td>${formatLatency(g.metrics.p95Ms)}</td><td>${formatLatency(g.metrics.p99Ms)}</td><td>${formatNumber(g.locks.waits)}</td><td>${formatNumber(g.locks.waitsPerSecond)}</td><td>${formatNumber(g.locks.waitMs)}</td><td>${formatLatency(g.locks.meanWaitMs)}</td><td>${quotaPercent(g.resources.mysql.meanQuotaPercent)}</td><td>${quotaPercent(g.resources.loadgen.meanQuotaPercent)}</td><td class="hot-failures">${formatNumber(g.metrics.failureCount)}</td></tr>`).join("")}</tbody></table></div>
+    ${groups.map(g => `<details class="hot-run-detail environment-detail"><summary>${escape(g.label)} · ${formatNumber(g.activeRows)} 条活动记录 · 1 次测量</summary>
+      <p class="run-context">${escape(g.environment.container.platform)} · MySQL ${escape(g.environment.mysql.version)} · MySQL ${g.environment.container.mysqlCpuLimit} CPU / ${formatMemory(g.environment.container.mysqlMemoryLimit)} · sysbench ${g.environment.container.loadGeneratorCpuLimit} CPU / ${formatMemory(g.environment.container.loadGeneratorMemoryLimit)} · Buffer Pool ${formatMemory(g.environment.mysql.bufferPoolBytes)} · redo ${g.environment.mysql.flushLogAtTransactionCommit} / sync_binlog ${g.environment.mysql.syncBinlog} · binlog ON</p>
+      <p class="run-context">每表访问 id=1–${formatNumber(g.idLimit)} · 主键 id + k 二级索引 · 单条自动提交 UPDATE · 均匀随机 · 锁计数窗口 ${formatNumber(g.locks.seconds)}s · 重连 ${formatNumber(g.metrics.reconnects)}</p>
+      <p>${link(g.runs[1].rawOutputPath, "原始输出")} · ${link(g.runs[0].rawOutputPath, "预热输出")} · ${link(g.runs[1].lockPath, "锁计数")} · ${link(g.runs[1].resourcePath, "资源采样")} · ${link(g.datasetPath, "数据与索引清单")} · ${link(g.environmentPath, "环境清单")}</p></details>`).join("")}`;
+}
+
 function renderResults() {
   const { data } = report;
   const validRuns = (rows) => (Array.isArray(rows) ? rows : [])
@@ -222,6 +250,7 @@ async function loadData() {
       renderDashboard();
       renderResults();
       renderBufferPool();
+      renderHotUpdate();
     } else renderIndex();
     status.hidden = true;
   } catch (error) {

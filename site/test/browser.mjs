@@ -118,6 +118,12 @@ try {
   await page.locator("h1").hover();
   assert.equal(await page.locator(".chart-tooltip").count(), 0);
   assert.equal(await page.locator(".result-detail").count(), data.series.flatMap((s) => s.points).length);
+  const mixedLabel = "读写混合（读:写 = 7:2）";
+  for (const selector of ["#scenario-controls", "#selected-body"]) {
+    assert.ok((await page.locator(selector).textContent()).includes(mixedLabel));
+  }
+  assert.equal(await page.locator(".result-detail summary").filter({ hasText: mixedLabel }).count(),
+    data.series.find((series) => series.scenario === "read_write").points.length);
   for (const detail of await page.locator(".result-detail").all()) await detail.locator("summary").click();
   assert.equal(await page.locator("a.run-link").count(), data.rawResults.length);
   for (const link of await page.locator("a.run-link").all()) {
@@ -236,6 +242,7 @@ try {
   assert.equal(await page.locator(".result-detail").first().locator("a.run-link").count(), data.stability[0].runs.length);
   await page.unroute("**/data/mysql.json");
   const four = structuredClone(data);
+  delete four.hotUpdateExperiment;
   four.series = four.series.filter((s) => ["point_select","update_index","read_write"].includes(s.scenario));
   delete four.bufferPoolExperiment;
   const synchronous = four.series.find((s) => s.scenario === "update_index");
@@ -248,6 +255,7 @@ try {
   await page.route("**/data/mysql.json", (request) => request.fulfill({ json: four }));
   await ready(page);
   assert.equal(await page.locator("#scenario-controls input").count(), 4);
+  assert.equal(await page.locator("#hot-update-experiment").isVisible(), false);
   assert.equal(await page.locator('.chart-dot[data-scenario="update_index_async"]').count(), 12);
   await noProcessNotice(page);
   const asyncEnvironment = page.locator(".environment-detail").filter({ hasText: "索引更新（异步刷盘） · 日志配置" });
@@ -314,6 +322,49 @@ try {
     await page.screenshot({path:path.join(screenshotDirectory,`expanded-fixture-${width}.png`),fullPage:true});
   }
   await page.unroute("**/data/mysql.json");
+  const hotFixture = structuredClone(data);
+  hotFixture.hotUpdateExperiment = { testedAt: "2026-10-07T04:00:00Z", protocol: { concurrency:16,warmupSeconds:30,durationSeconds:60,repeats:1 }, groups: ["distributed","hot"].map((id,i) => ({
+    id, label:i ? "热点更新" : "分散更新", activeRows:i ? 10 : 1000000, idLimit:i ? 1 : 100000,
+    environment:data.environment, environmentPath:"benchmarks/mysql/results/environment.json", datasetPath:"benchmarks/mysql/results/dataset.json",
+    metrics:{tps:i ? 6000 : 10000,p95Ms:1,p99Ms:2,failureCount:i ? 3 : 0,reconnects:1},
+    locks:{seconds:62,waits:0,waitsPerSecond:0,waitMs:0,meanWaitMs:0},
+    resources:{mysql:{meanQuotaPercent:20},loadgen:{meanQuotaPercent:15}},
+    runs:[{rawOutputPath:data.rawResults[0].rawOutputPath},{rawOutputPath:data.rawResults[0].rawOutputPath,resourcePath:data.stability[0].runs[0].resources.rawPath,lockPath:data.stability[0].runs[0].resources.rawPath}],
+  })) };
+  await page.route("**/data/mysql.json", request => request.fulfill({json:hotFixture}));
+  await ready(page);
+  assert.equal(await page.locator("#hot-update-experiment").isVisible(),true);
+  assert.equal(await page.locator("#hot-update-results .cache-bar-row").count(),8);
+  assert.deepEqual(await page.locator(".hot-failures").allTextContents(),["0","3"]);
+  assert.equal(await page.locator("#hot-update-results .status").count(),0);
+  assert.equal(await page.locator(".hot-run-detail").count(),2);
+  const hotBefore = await page.locator("#hot-update-results").textContent();
+  for(const checkbox of await page.locator("#scenario-controls input").all()) await checkbox.uncheck();
+  await page.getByRole("button",{name:"并发 8",exact:true}).click();
+  assert.equal(await page.locator("#hot-update-results").textContent(),hotBefore);
+  for(const width of [1440,390,375]) {
+    await page.setViewportSize({width,height:900});
+    await noOverflow(page);
+    for(const detail of await page.locator(".hot-run-detail").all()) await detail.evaluate(node=>{node.open=true;});
+    await noOverflow(page);
+    await page.locator("#hot-update-experiment").screenshot({path:path.join(screenshotDirectory,`hot-fixture-${width}.png`)});
+  }
+  await page.unroute("**/data/mysql.json");
+  await ready(page);
+  if(data.hotUpdateExperiment) {
+    const allArtifacts = [...new Set(await page.locator('a[href*="artifacts/mysql/"]').evaluateAll(nodes => nodes.map(node => node.href)))];
+    for(const href of allArtifacts) assert.equal((await page.request.get(href)).status(),200,href);
+    console.log(`All ${allArtifacts.length} unique artifact links return HTTP 200.`);
+    for(const link of await page.locator("a.hot-artifact-link").all()) {
+      assert.equal((await page.request.get(new URL(await link.getAttribute("href"),url).href)).status(),200);
+    }
+    for(const width of [1440,375]) {
+      await page.setViewportSize({width,height:900});
+      for(const detail of await page.locator(".hot-run-detail").all()) await detail.evaluate(node=>{node.open=true;});
+      await noOverflow(page);
+      await page.locator("#hot-update-experiment").screenshot({path:path.join(screenshotDirectory,`hot-actual-${width}.png`)});
+    }
+  }
   assert.deepEqual(errors, []);
   console.log("Browser checks passed: four viewports, touch/keyboard, all metrics, filters, raw links, environment and failure states.");
   console.log(`Screenshots: ${screenshotDirectory}`);

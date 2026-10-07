@@ -14,9 +14,25 @@
 - 数据：10 张表，每张 100,000 行
 - 正式场景：`point_select`、`update_index`、`update_index_async`、`update_no_secondary_index`、`insert`、`read_write`
 - 协议：预热 30 秒，正式运行 2 次、每次 90 秒；TPS 或 p99 差异超过 30% 时补跑第 3 次
-- 最终正式实验：6 个场景 × 并发 1/8/16，另含独立 Buffer Pool 1/2 GiB 两组实验；测量约 91.5-133 分钟，准备与重启时间另计
+- 最终正式实验：6 个场景 × 并发 1/8/16，另含独立 Buffer Pool 1/2 GiB 两组实验及16并发热点更新实验；主测试与缓存测量约 91.5-133 分钟，热点实验另需3分钟，准备与重启时间另计
 
-## 开发命令
+## 独立热点更新实验
+
+```bash
+npm run mysql:hot-update -- --dry-run
+npm run mysql:hot-update -- --verification
+caffeinate -i npm run mysql:hot-update
+```
+
+固定16并发，每组预热30秒、测量60秒，只测一次、不补跑。两组各自prepare 10表×100000行，均使用标准`oltp_update_index.lua`的单条自动提交`UPDATE k=k+1`及均匀随机选表。分散组访问全100万行，热点组只访问每表id=1（共10行）；热点运行参数`--table-size=1`不表示物理表被缩小。两组相同ARM64、MySQL 8 CPU/6 GiB、sysbench 4 CPU/1 GiB、3 GiB缓存和redo=1/sync_binlog=1/binlog ON。
+
+锁计数仅取预热结束后、正式负载结束后的`Innodb_row_lock_waits`和`Innodb_row_lock_time`差分；平均等待=累计毫秒/次数，等待速率=次数/实际窗口秒数。零等待保留为0，不使用全局累计平均值。累计等待汇总多个线程，不能当墙钟占比；吞吐差额同时包含缓存、日志和调度影响，不能全部称为纯锁开销。失败数取sysbench ignoredErrors，重连另外展示；完整有效的非零错误结果不剔除或重测。
+
+正式资源每5秒采样，60秒测量要求至少48秒覆盖、最多70秒跨度、最大间隔10秒。只在两组原始证据及恢复验收通过后原子合并`hotUpdateExperiment`，不修改主实验、缓存、日期或代表值；`--no-publish`仅保留正式证据。短验证落在`results/verification/`，不能发布。支持SIGINT/SIGTERM清理自己创建的容器及恢复日志；SIGKILL/VM故障后必须人工检查遗留容器及日志，不发布残缺实验。运行期间不要执行其他负载或合盖。
+
+保留的完整正式summary可通过`npm run mysql:hot-update -- --publish-summary=benchmarks/mysql/results/<group>-hot-update.json`重新复算验收并发布。
+
+## 常规命令
 
 ```bash
 npm run mysql:up

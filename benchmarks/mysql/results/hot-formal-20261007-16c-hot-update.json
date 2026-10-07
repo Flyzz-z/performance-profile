@@ -1,0 +1,455 @@
+{
+  "schemaVersion": 1,
+  "purpose": "formal",
+  "runGroup": "hot-formal-20261007-16c",
+  "testedAt": "2026-10-07T03:33:03.580Z",
+  "protocol": {
+    "concurrency": 16,
+    "warmupSeconds": 30,
+    "durationSeconds": 60,
+    "repeats": 1
+  },
+  "restorationVerified": true,
+  "groups": [
+    {
+      "id": "distributed",
+      "label": "分散更新",
+      "runGroup": "hot-formal-20261007-16c",
+      "actualRows": 1000000,
+      "activeRows": 1000000,
+      "idLimit": 100000,
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-07T03:33:21.169Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": false,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 8,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "7c918b6f1f8991f3c12014151e454a5a553e0f2998eddcf0d4680ce793c9b25c"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0",
+          "imageId": "sha256:84066a5dabc6169a37e67ac54c586ca96ca7045f2e03dbe52bb61033a85ae5ff",
+          "imagePlatform": "linux/arm64"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "environmentPath": "benchmarks/mysql/results/hot-formal-20261007-16c-distributed-environment.json",
+      "datasetPath": "benchmarks/mysql/results/hot-formal-20261007-16c-distributed-dataset.json",
+      "runs": [
+        {
+          "kind": "warmup",
+          "group": "distributed",
+          "runGroup": "hot-formal-20261007-16c",
+          "arguments": [
+            "/usr/share/sysbench/oltp_update_index.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=sbtest",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "rawOutputPath": "benchmarks/mysql/results/hot-formal-20261007-16c-distributed-warmup.txt",
+          "startedAt": "2026-10-07T03:33:21.497Z",
+          "finishedAt": "2026-10-07T03:33:54.684Z",
+          "exitCode": 0,
+          "metrics": {
+            "transactions": 57911,
+            "queries": 57911,
+            "tps": 1927.7,
+            "qps": 1927.7,
+            "averageLatencyMs": 8.29,
+            "p95Ms": 20.736,
+            "p99Ms": 41.1,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "kind": "measured",
+          "group": "distributed",
+          "runGroup": "hot-formal-20261007-16c",
+          "arguments": [
+            "/usr/share/sysbench/oltp_update_index.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=sbtest",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=60",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "rawOutputPath": "benchmarks/mysql/results/hot-formal-20261007-16c-distributed-measured.txt",
+          "startedAt": "2026-10-07T03:33:54.688Z",
+          "finishedAt": "2026-10-07T03:34:58.120Z",
+          "exitCode": 0,
+          "metrics": {
+            "transactions": 111172,
+            "queries": 111172,
+            "tps": 1850.35,
+            "qps": 1850.35,
+            "averageLatencyMs": 8.63,
+            "p95Ms": 23.101,
+            "p99Ms": 48.34,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "lockPath": "benchmarks/mysql/results/hot-formal-20261007-16c-distributed-locks.json",
+          "resourcePath": "benchmarks/mysql/results/hot-formal-20261007-16c-distributed-resources.json"
+        }
+      ],
+      "locks": {
+        "seconds": 63.594,
+        "waits": 2,
+        "waitMs": 10,
+        "waitsPerSecond": 0.03144950781520269,
+        "meanWaitMs": 5
+      },
+      "metrics": {
+        "transactions": 111172,
+        "queries": 111172,
+        "tps": 1850.35,
+        "qps": 1850.35,
+        "averageLatencyMs": 8.63,
+        "p95Ms": 23.101,
+        "p99Ms": 48.34,
+        "p95Source": "histogram",
+        "p99Source": "sysbench",
+        "ignoredErrors": 0,
+        "reconnects": 0,
+        "queriesPerTransaction": 1,
+        "errors": 0,
+        "queriesPerSecondPerTransaction": 1,
+        "failureCount": 0
+      },
+      "resources": {
+        "valid": true,
+        "status": "complete",
+        "sampleCount": 12,
+        "coverageSeconds": 55.371,
+        "expectedSeconds": 60,
+        "limits": {
+          "mysql": {
+            "cpus": 8,
+            "memoryBytes": 6442450944
+          },
+          "loadgen": {
+            "cpus": 4,
+            "memoryBytes": 1073741824
+          }
+        },
+        "mysql": {
+          "coverageSeconds": 55.372,
+          "maxGapSeconds": 5.173,
+          "meanCpuPercent": 91.62671386260203,
+          "meanQuotaPercent": 11.453339232825254,
+          "maxCpuPercent": 115.49824666268181,
+          "throttledPeriods": 0,
+          "periods": 554,
+          "throttledTimeSeconds": 0
+        },
+        "loadgen": {
+          "coverageSeconds": 55.371,
+          "maxGapSeconds": 5.177,
+          "meanCpuPercent": 4.835399396796157,
+          "meanQuotaPercent": 1.2088498491990392,
+          "maxCpuPercent": 6.698087695576589,
+          "throttledPeriods": 0,
+          "periods": 549,
+          "throttledTimeSeconds": 0
+        },
+        "errors": [],
+        "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+      }
+    },
+    {
+      "id": "hot",
+      "label": "热点更新",
+      "runGroup": "hot-formal-20261007-16c",
+      "actualRows": 1000000,
+      "activeRows": 10,
+      "idLimit": 1,
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-07T03:35:15.620Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": false,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 8,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "7c918b6f1f8991f3c12014151e454a5a553e0f2998eddcf0d4680ce793c9b25c"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "logBinEnabled": true,
+          "flushLogAtTimeout": 1,
+          "transactionIsolation": "REPEATABLE-READ"
+        },
+        "loadGenerator": {
+          "sysbenchVersion": "sysbench 1.0.20",
+          "image": "performance-profile/mysql-sysbench:1.0.0",
+          "imageId": "sha256:84066a5dabc6169a37e67ac54c586ca96ca7045f2e03dbe52bb61033a85ae5ff",
+          "imagePlatform": "linux/arm64"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs",
+          "composeVersion": "5.1.2"
+        },
+        "host": {
+          "architecture": "arm64",
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184
+        },
+        "limitations": [
+          "Docker on macOS runs Linux containers inside a virtual machine.",
+          "Results include OrbStack virtualization and local SSD overhead.",
+          "Values are exploratory and must not be treated as production capacity."
+        ]
+      },
+      "environmentPath": "benchmarks/mysql/results/hot-formal-20261007-16c-hot-environment.json",
+      "datasetPath": "benchmarks/mysql/results/hot-formal-20261007-16c-hot-dataset.json",
+      "runs": [
+        {
+          "kind": "warmup",
+          "group": "hot",
+          "runGroup": "hot-formal-20261007-16c",
+          "arguments": [
+            "/usr/share/sysbench/oltp_update_index.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=sbtest",
+            "--tables=10",
+            "--table-size=1",
+            "--threads=16",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "rawOutputPath": "benchmarks/mysql/results/hot-formal-20261007-16c-hot-warmup.txt",
+          "startedAt": "2026-10-07T03:35:15.979Z",
+          "finishedAt": "2026-10-07T03:35:48.708Z",
+          "exitCode": 0,
+          "metrics": {
+            "transactions": 50093,
+            "queries": 50093,
+            "tps": 1668.42,
+            "qps": 1668.42,
+            "averageLatencyMs": 9.58,
+            "p95Ms": 21.886,
+            "p99Ms": 32.53,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "kind": "measured",
+          "group": "hot",
+          "runGroup": "hot-formal-20261007-16c",
+          "arguments": [
+            "/usr/share/sysbench/oltp_update_index.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=sbtest",
+            "--tables=10",
+            "--table-size=1",
+            "--threads=16",
+            "--time=60",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "rawOutputPath": "benchmarks/mysql/results/hot-formal-20261007-16c-hot-measured.txt",
+          "startedAt": "2026-10-07T03:35:48.712Z",
+          "finishedAt": "2026-10-07T03:36:52.052Z",
+          "exitCode": 0,
+          "metrics": {
+            "transactions": 80836,
+            "queries": 80836,
+            "tps": 1345.67,
+            "qps": 1345.67,
+            "averageLatencyMs": 11.88,
+            "p95Ms": 28.162,
+            "p99Ms": 65.65,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "lockPath": "benchmarks/mysql/results/hot-formal-20261007-16c-hot-locks.json",
+          "resourcePath": "benchmarks/mysql/results/hot-formal-20261007-16c-hot-resources.json"
+        }
+      ],
+      "locks": {
+        "seconds": 63.235,
+        "waits": 51193,
+        "waitMs": 500675,
+        "waitsPerSecond": 809.5674863604016,
+        "meanWaitMs": 9.780145723048072
+      },
+      "metrics": {
+        "transactions": 80836,
+        "queries": 80836,
+        "tps": 1345.67,
+        "qps": 1345.67,
+        "averageLatencyMs": 11.88,
+        "p95Ms": 28.162,
+        "p99Ms": 65.65,
+        "p95Source": "histogram",
+        "p99Source": "sysbench",
+        "ignoredErrors": 0,
+        "reconnects": 0,
+        "queriesPerTransaction": 1,
+        "errors": 0,
+        "queriesPerSecondPerTransaction": 1,
+        "failureCount": 0
+      },
+      "resources": {
+        "valid": true,
+        "status": "complete",
+        "sampleCount": 12,
+        "coverageSeconds": 55.124,
+        "expectedSeconds": 60,
+        "limits": {
+          "mysql": {
+            "cpus": 8,
+            "memoryBytes": 6442450944
+          },
+          "loadgen": {
+            "cpus": 4,
+            "memoryBytes": 1073741824
+          }
+        },
+        "mysql": {
+          "coverageSeconds": 55.125,
+          "maxGapSeconds": 5.044,
+          "meanCpuPercent": 50.72827573696145,
+          "meanQuotaPercent": 6.341034467120181,
+          "maxCpuPercent": 56.85747103475829,
+          "throttledPeriods": 0,
+          "periods": 551,
+          "throttledTimeSeconds": 0
+        },
+        "loadgen": {
+          "coverageSeconds": 55.124,
+          "maxGapSeconds": 5.043,
+          "meanCpuPercent": 3.546752775560554,
+          "meanQuotaPercent": 0.8866881938901385,
+          "maxCpuPercent": 4.705730715843743,
+          "throttledPeriods": 0,
+          "periods": 546,
+          "throttledTimeSeconds": 0
+        },
+        "errors": [],
+        "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+      }
+    }
+  ],
+  "restorationPath": "benchmarks/mysql/results/hot-formal-20261007-16c-restoration.json",
+  "finishedAt": "2026-10-07T03:36:52.759Z"
+}

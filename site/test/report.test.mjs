@@ -11,7 +11,7 @@ const data = JSON.parse(readFileSync(new URL("../data/mysql.json", import.meta.u
 test("projects all report combinations without changing source values", () => {
   const before = JSON.stringify(data);
   const report = projectReport(data);
-  assert.deepEqual(report.concurrency, [1, 8, 32]);
+  assert.deepEqual(report.concurrency, data.protocol.concurrency);
   assert.equal(report.series.flatMap((s) => s.points).length, data.series.flatMap((s) => s.points).length);
   for (const series of report.series) {
     for (const point of series.points) {
@@ -21,6 +21,13 @@ test("projects all report combinations without changing source values", () => {
   }
   assert.equal(JSON.stringify(data), before);
   assert.equal(peakPoint(report).qps, Math.max(...data.series.flatMap((s) => s.points.map((p) => p.qps))));
+});
+
+test("mixed workload ratio is presentation-only and preserves result data", () => {
+  const before = JSON.stringify(data);
+  const report = projectReport(data);
+  assert.equal(report.series.find((series) => series.id === "read_write").label, "读写混合（读:写 = 7:2）");
+  assert.equal(JSON.stringify(data), before);
 });
 
 test("accepts empty and partial reports, excludes failed points", () => {
@@ -48,7 +55,7 @@ test("formats binary resources and submillisecond latency truthfully", () => {
 test("keeps resource layers distinct and complete", () => {
   const groups = environmentGroups(data);
   const lookup = (name, label) => groups.find((g) => g.name === name).rows.find((r) => r.label === label).value;
-  assert.equal(lookup("MySQL 容器与配置", "CPU 上限（配额）"), "4 CPU");
+  assert.equal(lookup("MySQL 容器与配置", "CPU 上限（配额）"), `${data.environment.container.mysqlCpuLimit} CPU`);
   assert.equal(lookup("压测端", "CPU 上限（配额）"), `${data.environment.container.loadGeneratorCpuLimit} CPU`);
   assert.equal(lookup("Docker VM", "VM 可见 CPU"), "10 CPU");
   assert.equal(lookup("宿主机", "物理内存"), "16 GiB");
@@ -58,7 +65,7 @@ test("keeps resource layers distinct and complete", () => {
 
 test("fourth series uses its actual environment without inventing historical binlog state", () => {
   const fixture = structuredClone(data);
-  fixture.series = fixture.series.filter((series) => series.scenario !== "update_index_async");
+  fixture.series = fixture.series.filter((series) => ["point_select", "update_index", "read_write"].includes(series.scenario));
   const source = fixture.series.find((series) => series.scenario === "update_index");
   source.label = "索引更新（同步刷盘）";
   source.environment = { mysql: { flushLogAtTransactionCommit: 1, syncBinlog: 1, logBinEnabled: true, flushLogAtTimeout: 1 } };
