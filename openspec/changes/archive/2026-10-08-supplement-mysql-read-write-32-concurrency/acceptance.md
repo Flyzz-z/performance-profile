@@ -27,4 +27,8 @@
 - 浏览器验收1440、1024、390、375宽度，含键盘、触摸、四指标、刻度、筛选、逐次记录、配置与失败恢复；32档表格和悬浮框只展示两个已测场景，其余曲线止于16。
 - 全部129个唯一资料链接HTTP 200；读写7:2及独立缓存/热点区块正常，不添加过程或风险横幅。
 - 实际桌面/移动截图已检查，保存在`/tmp/performance-profile-dashboard/`，可用`npm run test:site:browser`重新生成；最终页面`http://127.0.0.1:4173/mysql.html`。
-- 实施与数据提交通过Git保留；规范同步及归档另行提交。
+- 实施与数据提交：`44f0cc7`。规范同步及归档另行提交。
+
+## 规范同步与归档
+
+主规范`mysql-expanded-formal-results`同步3条MODIFIED与1条ADDED要求，保留未涉及的原要求和场景；Purpose限定基础正式实验及已批准增量。逐块比较与delta完全一致，`openspec validate --all --strict`全部通过。9/9任务完成后按用户授权归档至`2026-10-08-supplement-mysql-read-write-32-concurrency`，不删除正式证据或数据卷。
