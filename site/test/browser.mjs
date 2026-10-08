@@ -77,8 +77,10 @@ try {
   assert.equal(await page.locator("#memory-limit").textContent(), "6 GiB");
   assert.equal(await page.locator("#buffer-pool").textContent(), "3 GiB");
   assert.equal(await page.locator("#report-time").textContent(), formatDate(data.component.testedAt));
-  const highestConcurrency = Math.max(...data.protocol.concurrency);
+  const highestConcurrency = Math.max(...projectReport(data).concurrency);
   assert.equal(await page.locator("#selected-concurrency").textContent(), String(highestConcurrency));
+  assert.equal(await page.locator("#selected-body tr[data-scenario]").count(),
+    data.series.filter(s=>s.points.some(p=>p.concurrency===highestConcurrency)).length);
   for (const metric of ["qps", "tps", "p95Ms", "p99Ms"]) {
     const panel = page.locator(`[data-metric="${metric}"]`);
     for (const series of data.series) {
@@ -189,6 +191,7 @@ try {
   await noProcessNotice(page);
   assert.equal(await page.locator("#index-peak").textContent(), formatNumber(expectedPeak.qps));
   assert.ok((await page.locator("#index-peak-scope").textContent()).includes(`并发 ${expectedPeak.concurrency} · ${stabilityLabel(expectedPeak.stability)}`));
+  assert.equal(await page.locator("#index-tested-at").textContent(),formatDate(expectedPeak.testedAt));
   assert.ok((await page.locator("#index-resources").textContent()).includes(`${data.environment.container.mysqlCpuLimit} CPU / 6 GiB`));
   await noOverflow(page);
   await page.screenshot({ path: path.join(screenshotDirectory, "index-mobile.png"), fullPage: true });
@@ -242,6 +245,10 @@ try {
   assert.equal(await page.locator(".result-detail").first().locator("a.run-link").count(), data.stability[0].runs.length);
   await page.unroute("**/data/mysql.json");
   const four = structuredClone(data);
+  delete four.concurrencySupplement;
+  for(const series of four.series) series.points = series.points.filter(p=>p.concurrency!==32);
+  four.stability = four.stability.filter(row=>row.concurrency!==32);
+  four.rawResults = four.rawResults.filter(row=>row.concurrency!==32);
   delete four.hotUpdateExperiment;
   four.series = four.series.filter((s) => ["point_select","update_index","read_write"].includes(s.scenario));
   delete four.bufferPoolExperiment;
@@ -320,6 +327,33 @@ try {
   for(const width of [1440,390,375]) {
     await page.setViewportSize({width,height:900});await noOverflow(page);
     await page.screenshot({path:path.join(screenshotDirectory,`expanded-fixture-${width}.png`),fullPage:true});
+  }
+  await page.unroute("**/data/mysql.json");
+  const sparse = structuredClone(expanded);
+  for(const scenario of ["point_select","update_index"]) {
+    const series = sparse.series.find(s=>s.scenario===scenario);
+    series.points.push({...structuredClone(series.points.at(-1)),concurrency:32,
+      testedAt:"2026-10-08T09:00:00Z",runGroup:"fixture-supplement"});
+  }
+  await page.route("**/data/mysql.json",request=>request.fulfill({json:sparse}));
+  await ready(page);
+  assert.equal(await page.locator("#selected-concurrency").textContent(),"32");
+  assert.deepEqual(await page.locator("#selected-body tr").evaluateAll(nodes=>nodes.map(n=>n.dataset.scenario)),
+    ["point_select","update_index"]);
+  assert.equal(await page.locator('.chart-dot[data-concurrency="32"]').count(),8);
+  await page.locator('[data-metric="qps"] .chart-dot[data-scenario="point_select"][data-concurrency="32"]').hover();
+  assert.equal(await page.locator(".chart-tooltip > div").count(),2);
+  assert.ok(!(await page.locator(".chart-tooltip").textContent()).includes("未记录"));
+  await page.locator("h1").hover();
+  const independentCache = await page.locator("#buffer-pool-results").textContent();
+  await page.locator('input[value="point_select"]').uncheck();
+  await page.locator('input[value="update_index"]').uncheck();
+  assert.ok((await page.locator("#selected-body").textContent()).includes("该并发无已测结果"));
+  assert.equal(await page.locator("#buffer-pool-results").textContent(),independentCache);
+  for(const checkbox of await page.locator("#scenario-controls input").all()) await checkbox.check();
+  for(const width of [1440,375]) {
+    await page.setViewportSize({width,height:900});await noOverflow(page);
+    await page.screenshot({path:path.join(screenshotDirectory,`sparse-fixture-${width}.png`),fullPage:true});
   }
   await page.unroute("**/data/mysql.json");
   const hotFixture = structuredClone(data);

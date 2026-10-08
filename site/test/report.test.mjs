@@ -11,7 +11,8 @@ const data = JSON.parse(readFileSync(new URL("../data/mysql.json", import.meta.u
 test("projects all report combinations without changing source values", () => {
   const before = JSON.stringify(data);
   const report = projectReport(data);
-  assert.deepEqual(report.concurrency, data.protocol.concurrency);
+  assert.deepEqual(report.concurrency, [...new Set([...data.protocol.concurrency,
+    ...data.series.flatMap(s => s.points.map(p => p.concurrency))])].sort((a,b) => a-b));
   assert.equal(report.series.flatMap((s) => s.points).length, data.series.flatMap((s) => s.points).length);
   for (const series of report.series) {
     for (const point of series.points) {
@@ -37,7 +38,7 @@ test("accepts empty and partial reports, excludes failed points", () => {
   partial.series[0].points[1].status = "failed";
   const report = projectReport(partial);
   assert.equal(report.series[0].points[0].qps, null);
-  assert.equal(report.series[0].points.length, 2);
+  assert.equal(report.series[0].points.length, data.series[0].points.length - 1);
   assert.throws(() => projectReport({ schemaVersion: 2 }), /格式/);
 });
 
@@ -122,4 +123,18 @@ test("raw paths are scoped to benchmark artifacts", () => {
   assert.match(artifactUrl(data.rawResults[0].rawOutputPath), /^\.\/artifacts\/mysql\/raw\//);
   assert.equal(artifactUrl("benchmarks/mysql/results/../.env"), null);
   assert.equal(artifactUrl("https://unknown.example/"), null);
+});
+
+test("sparse supplement preserves actual ranges and point-level peak dates", () => {
+  const fixture = structuredClone(data);
+  for (const series of fixture.series) series.points = series.points.filter(p => p.concurrency !== 32);
+  fixture.series[0].points.push({ concurrency:32,qps:1e9,tps:1e9,p95Ms:1,p99Ms:1,
+    testedAt:"2026-10-08T09:00:00Z",sourceRole:"formal" });
+  const report = projectReport(fixture);
+  assert.deepEqual(report.concurrency,[1,8,16,32]);
+  assert.equal(report.series.filter(s=>s.points.some(p=>p.concurrency===32)).length,1);
+  assert.equal(peakPoint(report).testedAt,"2026-10-08T09:00:00Z");
+  assert.equal(peakPoint(report).sourceRole,"formal");
+  assert.deepEqual(chartSegments(report.series[1].points,report.concurrency,"tps",
+    createAxis(report.series[1].points.map(p=>p.tps))).flat().map(p=>p.concurrency),[1,8,16]);
 });

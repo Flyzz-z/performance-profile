@@ -31,7 +31,7 @@ function renderIndex() {
   const peak = peakPoint(report);
   setText("index-peak", peak ? formatNumber(peak.qps) : "暂无有效数据");
   setText("index-peak-scope", peak ? `${peak.label} · 并发 ${peak.concurrency} · ${stabilityLabel(peak.stability)}` : "未记录指标");
-  setText("index-tested-at", formatDate(data.component.testedAt));
+  setText("index-tested-at", formatDate(peak?.testedAt ?? data.component.testedAt));
 }
 
 function renderEnvironment() {
@@ -114,15 +114,16 @@ function renderDashboard() {
     chart.update({ series: visibleSeries, concurrency: report.concurrency, selectedConcurrency: state.selectedConcurrency, mode });
   });
   setText("selected-concurrency", state.selectedConcurrency ?? MISSING);
-  document.getElementById("selected-body").innerHTML = visibleSeries.length
-    ? visibleSeries.map((series) => {
+  const measuredSeries = visibleSeries.filter(series => series.points.some(p => p.concurrency === state.selectedConcurrency));
+  document.getElementById("selected-body").innerHTML = measuredSeries.length
+    ? measuredSeries.map((series) => {
       const point = series.points.find((p) => p.concurrency === state.selectedConcurrency);
       return `<tr data-scenario="${series.id}"><td>${scenarioName(series)}</td><td>${formatNumber(point?.qps)}</td><td>${formatNumber(point?.tps)}</td>
         <td>${formatLatency(point?.p95Ms)}</td><td>${formatLatency(point?.p99Ms)}</td><td>${formatNumber(point?.queriesPerTransaction)}</td>
         ${report.data.formalExperiment?.purpose === "formal" ? `<td>${quotaPercent(point?.resources?.mysql?.meanQuotaPercent)}</td><td>${quotaPercent(point?.resources?.loadgen?.meanQuotaPercent)}</td>` : ""}
         <td>${badge(point?.stability)}</td></tr>`;
     }).join("")
-    : `<tr><td colspan="${report.data.formalExperiment?.purpose === "formal" ? 9 : 7}">未选择场景</td></tr>`;
+    : `<tr><td colspan="${report.data.formalExperiment?.purpose === "formal" ? 9 : 7}">${visibleSeries.length ? "该并发无已测结果" : "未选择场景"}</td></tr>`;
 }
 
 function renderBufferPool() {

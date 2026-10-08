@@ -16,6 +16,21 @@
 - 协议：预热 30 秒，正式运行 2 次、每次 90 秒；TPS 或 p99 差异超过 30% 时补跑第 3 次
 - 最终正式实验：6 个场景 × 并发 1/8/16，另含独立 Buffer Pool 1/2 GiB 两组实验及16并发热点更新实验；主测试与缓存测量约 91.5-133 分钟，热点实验另需3分钟，准备与重启时间另计
 
+## 两场景32并发补测
+
+```bash
+npm run mysql:supplement -- --dry-run
+npm run mysql:supplement -- --verification --no-publish
+caffeinate -i npm run mysql:supplement -- --group=supplement32-<唯一标识> --no-publish
+npm run mysql:supplement -- --publish-summary=benchmarks/mysql/results/supplement32-<唯一标识>-supplement.json
+```
+
+只补主键点查和同步索引更新的32并发，不重测16并发，不扩展其余场景。每场景独立准备10表各100000行，均匀随机访问全部ID；保留自增主键和k二级索引。ARM64、MySQL 8 CPU/6 GiB、sysbench 4 CPU/1 GiB、3 GiB缓存、binlog ON及redo/sync_binlog/timeout 1/1/1与基础实验一致，核验真实配额和镜像。预热30秒、两次90秒测量，TPS或p99差异超过30%补第三次，两次取均值、三次取中位数，保留全部有效观测和原稳定性口径。两场景净运行7分钟，均补第三次时10分钟，准备和启动另计。
+
+5秒资源证据必须满足至少72秒覆盖、最多100秒跨度、最大10秒间隔。支持可捕获中断清理自身容器和日志回读恢复；不删除数据卷。运行期间不得叠加其他负载或合盖。原始证据完整、无错误且恢复成功才原子追加两点和自身日期/环境；原1/8/16、其他场景、缓存和热点实验及日期不变。旧报告备份在`results/verification/report-backups/`，短验证不能发布。原完整18组合和通用partial校验不放宽。
+
+32与既有16分别测量，只观察相同配置下的扩展趋势，不能声称同批控制对照或凭平台期定位唯一瓶颈；本补测不增加新的页面总结。重复使用结果组或已有32正式点会被拒绝，不覆盖已发布数据。
+
 ## 独立热点更新实验
 
 ```bash

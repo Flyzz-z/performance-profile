@@ -150,6 +150,18 @@ export function environmentGroups(data) {
       ]) });
     }
   }
+  if (data.concurrencySupplement) {
+    const supplement = data.concurrencySupplement;
+    const c = supplement.environment?.container ?? {};
+    groups.push({ name: "32 并发实验", rows: rows([
+      ["场景", "主键点查 / 同步索引更新"], ["结果组", supplement.runGroup],
+      ["测试时间（UTC+8）", formatDate(supplement.testedAt)],
+      ["MySQL 配额", `${cpu(c.mysqlCpuLimit)} / ${formatMemory(c.mysqlMemoryLimit)}`],
+      ["压测端配额", `${cpu(c.loadGeneratorCpuLimit)} / ${formatMemory(c.loadGeneratorMemoryLimit)}`],
+      ["Buffer Pool", formatMemory(supplement.environment?.mysql?.bufferPoolBytes)],
+      ["平台", c.imagePlatform],
+    ]) });
+  }
   return groups;
 }
 
@@ -183,7 +195,8 @@ export function projectReport(data) {
 
 export function peakPoint(report) {
   return report.series.flatMap((series) => series.points.map((point) => ({
-    ...point, label: series.label, testedAt: series.testedAt, sourceRole: series.sourceRole,
+    ...point, label: series.label, testedAt: point.testedAt ?? series.testedAt,
+    sourceRole: point.sourceRole ?? series.sourceRole,
   })))
     .filter((point) => validMetric(point.qps)).sort((a, b) => b.qps - a.qps)[0] ?? null;
 }

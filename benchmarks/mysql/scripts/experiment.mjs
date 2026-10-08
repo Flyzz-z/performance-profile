@@ -27,7 +27,10 @@ export function validateDataset(dataset, secondary = true, cache = false) {
   }
 }
 
-export function validateExperimentRun(run, bufferBytes = 3221225472) {
+export function validateExperimentRun(run, bufferBytes = 3221225472, reader = {
+  json: file => readJson(path.resolve(PATHS.projectRoot, file)),
+  text: file => readFileSync(path.resolve(PATHS.projectRoot, file), "utf8"),
+}) {
   assert(run.purpose === "formal" && run.status === "passed" && run.restorationVerified === true && run.metrics?.errors === 0, "Invalid formal run or restoration");
   const c = run.environment?.container;
   assert(c?.mysqlCpuLimit === 8 && c.loadGeneratorCpuLimit === 4 && c.mysqlMemoryLimit === "6g" && c.loadGeneratorMemoryLimit === "1g" && c.platform === "linux/arm64", "Formal resource configuration mismatch");
@@ -35,9 +38,9 @@ export function validateExperimentRun(run, bufferBytes = 3221225472) {
   assertLoggingMatch(run.environment.mysql, loggingMode(run.scenario));
   assert(run.protocol.warmupSeconds === 30 && run.protocol.repeatCount === 2 && run.protocol.adaptiveThresholdPercent === 30, "Formal protocol mismatch");
   assert(run.protocol.durationSeconds === (run.kind === "warmup" ? 30 : 90), "Formal duration mismatch");
-  const rawMetrics = parseSysbenchOutput(readFileSync(path.resolve(PATHS.projectRoot, run.rawOutputPath), "utf8"));
+  const rawMetrics = parseSysbenchOutput(reader.text(run.rawOutputPath));
   assert(JSON.stringify(rawMetrics) === JSON.stringify(run.metrics), "Raw metrics mismatch");
-  const dataset = readJson(path.resolve(PATHS.projectRoot, run.datasetPath));
+  const dataset = reader.json(run.datasetPath);
   validateDataset(dataset, run.scenario !== "update_no_secondary_index", bufferBytes !== 3221225472);
   assert(run.command.includes(`--table-size=${dataset.tableSize}`) && run.command.includes("--rand-type=uniform"), "Query ID range mismatch");
   assert(run.command.includes(`/usr/share/sysbench/${SCENARIOS[run.scenario].script}`), "Unexpected workload SQL script");
@@ -50,7 +53,7 @@ export function validateExperimentRun(run, bufferBytes = 3221225472) {
       && counts.afterWarmup - counts.beforeWarmup === counts.warmupEvents, "INSERT warmup evidence mismatch");
   }
   if (run.kind === "measured") {
-    const capture = readJson(path.resolve(PATHS.projectRoot, run.resources.rawPath));
+    const capture = reader.json(run.resources.rawPath);
     const limits = capture.summary.limits;
     assert(limits.mysql.cpus === 8 && limits.loadgen.cpus === 4 && limits.mysql.memoryBytes === 6 * 1024 ** 3 && limits.loadgen.memoryBytes === 1024 ** 3, "Sampling quota mismatch");
     const verified = summarizeResources(capture.samples, limits, 90, capture.summary.errors, capture.intervalMs);

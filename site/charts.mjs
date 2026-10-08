@@ -46,7 +46,8 @@ export class MetricChart {
     tooltip.className = "chart-tooltip";
     tooltip.setAttribute("role", "tooltip");
     const formatter = this.metric.key.startsWith("p") ? formatLatency : formatNumber;
-    tooltip.innerHTML = `<h4>并发 ${level} · ${escape(this.metric.symbol)}</h4>${this.state.series.map((series) => {
+    const measuredSeries = this.state.series.filter(series => series.points.some(p => p.concurrency === level));
+    tooltip.innerHTML = `<h4>并发 ${level} · ${escape(this.metric.symbol)}</h4>${measuredSeries.map((series) => {
       const point = series.points.find((p) => p.concurrency === level);
       return `<div><span class="scenario-name"><i class="swatch" style="background:${series.color}"></i>${escape(series.label)}</span>
         <span>${escape(formatter(point?.[this.metric.key]))}${point?.stability === "unstable"
