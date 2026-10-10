@@ -21,6 +21,10 @@
           </div>
           <a class="subtle-link" href="#environment">环境明细</a>
         </section>
+        <section class="experiment-conclusions" id="experiment-conclusions" aria-labelledby="conclusions-title" hidden>
+          <div class="section-heading"><h2 id="conclusions-title">实验结论</h2><span id="conclusion-scope" class="muted"></span></div>
+          <div id="conclusion-grid" class="conclusion-grid"></div>
+        </section>
         <section class="resources" aria-label="MySQL 容器资源限制">
           <div><span>MySQL 容器 CPU 上限</span><strong id="cpu-limit"></strong><small>配置配额，非独占物理核</small></div>
           <div><span>MySQL 容器内存上限</span><strong id="memory-limit"></strong><small>容器限制，非实际使用量</small></div>

@@ -70,6 +70,14 @@ try {
   page.on("pageerror", (error) => errors.push(error.message));
   await ready(page);
   await noProcessNotice(page);
+  assert.equal(await page.locator("#experiment-conclusions").isVisible(), true);
+  assert.equal(await page.locator(".conclusion-item").count(), 4);
+  assert.equal(await page.locator('[data-conclusion="read-write"] strong').textContent(), "约 140 倍");
+  assert.ok((await page.locator('[data-conclusion="read-write"]').textContent()).includes("0.22 / 43.39 ms"));
+  assert.equal(await page.locator('[data-conclusion="write-policy"] strong').textContent(), "5.4 倍");
+  assert.equal(await page.locator('[data-conclusion="buffer-pool"] strong').textContent(), "+15.5%");
+  assert.equal(await page.locator('[data-conclusion="hot-update"] strong').textContent(), "-27.3%");
+  const conclusionText = await page.locator("#experiment-conclusions").textContent();
   assert.equal(await page.locator(".chart-panel").count(), 4);
   assert.equal(await page.locator(".chart-dot").count(), data.series.flatMap((s) => s.points).length * 4);
   assert.equal(await page.locator("#comparison-grid").count(), 0);
@@ -91,6 +99,7 @@ try {
     }
   }
   await page.getByRole("button", { name: "并发 8", exact: true }).click();
+  assert.equal(await page.locator("#experiment-conclusions").textContent(), conclusionText);
   assert.equal(await page.locator("#selected-concurrency").textContent(), "8");
   const read = page.locator('#selected-body tr[data-scenario="point_select"]');
   assert.ok((await read.textContent()).includes(formatNumber(read8.qps)));
@@ -163,6 +172,11 @@ try {
     await page.setViewportSize({ width, height });
     await page.waitForTimeout(150);
     await noOverflow(page);
+    assert.equal(await page.locator(".conclusion-item").evaluateAll(nodes =>
+      nodes.some(node => node.scrollWidth > node.clientWidth + 1)), false, "summary text must fit");
+    if (width === 1440 || width === 375) {
+      await page.locator("#experiment-conclusions").screenshot({ path: path.join(screenshotDirectory, `conclusions-${width}.png`) });
+    }
     const geometry = await page.locator(".chart").evaluateAll((nodes) => nodes.map((node) => {
       const svg = node.querySelector("svg");
       return { clientWidth: node.clientWidth, svgWidth: svg.getBoundingClientRect().width };

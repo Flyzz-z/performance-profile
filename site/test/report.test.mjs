@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   projectReport, environmentGroups, createAxis, chartSegments, formatLatency,
-  formatMemory, parseRuntime, formatDate, peakPoint, artifactUrl,
+  formatMemory, parseRuntime, formatDate, peakPoint, artifactUrl, experimentConclusions,
 } from "../report.mjs";
 
 const data = JSON.parse(readFileSync(new URL("../data/mysql.json", import.meta.url)));
@@ -137,4 +137,53 @@ test("sparse supplement preserves actual ranges and point-level peak dates", () 
   assert.equal(peakPoint(report).sourceRole,"formal");
   assert.deepEqual(chartSegments(report.series[1].points,report.concurrency,"tps",
     createAxis(report.series[1].points.map(p=>p.tps))).flat().map(p=>p.concurrency),[1,8,16]);
+});
+
+test("four conclusions derive approved 16-thread comparisons without mutating results", () => {
+  const before = JSON.stringify(data);
+  const conclusions = experimentConclusions(data);
+  assert.deepEqual(conclusions.map(c => c.id), ["read-write", "write-policy", "buffer-pool", "hot-update"]);
+  assert.equal(conclusions[0].headline, "约 140 倍");
+  assert.deepEqual(conclusions[0].metrics, [["主键点查", "291,532 TPS"],
+    ["同步索引更新", "2,087 TPS"], ["p99（查 / 写）", "0.22 / 43.39 ms"]]);
+  assert.equal(conclusions[1].headline, "5.4 倍");
+  assert.match(conclusions[1].note, /\+38.8%/);
+  assert.equal(conclusions[2].headline, "+15.5%");
+  assert.equal(conclusions[2].metrics[0][1], "0.47 → 0.26 ms");
+  assert.equal(conclusions[3].headline, "-27.3%");
+  assert.equal(conclusions[3].metrics[1][1], "0.03 → 809.57");
+  assert.deepEqual(conclusions[2].stability.map(s => s.value), ["acceptable", "unstable"]);
+  assert.match(conclusions[2].scope, /独立实验/);
+  assert.match(conclusions[3].scope, /每组 1 次/);
+  const fixture = structuredClone(data);
+  fixture.series[0].points.find(p => p.concurrency === 32).tps = 1e9;
+  assert.deepEqual(experimentConclusions(fixture), conclusions);
+  assert.equal(JSON.stringify(data), before);
+});
+
+test("missing, failed or verification sources cannot produce a conclusion", () => {
+  assert.deepEqual(experimentConclusions({}), []);
+  assert.deepEqual(experimentConclusions({ ...data, formalExperiment: { purpose: "verification" } }), []);
+  for (const mutate of [p => { p.tps = 0; }, p => { p.tps = null; }, p => { p.status = "failed"; },
+    p => { p.sourceRole = "verification"; }, p => { p.p99Ms = null; }]) {
+    const fixture = structuredClone(data);
+    mutate(fixture.series[0].points.find(p => p.concurrency === 16));
+    assert.ok(!experimentConclusions(fixture).some(c => c.id === "read-write"));
+  }
+  const fixture = structuredClone(data);
+  fixture.bufferPoolExperiment.purpose = "verification";
+  fixture.hotUpdateExperiment.purpose = "verification";
+  assert.deepEqual(experimentConclusions(fixture).map(c => c.id), ["read-write", "write-policy"]);
+  delete fixture.bufferPoolExperiment;
+  delete fixture.hotUpdateExperiment;
+  assert.equal(experimentConclusions(fixture).length, 2);
+});
+
+test("conclusion percentages follow changed measurements instead of assuming improvements", () => {
+  const fixture = structuredClone(data);
+  fixture.bufferPoolExperiment.groups[1].selected.qps = fixture.bufferPoolExperiment.groups[0].selected.qps / 2;
+  fixture.hotUpdateExperiment.groups[1].metrics.tps = fixture.hotUpdateExperiment.groups[0].metrics.tps * 2;
+  const conclusions = experimentConclusions(fixture);
+  assert.equal(conclusions.find(c => c.id === "buffer-pool").headline, "-50%");
+  assert.equal(conclusions.find(c => c.id === "hot-update").headline, "+100%");
 });
