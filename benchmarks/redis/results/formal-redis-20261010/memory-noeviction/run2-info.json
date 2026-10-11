@@ -1,0 +1,52 @@
+{
+  "before": {
+    "timeMs": 1791627599901,
+    "redisVersion": "7.4.11",
+    "totalCommands": 9120095,
+    "usedCpuSys": 32.073036,
+    "usedCpuUser": 20.16764,
+    "keyspaceHits": 3673485,
+    "keyspaceMisses": 4652196,
+    "evictedKeys": 0,
+    "errorReplies": 1930729,
+    "rdbSaves": 0,
+    "aofRewrites": 0,
+    "latestForkUsec": 0,
+    "rdbLastCowSize": 0,
+    "usedMemoryBytes": 1073437376,
+    "memFragmentationRatio": 1.01,
+    "connectedClients": 1,
+    "ioThreadsActive": 0,
+    "oomRejections": 1930729,
+    "errorstats": {
+      "OOM": 1930729
+    },
+    "bgsaveInProgress": false,
+    "aofRewriteInProgress": false
+  },
+  "after": {
+    "timeMs": 1791627660659,
+    "redisVersion": "7.4.11",
+    "totalCommands": 13881400,
+    "usedCpuSys": 51.769025,
+    "usedCpuUser": 33.96302,
+    "keyspaceHits": 5774292,
+    "keyspaceMisses": 7312670,
+    "evictedKeys": 0,
+    "errorReplies": 2459765,
+    "rdbSaves": 0,
+    "aofRewrites": 0,
+    "latestForkUsec": 0,
+    "rdbLastCowSize": 0,
+    "usedMemoryBytes": 1073437768,
+    "memFragmentationRatio": 1.01,
+    "connectedClients": 1,
+    "ioThreadsActive": 0,
+    "oomRejections": 2459765,
+    "errorstats": {
+      "OOM": 2459765
+    },
+    "bgsaveInProgress": false,
+    "aofRewriteInProgress": false
+  }
+}

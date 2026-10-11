@@ -4,6 +4,7 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveSitePath } from "./artifact-routes.mjs";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT ?? 4173);
@@ -23,18 +24,10 @@ const server = createServer((request, response) => {
   const requestedPath = decodeURIComponent(url.pathname);
   const relativePath =
     requestedPath === "/" ? "index.html" : requestedPath.replace(/^\/+/, "");
-  const artifactPrefix = "artifacts/mysql/";
-  const servingArtifact = relativePath.startsWith(artifactPrefix);
-  const fileRoot = servingArtifact
-    ? path.resolve(root, "../benchmarks/mysql/results")
-    : root;
-  const resolvedRelativePath = servingArtifact
-    ? relativePath.slice(artifactPrefix.length)
-    : relativePath;
-  const filePath = path.resolve(fileRoot, resolvedRelativePath);
+  const filePath = resolveSitePath(root, relativePath);
 
   if (
-    !filePath.startsWith(fileRoot) ||
+    !filePath ||
     !existsSync(filePath) ||
     statSync(filePath).isDirectory()
   ) {

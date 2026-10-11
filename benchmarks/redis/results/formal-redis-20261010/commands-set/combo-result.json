@@ -1,0 +1,260 @@
+{
+  "combo": {
+    "id": "commands-set",
+    "group": "commands",
+    "label": "set",
+    "connections": 16,
+    "pipeline": 1,
+    "redisProfile": "baseline",
+    "background": null,
+    "reads": false,
+    "variant": {
+      "command": "set"
+    },
+    "dataset": {
+      "kind": "strings",
+      "keys": 1000000,
+      "valueBytes": 256
+    },
+    "workload": {
+      "type": "ratio",
+      "ratio": "1:0",
+      "keyMin": 1,
+      "keyMax": 1000000,
+      "keyPattern": "R:R",
+      "valueBytes": 256
+    }
+  },
+  "preparation": {
+    "loadSeconds": 3.202,
+    "dbSize": 1000000,
+    "expectedDbSize": 1000000,
+    "usedMemoryBytes": 385632576,
+    "evictedKeysAfterLoad": 0,
+    "dataset": {
+      "kind": "strings",
+      "keys": 1000000,
+      "valueBytes": 256
+    },
+    "profile": "baseline",
+    "resultsMount": "/workspace/results"
+  },
+  "runs": [
+    {
+      "kind": "measured",
+      "repeat": 1,
+      "startedAt": "2026-10-10T16:56:52.549Z",
+      "finishedAt": "2026-10-10T16:57:53.224Z",
+      "exitCode": 0,
+      "arguments": [
+        "memtier_benchmark",
+        "--server=redis",
+        "--port=6379",
+        "--protocol=redis",
+        "--threads=2",
+        "--clients=8",
+        "--pipeline=1",
+        "--test-time=60",
+        "--hide-histogram",
+        "--print-percentiles=50,95,99,99.9,99.99",
+        "--json-out-file=/workspace/results/formal-redis-20261010/commands-set/run1.json",
+        "--distinct-client-seed",
+        "--data-size=256",
+        "--key-minimum=1",
+        "--key-maximum=1000000",
+        "--ratio=1:0",
+        "--key-pattern=R:R"
+      ],
+      "rawOutputPath": "formal-redis-20261010/commands-set/run1.txt",
+      "memtierJsonPath": "formal-redis-20261010/commands-set/run1.json",
+      "infoPath": "formal-redis-20261010/commands-set/run1-info.json",
+      "resourcePath": "formal-redis-20261010/commands-set/run1-resources.json",
+      "background": null,
+      "slowlogEntries": 0,
+      "metrics": {
+        "opsPerSec": 165822.02,
+        "count": 9950744,
+        "hitsPerSec": 0,
+        "missesPerSec": 0,
+        "kbPerSec": 49048.48,
+        "averageLatencyMs": 0.09610376872322311,
+        "p50Ms": 0.103,
+        "p95Ms": 0.151,
+        "p99Ms": 0.239,
+        "p999Ms": 2.335,
+        "p9999Ms": 3.967,
+        "maxMs": 14.631
+      },
+      "redis": {
+        "windowSeconds": 60.669,
+        "commands": 9950766,
+        "commandsPerSec": 164017.30702665282,
+        "redisCpuSeconds": 40.242193,
+        "redisCpuPercent": 66.3307339827589,
+        "redisCpuQuotaPercent": 33.16536699137945,
+        "keyspaceHits": 0,
+        "keyspaceMisses": 0,
+        "hitRatioPercent": null,
+        "evictedKeys": 0,
+        "evictedPerSec": 0,
+        "errorReplies": 0,
+        "oomRejections": 0,
+        "rdbSaves": 0,
+        "aofRewrites": 0,
+        "latestForkUsec": null,
+        "rdbLastCowSize": null,
+        "usedMemoryBytes": 385632392,
+        "memFragmentationRatio": 1.02
+      },
+      "resources": {
+        "valid": true,
+        "status": "complete",
+        "sampleCount": 13,
+        "coverageSeconds": 60.127,
+        "expectedSeconds": 60,
+        "limits": {
+          "redis": {
+            "cpus": 2,
+            "memoryBytes": 4294967296
+          },
+          "loadgen": {
+            "cpus": 4,
+            "memoryBytes": 1073741824
+          }
+        },
+        "redis": {
+          "coverageSeconds": 60.127,
+          "maxGapSeconds": 5.053,
+          "meanCpuPercent": 67.2779699635771,
+          "meanQuotaPercent": 33.63898498178855,
+          "maxCpuPercent": 73.48275449101797,
+          "throttledPeriods": 0,
+          "periods": 602,
+          "throttledTimeSeconds": 0
+        },
+        "loadgen": {
+          "coverageSeconds": 60.128,
+          "maxGapSeconds": 5.046,
+          "meanCpuPercent": 73.46436768227781,
+          "meanQuotaPercent": 18.366091920569453,
+          "maxCpuPercent": 84.02776447105789,
+          "throttledPeriods": 0,
+          "periods": 600,
+          "throttledTimeSeconds": 0
+        },
+        "errors": [],
+        "loadgenBound": false,
+        "note": "CPU% is relative to one CPU; quota% divides by the CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock percentage."
+      },
+      "problems": []
+    },
+    {
+      "kind": "measured",
+      "repeat": 2,
+      "startedAt": "2026-10-10T16:57:53.546Z",
+      "finishedAt": "2026-10-10T16:58:54.165Z",
+      "exitCode": 0,
+      "arguments": [
+        "memtier_benchmark",
+        "--server=redis",
+        "--port=6379",
+        "--protocol=redis",
+        "--threads=2",
+        "--clients=8",
+        "--pipeline=1",
+        "--test-time=60",
+        "--hide-histogram",
+        "--print-percentiles=50,95,99,99.9,99.99",
+        "--json-out-file=/workspace/results/formal-redis-20261010/commands-set/run2.json",
+        "--distinct-client-seed",
+        "--data-size=256",
+        "--key-minimum=1",
+        "--key-maximum=1000000",
+        "--ratio=1:0",
+        "--key-pattern=R:R"
+      ],
+      "rawOutputPath": "formal-redis-20261010/commands-set/run2.txt",
+      "memtierJsonPath": "formal-redis-20261010/commands-set/run2.json",
+      "infoPath": "formal-redis-20261010/commands-set/run2-info.json",
+      "resourcePath": "formal-redis-20261010/commands-set/run2-resources.json",
+      "background": null,
+      "slowlogEntries": 0,
+      "metrics": {
+        "opsPerSec": 169079.08,
+        "count": 10146060,
+        "hitsPerSec": 0,
+        "missesPerSec": 0,
+        "kbPerSec": 50011.88,
+        "averageLatencyMs": 0.09424712647076797,
+        "p50Ms": 0.095,
+        "p95Ms": 0.151,
+        "p99Ms": 0.319,
+        "p999Ms": 2.519,
+        "p9999Ms": 4.031,
+        "maxMs": 13.991
+      },
+      "redis": {
+        "windowSeconds": 60.61,
+        "commands": 10146082,
+        "commandsPerSec": 167399.47203431776,
+        "redisCpuSeconds": 41.62619400000001,
+        "redisCpuPercent": 68.67875598086127,
+        "redisCpuQuotaPercent": 34.339377990430634,
+        "keyspaceHits": 0,
+        "keyspaceMisses": 0,
+        "hitRatioPercent": null,
+        "evictedKeys": 0,
+        "evictedPerSec": 0,
+        "errorReplies": 0,
+        "oomRejections": 0,
+        "rdbSaves": 0,
+        "aofRewrites": 0,
+        "latestForkUsec": null,
+        "rdbLastCowSize": null,
+        "usedMemoryBytes": 385632392,
+        "memFragmentationRatio": 1.02
+      },
+      "resources": {
+        "valid": true,
+        "status": "complete",
+        "sampleCount": 13,
+        "coverageSeconds": 60.101,
+        "expectedSeconds": 60,
+        "limits": {
+          "redis": {
+            "cpus": 2,
+            "memoryBytes": 4294967296
+          },
+          "loadgen": {
+            "cpus": 4,
+            "memoryBytes": 1073741824
+          }
+        },
+        "redis": {
+          "coverageSeconds": 60.101,
+          "maxGapSeconds": 5.018,
+          "meanCpuPercent": 69.63221077852282,
+          "meanQuotaPercent": 34.81610538926141,
+          "maxCpuPercent": 72.59362891951268,
+          "throttledPeriods": 0,
+          "periods": 601,
+          "throttledTimeSeconds": 0
+        },
+        "loadgen": {
+          "coverageSeconds": 60.101,
+          "maxGapSeconds": 5.023,
+          "meanCpuPercent": 77.65289928620156,
+          "meanQuotaPercent": 19.41322482155039,
+          "maxCpuPercent": 81.07833033752746,
+          "throttledPeriods": 0,
+          "periods": 600,
+          "throttledTimeSeconds": 0
+        },
+        "errors": [],
+        "loadgenBound": false,
+        "note": "CPU% is relative to one CPU; quota% divides by the CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock percentage."
+      },
+      "problems": []
+    }
+  ]
+}

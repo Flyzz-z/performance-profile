@@ -1,0 +1,265 @@
+{
+  "combo": {
+    "id": "commands-zincrby",
+    "group": "commands",
+    "label": "zincrby",
+    "connections": 16,
+    "pipeline": 1,
+    "redisProfile": "baseline",
+    "background": null,
+    "reads": false,
+    "variant": {
+      "command": "zincrby"
+    },
+    "dataset": {
+      "kind": "zsets",
+      "keys": 1000,
+      "members": 1000
+    },
+    "workload": {
+      "type": "command",
+      "commands": [
+        {
+          "template": "ZINCRBY __key__ 1 m1",
+          "ratio": 1
+        }
+      ],
+      "keyMin": 1,
+      "keyMax": 1000,
+      "keyPattern": "R",
+      "valueBytes": 0
+    }
+  },
+  "preparation": {
+    "loadSeconds": 1.435,
+    "dbSize": 1000,
+    "expectedDbSize": 1000,
+    "usedMemoryBytes": 88571320,
+    "evictedKeysAfterLoad": 0,
+    "dataset": {
+      "kind": "zsets",
+      "keys": 1000,
+      "members": 1000
+    },
+    "profile": "baseline",
+    "resultsMount": "/workspace/results"
+  },
+  "runs": [
+    {
+      "kind": "measured",
+      "repeat": 1,
+      "startedAt": "2026-10-10T17:09:43.027Z",
+      "finishedAt": "2026-10-10T17:10:43.720Z",
+      "exitCode": 0,
+      "arguments": [
+        "memtier_benchmark",
+        "--server=redis",
+        "--port=6379",
+        "--protocol=redis",
+        "--threads=2",
+        "--clients=8",
+        "--pipeline=1",
+        "--test-time=60",
+        "--hide-histogram",
+        "--print-percentiles=50,95,99,99.9,99.99",
+        "--json-out-file=/workspace/results/formal-redis-20261010/commands-zincrby/run1.json",
+        "--distinct-client-seed",
+        "--key-minimum=1",
+        "--key-maximum=1000",
+        "--command=ZINCRBY __key__ 1 m1",
+        "--command-ratio=1",
+        "--command-key-pattern=R"
+      ],
+      "rawOutputPath": "formal-redis-20261010/commands-zincrby/run1.txt",
+      "memtierJsonPath": "formal-redis-20261010/commands-zincrby/run1.json",
+      "infoPath": "formal-redis-20261010/commands-zincrby/run1-info.json",
+      "resourcePath": "formal-redis-20261010/commands-zincrby/run1-resources.json",
+      "background": null,
+      "slowlogEntries": 0,
+      "metrics": {
+        "opsPerSec": 173830.58,
+        "count": 10432111,
+        "hitsPerSec": 0,
+        "missesPerSec": 0,
+        "kbPerSec": 20519.3,
+        "averageLatencyMs": 0.09158127247687453,
+        "p50Ms": 0.087,
+        "p95Ms": 0.151,
+        "p99Ms": 0.303,
+        "p999Ms": 2.519,
+        "p9999Ms": 5.079,
+        "maxMs": 22.863
+      },
+      "redis": {
+        "windowSeconds": 60.701,
+        "commands": 10432133,
+        "commandsPerSec": 171860.97428378445,
+        "redisCpuSeconds": 41.233518000000004,
+        "redisCpuPercent": 67.92889408741208,
+        "redisCpuQuotaPercent": 33.96444704370604,
+        "keyspaceHits": 0,
+        "keyspaceMisses": 0,
+        "hitRatioPercent": null,
+        "evictedKeys": 0,
+        "evictedPerSec": 0,
+        "errorReplies": 0,
+        "oomRejections": 0,
+        "rdbSaves": 0,
+        "aofRewrites": 0,
+        "latestForkUsec": null,
+        "rdbLastCowSize": null,
+        "usedMemoryBytes": 88595304,
+        "memFragmentationRatio": 1.16
+      },
+      "resources": {
+        "valid": true,
+        "status": "complete",
+        "sampleCount": 13,
+        "coverageSeconds": 60.118,
+        "expectedSeconds": 60,
+        "limits": {
+          "redis": {
+            "cpus": 2,
+            "memoryBytes": 4294967296
+          },
+          "loadgen": {
+            "cpus": 4,
+            "memoryBytes": 1073741824
+          }
+        },
+        "redis": {
+          "coverageSeconds": 60.123,
+          "maxGapSeconds": 5.019,
+          "meanCpuPercent": 68.93672138782163,
+          "meanQuotaPercent": 34.46836069391082,
+          "maxCpuPercent": 78.68708325014973,
+          "throttledPeriods": 0,
+          "periods": 601,
+          "throttledTimeSeconds": 0
+        },
+        "loadgen": {
+          "coverageSeconds": 60.118,
+          "maxGapSeconds": 5.015,
+          "meanCpuPercent": 80.04643867061446,
+          "meanQuotaPercent": 20.011609667653616,
+          "maxCpuPercent": 92.7689744612929,
+          "throttledPeriods": 0,
+          "periods": 600,
+          "throttledTimeSeconds": 0
+        },
+        "errors": [],
+        "loadgenBound": false,
+        "note": "CPU% is relative to one CPU; quota% divides by the CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock percentage."
+      },
+      "problems": []
+    },
+    {
+      "kind": "measured",
+      "repeat": 2,
+      "startedAt": "2026-10-10T17:10:44.055Z",
+      "finishedAt": "2026-10-10T17:11:44.813Z",
+      "exitCode": 0,
+      "arguments": [
+        "memtier_benchmark",
+        "--server=redis",
+        "--port=6379",
+        "--protocol=redis",
+        "--threads=2",
+        "--clients=8",
+        "--pipeline=1",
+        "--test-time=60",
+        "--hide-histogram",
+        "--print-percentiles=50,95,99,99.9,99.99",
+        "--json-out-file=/workspace/results/formal-redis-20261010/commands-zincrby/run2.json",
+        "--distinct-client-seed",
+        "--key-minimum=1",
+        "--key-maximum=1000",
+        "--command=ZINCRBY __key__ 1 m1",
+        "--command-ratio=1",
+        "--command-key-pattern=R"
+      ],
+      "rawOutputPath": "formal-redis-20261010/commands-zincrby/run2.txt",
+      "memtierJsonPath": "formal-redis-20261010/commands-zincrby/run2.json",
+      "infoPath": "formal-redis-20261010/commands-zincrby/run2-info.json",
+      "resourcePath": "formal-redis-20261010/commands-zincrby/run2-resources.json",
+      "background": null,
+      "slowlogEntries": 0,
+      "metrics": {
+        "opsPerSec": 181603.73,
+        "count": 10898335,
+        "hitsPerSec": 0,
+        "missesPerSec": 0,
+        "kbPerSec": 21595.3,
+        "averageLatencyMs": 0.08764017622875421,
+        "p50Ms": 0.087,
+        "p95Ms": 0.151,
+        "p99Ms": 0.271,
+        "p999Ms": 2.615,
+        "p9999Ms": 4.543,
+        "maxMs": 20.527
+      },
+      "redis": {
+        "windowSeconds": 60.769,
+        "commands": 10898357,
+        "commandsPerSec": 179340.73293949218,
+        "redisCpuSeconds": 41.83515900000003,
+        "redisCpuPercent": 68.84292813770185,
+        "redisCpuQuotaPercent": 34.42146406885092,
+        "keyspaceHits": 0,
+        "keyspaceMisses": 0,
+        "hitRatioPercent": null,
+        "evictedKeys": 0,
+        "evictedPerSec": 0,
+        "errorReplies": 0,
+        "oomRejections": 0,
+        "rdbSaves": 0,
+        "aofRewrites": 0,
+        "latestForkUsec": null,
+        "rdbLastCowSize": null,
+        "usedMemoryBytes": 88595304,
+        "memFragmentationRatio": 1.16
+      },
+      "resources": {
+        "valid": true,
+        "status": "complete",
+        "sampleCount": 13,
+        "coverageSeconds": 60.058,
+        "expectedSeconds": 60,
+        "limits": {
+          "redis": {
+            "cpus": 2,
+            "memoryBytes": 4294967296
+          },
+          "loadgen": {
+            "cpus": 4,
+            "memoryBytes": 1073741824
+          }
+        },
+        "redis": {
+          "coverageSeconds": 60.058,
+          "maxGapSeconds": 5.008,
+          "meanCpuPercent": 69.90739118851776,
+          "meanQuotaPercent": 34.95369559425888,
+          "maxCpuPercent": 85.72687312687313,
+          "throttledPeriods": 0,
+          "periods": 600,
+          "throttledTimeSeconds": 0
+        },
+        "loadgen": {
+          "coverageSeconds": 60.058,
+          "maxGapSeconds": 5.008,
+          "meanCpuPercent": 82.99673648806154,
+          "meanQuotaPercent": 20.749184122015386,
+          "maxCpuPercent": 106.18253746253745,
+          "throttledPeriods": 0,
+          "periods": 599,
+          "throttledTimeSeconds": 0
+        },
+        "errors": [],
+        "loadgenBound": false,
+        "note": "CPU% is relative to one CPU; quota% divides by the CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock percentage."
+      },
+      "problems": []
+    }
+  ]
+}

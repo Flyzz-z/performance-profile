@@ -1,0 +1,61 @@
+name: performance-profile-redis
+
+services:
+  redis:
+    image: ${REDIS_IMAGE}
+    platform: ${REDIS_PLATFORM}
+    restart: "no"
+    cpus: ${REDIS_CPUS}
+    mem_limit: ${REDIS_MEMORY}
+    environment:
+      REDIS_EXTRA_ARGS: ${REDIS_EXTRA_ARGS:-}
+    command:
+      - sh
+      - -c
+      - rm -rf /data/run && mkdir -p /data/run && exec redis-server /usr/local/etc/redis/redis.conf --dir /data/run $$REDIS_EXTRA_ARGS
+    volumes:
+      - redis_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - benchmark
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 ping | grep -q PONG"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  memtier:
+    image: ${MEMTIER_IMAGE}
+    platform: ${REDIS_PLATFORM}
+    profiles:
+      - tools
+    restart: "no"
+    cpus: ${LOADGEN_CPUS}
+    mem_limit: ${LOADGEN_MEMORY}
+    entrypoint: ["sleep", "infinity"]
+    working_dir: /workspace
+    volumes:
+      - ./results:/workspace/results
+    networks:
+      - benchmark
+
+  bgclient:
+    image: ${REDIS_IMAGE}
+    platform: ${REDIS_PLATFORM}
+    profiles:
+      - tools
+    restart: "no"
+    cpus: ${BGCLIENT_CPUS}
+    mem_limit: ${BGCLIENT_MEMORY}
+    entrypoint: ["sleep", "infinity"]
+    networks:
+      - benchmark
+
+volumes:
+  redis_data:
+    name: ${REDIS_VOLUME_NAME}
+
+networks:
+  benchmark:
+    name: ${REDIS_NETWORK_NAME}

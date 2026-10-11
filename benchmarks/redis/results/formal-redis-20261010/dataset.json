@@ -1,0 +1,711 @@
+{
+  "runGroup": "formal-redis-20261010",
+  "preparations": {
+    "commands-get": {
+      "loadSeconds": 2.912,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385533640,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-set": {
+      "loadSeconds": 3.202,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632576,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-incr": {
+      "loadSeconds": 2.259,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 49700384,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "counters",
+        "keys": 1000000
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-hget": {
+      "loadSeconds": 1.686,
+      "dbSize": 100000,
+      "expectedDbSize": 100000,
+      "usedMemoryBytes": 384788352,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "hashes",
+        "keys": 100000,
+        "fields": 10,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-hset": {
+      "loadSeconds": 1.644,
+      "dbSize": 100000,
+      "expectedDbSize": 100000,
+      "usedMemoryBytes": 384829640,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "hashes",
+        "keys": 100000,
+        "fields": 10,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-list_push_pop": {
+      "loadSeconds": 1.316,
+      "dbSize": 1000,
+      "expectedDbSize": 1000,
+      "usedMemoryBytes": 267584680,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "lists",
+        "keys": 1000,
+        "elements": 1000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-zincrby": {
+      "loadSeconds": 1.435,
+      "dbSize": 1000,
+      "expectedDbSize": 1000,
+      "usedMemoryBytes": 88571320,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "zsets",
+        "keys": 1000,
+        "members": 1000
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "commands-zrange": {
+      "loadSeconds": 1.481,
+      "dbSize": 1000,
+      "expectedDbSize": 1000,
+      "usedMemoryBytes": 88610608,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "zsets",
+        "keys": 1000,
+        "members": 1000
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-get-d1": {
+      "loadSeconds": 2.836,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385533608,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-get-d16": {
+      "loadSeconds": 3.435,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632544,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-get-d64": {
+      "loadSeconds": 3.194,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385633312,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-get-d256": {
+      "loadSeconds": 3.459,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632928,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-set-d1": {
+      "loadSeconds": 3.331,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385633888,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-set-d16": {
+      "loadSeconds": 3.395,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632544,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-set-d64": {
+      "loadSeconds": 3.408,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632544,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "pipeline-set-d256": {
+      "loadSeconds": 3.298,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632920,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-get-64": {
+      "loadSeconds": 6.012,
+      "dbSize": 4000000,
+      "expectedDbSize": 4000000,
+      "usedMemoryBytes": 603338664,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 4000000,
+        "valueBytes": 64
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-get-1024": {
+      "loadSeconds": 2.991,
+      "dbSize": 250000,
+      "expectedDbSize": 250000,
+      "usedMemoryBytes": 337881376,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 250000,
+        "valueBytes": 1024
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-get-10240": {
+      "loadSeconds": 1.96,
+      "dbSize": 25000,
+      "expectedDbSize": 25000,
+      "usedMemoryBytes": 310646368,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 25000,
+        "valueBytes": 10240
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-get-102400": {
+      "loadSeconds": 2.053,
+      "dbSize": 2500,
+      "expectedDbSize": 2500,
+      "usedMemoryBytes": 288676992,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 2500,
+        "valueBytes": 102400
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-set-64": {
+      "loadSeconds": 5.839,
+      "dbSize": 4000000,
+      "expectedDbSize": 4000000,
+      "usedMemoryBytes": 603338664,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 4000000,
+        "valueBytes": 64
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-set-1024": {
+      "loadSeconds": 3.034,
+      "dbSize": 250000,
+      "expectedDbSize": 250000,
+      "usedMemoryBytes": 337881672,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 250000,
+        "valueBytes": 1024
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-set-10240": {
+      "loadSeconds": 1.992,
+      "dbSize": 25000,
+      "expectedDbSize": 25000,
+      "usedMemoryBytes": 310646368,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 25000,
+        "valueBytes": 10240
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "value-size-set-102400": {
+      "loadSeconds": 1.97,
+      "dbSize": 2500,
+      "expectedDbSize": 2500,
+      "usedMemoryBytes": 288676992,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 2500,
+        "valueBytes": 102400
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-off-c1": {
+      "loadSeconds": 2.794,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385533672,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-off-c16": {
+      "loadSeconds": 3.19,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385607920,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-off-c64": {
+      "loadSeconds": 2.154,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385607920,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-rdb-c1": {
+      "loadSeconds": 2.928,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385533984,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "rdb",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-rdb-c16": {
+      "loadSeconds": 3.191,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385608048,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "rdb",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-rdb-c64": {
+      "loadSeconds": 3.285,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385608048,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "rdb",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-aof-everysec-c1": {
+      "loadSeconds": 4.098,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385534912,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "aof-everysec",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-aof-everysec-c16": {
+      "loadSeconds": 3.307,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 389803864,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "aof-everysec",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-aof-everysec-c64": {
+      "loadSeconds": 4.486,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385610944,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "aof-everysec",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-aof-always-c1": {
+      "loadSeconds": 16.972,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385535376,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "aof-always",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-aof-always-c16": {
+      "loadSeconds": 18.332,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385609248,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "aof-always",
+      "resultsMount": "/workspace/results"
+    },
+    "persistence-aof-always-c64": {
+      "loadSeconds": 18.356,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385611528,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "randomData": true
+      },
+      "profile": "aof-always",
+      "resultsMount": "/workspace/results"
+    },
+    "connections-c1": {
+      "loadSeconds": 2.846,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385533672,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "connections-c16": {
+      "loadSeconds": 3.322,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632608,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "connections-c64": {
+      "loadSeconds": 3.218,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632608,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "connections-c256": {
+      "loadSeconds": 3.449,
+      "dbSize": 1000000,
+      "expectedDbSize": 1000000,
+      "usedMemoryBytes": 385632608,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "memory-fits": {
+      "loadSeconds": 2.891,
+      "dbSize": 500000,
+      "expectedDbSize": 500000,
+      "usedMemoryBytes": 673339400,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 500000,
+        "valueBytes": 1024
+      },
+      "profile": "mem-fit",
+      "resultsMount": "/workspace/results"
+    },
+    "memory-lru-uniform": {
+      "loadSeconds": 7.041,
+      "dbSize": 793864,
+      "expectedDbSize": null,
+      "usedMemoryBytes": 1073013056,
+      "evictedKeysAfterLoad": 1006136,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1800000,
+        "valueBytes": 1024
+      },
+      "profile": "mem-lru",
+      "resultsMount": "/workspace/results"
+    },
+    "memory-lru-gaussian": {
+      "loadSeconds": 6.623,
+      "dbSize": 793815,
+      "expectedDbSize": null,
+      "usedMemoryBytes": 1073050216,
+      "evictedKeysAfterLoad": 2654851,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1800000,
+        "valueBytes": 1024
+      },
+      "profile": "mem-lru",
+      "resultsMount": "/workspace/results"
+    },
+    "memory-noeviction": {
+      "loadSeconds": 5.923,
+      "dbSize": 793967,
+      "expectedDbSize": null,
+      "usedMemoryBytes": 1073050280,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1800000,
+        "valueBytes": 1024
+      },
+      "profile": "mem-noeviction",
+      "resultsMount": "/workspace/results"
+    },
+    "blocking-baseline": {
+      "loadSeconds": 3.43,
+      "dbSize": 1000001,
+      "expectedDbSize": 1000001,
+      "usedMemoryBytes": 398508056,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "bigHash": {
+          "key": "bighash",
+          "fields": 100000,
+          "valueBytes": 64
+        }
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "blocking-hgetall": {
+      "loadSeconds": 3.677,
+      "dbSize": 1000001,
+      "expectedDbSize": 1000001,
+      "usedMemoryBytes": 398606992,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "bigHash": {
+          "key": "bighash",
+          "fields": 100000,
+          "valueBytes": 64
+        }
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "blocking-keys": {
+      "loadSeconds": 3.598,
+      "dbSize": 1000001,
+      "expectedDbSize": 1000001,
+      "usedMemoryBytes": 398655872,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "bigHash": {
+          "key": "bighash",
+          "fields": 100000,
+          "valueBytes": 64
+        }
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    },
+    "blocking-scan": {
+      "loadSeconds": 3.571,
+      "dbSize": 1000001,
+      "expectedDbSize": 1000001,
+      "usedMemoryBytes": 398675688,
+      "evictedKeysAfterLoad": 0,
+      "dataset": {
+        "kind": "strings",
+        "keys": 1000000,
+        "valueBytes": 256,
+        "bigHash": {
+          "key": "bighash",
+          "fields": 100000,
+          "valueBytes": 64
+        }
+      },
+      "profile": "baseline",
+      "resultsMount": "/workspace/results"
+    }
+  }
+}

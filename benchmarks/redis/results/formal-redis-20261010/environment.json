@@ -1,0 +1,110 @@
+{
+  "platform": "linux/arm64",
+  "exploratory": false,
+  "profiles": {
+    "baseline": {
+      "io-threads": "1",
+      "save": "",
+      "appendonly": "no",
+      "appendfsync": "everysec",
+      "maxmemory": "0",
+      "maxmemory-policy": "noeviction",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    },
+    "mem-fit": {
+      "io-threads": "1",
+      "save": "",
+      "appendonly": "no",
+      "appendfsync": "everysec",
+      "maxmemory": "1073741824",
+      "maxmemory-policy": "allkeys-lru",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    },
+    "mem-lru": {
+      "io-threads": "1",
+      "save": "",
+      "appendonly": "no",
+      "appendfsync": "everysec",
+      "maxmemory": "1073741824",
+      "maxmemory-policy": "allkeys-lru",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    },
+    "mem-noeviction": {
+      "io-threads": "1",
+      "save": "",
+      "appendonly": "no",
+      "appendfsync": "everysec",
+      "maxmemory": "1073741824",
+      "maxmemory-policy": "noeviction",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    },
+    "rdb": {
+      "io-threads": "1",
+      "save": "3600 1 300 100 60 10000",
+      "appendonly": "no",
+      "appendfsync": "everysec",
+      "maxmemory": "0",
+      "maxmemory-policy": "noeviction",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    },
+    "aof-everysec": {
+      "io-threads": "1",
+      "save": "",
+      "appendonly": "yes",
+      "appendfsync": "everysec",
+      "maxmemory": "0",
+      "maxmemory-policy": "noeviction",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    },
+    "aof-always": {
+      "io-threads": "1",
+      "save": "",
+      "appendonly": "yes",
+      "appendfsync": "always",
+      "maxmemory": "0",
+      "maxmemory-policy": "noeviction",
+      "maxclients": "10000",
+      "latency-tracking": "yes"
+    }
+  },
+  "redis": {
+    "version": "7.4.11",
+    "containerId": "5a5a70384b406179662c264268cfe04efb6341d264355bd7731c0ebb80c78ead",
+    "image": "redis:7.4@sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85",
+    "imageId": "sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85",
+    "cpus": 2,
+    "memoryBytes": 4294967296,
+    "ioThreadsActive": 0
+  },
+  "loadgen": {
+    "tool": "memtier_benchmark",
+    "version": "memtier_benchmark 2.1.2",
+    "containerId": "ec9fddf2f4464eb233bfa6c425ded617fd2a18223312a97859de16e4aa30b68e",
+    "image": "redislabs/memtier_benchmark:2.1.2@sha256:61ae5179a56219ad294bfb0d071d9e5bb151c466ba407946ff4be09684cf4d81",
+    "imageId": "sha256:61ae5179a56219ad294bfb0d071d9e5bb151c466ba407946ff4be09684cf4d81",
+    "cpus": 4,
+    "memoryBytes": 1073741824
+  },
+  "dockerVm": {
+    "cpus": 10,
+    "memoryBytes": 8393289728,
+    "kernel": "7.0.14-orbstack-00380-ga7e0a2dc9535",
+    "operatingSystem": "OrbStack",
+    "architecture": "aarch64",
+    "dockerVersion": "29.4.0"
+  },
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "25.5.0",
+    "cpuModel": "Apple M1 Pro",
+    "cpuCount": 10,
+    "memoryBytes": 17179869184
+  }
+}

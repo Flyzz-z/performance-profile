@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redis | Performance Profile</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="redis">
+    <header class="topbar">
+      <a class="brand" href="./index.html"><span class="brand-mark">PP</span>Performance Profile</a>
+      <nav aria-label="报告导航"><a href="./index.html">组件索引</a><span class="nav-divider">/</span><span aria-current="page">Redis</span></nav>
+    </header>
+    <main>
+      <div id="load-status" class="load-status" role="status" aria-live="polite">正在读取测试结果...</div>
+      <div id="report" hidden>
+        <section class="report-header">
+          <div>
+            <div class="title-line"><h1>Redis <span id="redis-version"></span></h1><span class="tag">local Docker benchmark</span></div>
+            <p class="report-meta">单实例 · <span id="report-platform"></span> · <time id="report-time"></time> <span class="muted">UTC+8</span></p>
+          </div>
+          <a class="subtle-link" href="#environment">环境明细</a>
+        </section>
+        <p class="coverage-note" id="coverage-note" role="note" hidden></p>
+        <section class="experiment-conclusions redis-conclusions" id="experiment-conclusions" aria-labelledby="conclusions-title" hidden>
+          <div class="section-heading"><h2 id="conclusions-title">实验结论</h2><span id="conclusion-scope" class="muted">各结论只适用于所标注的连接数、数据规模与重复次数</span></div>
+          <div id="conclusion-grid" class="conclusion-grid redis-conclusion-grid"></div>
+        </section>
+        <section class="resources redis-resources" id="redis-resources" aria-label="Redis 测试环境"></section>
+        <nav class="scenario-nav" id="scenario-nav" aria-label="场景导航"></nav>
+        <div id="scenarios"></div>
+        <section class="section-band" id="environment" aria-labelledby="environment-title">
+          <div class="section-heading"><h2 id="environment-title">环境与实验协议</h2><span class="muted">测试时的记录快照</span></div>
+          <div id="environment-groups" class="environment-groups"></div>
+        </section>
+        <section class="section-band limitations" aria-labelledby="scope-title">
+          <h2 id="scope-title">指标来源与结论边界</h2>
+          <ul>
+            <li>吞吐与分位延迟来自 memtier_benchmark 输出；Pipeline 场景的延迟是每批请求延迟，不是单条命令延迟。</li>
+            <li>macOS 上的 Linux 容器运行于 Docker 虚拟机，结果包含虚拟网络与虚拟存储的影响，不代表生产容量。</li>
+            <li>资源上限是容器配置配额，不是专用物理核或实际使用量；Redis CPU 来自 INFO 的进程 CPU 增量，含后台线程，不等同于主线程占用。</li>
+            <li>压测端 CPU 接近配额的点已标记，其结果可能受压测端限制，不能当作 Redis 的性能上限。</li>
+            <li>持久化场景的磁盘为 Docker VM 虚拟存储，不代表物理磁盘 fsync 性能；慢命令场景的后台频率固定，不代表生产延迟。</li>
+          </ul>
+        </section>
+      </div>
+      <footer>Performance Profile <span>可复现的组件性能记录</span></footer>
+    </main>
+    <script type="module" src="./redis-app.js"></script>
+  </body>
+</html>

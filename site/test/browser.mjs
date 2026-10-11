@@ -211,7 +211,7 @@ try {
   await page.screenshot({ path: path.join(screenshotDirectory, "index-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.screenshot({ path: path.join(screenshotDirectory, "index-desktop.png"), fullPage: true });
-  await page.getByRole("link", { name: "查看报告", exact: true }).click();
+  await page.locator('a[href="./mysql.html"]', { hasText: "查看报告" }).click();
   await page.locator(".chart svg").first().waitFor();
   await page.getByRole("link", { name: "组件索引", exact: true }).click();
   await page.locator("#index-peak").waitFor();

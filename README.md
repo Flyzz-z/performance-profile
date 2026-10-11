@@ -25,3 +25,5 @@ npm run site
 ```
 
 打开 [组件索引](http://127.0.0.1:4173/) 或 [MySQL 结果页面](http://127.0.0.1:4173/mysql.html)。结果明确标记为 `local Docker benchmark`，不代表生产服务器性能。
+
+Redis 本地 Docker 基准见 [benchmarks/redis/README.md](benchmarks/redis/README.md)，页面为 [Redis 结果页面](http://127.0.0.1:4173/redis.html)（正式实验完成并发布后可用）。

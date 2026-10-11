@@ -48,3 +48,19 @@ npm run test:site:browser
 独立缓存实验使用 `bufferPoolExperiment`：两组 `groups.selected` 提供QPS、p95/p99、近似页面命中率和缺页读取速率，`dataset`提供实际冻结数据与主键页占用，各组 `environment`保存真实缓存与资源配置。独立区域不随主场景并发筛选变化，不参与六场景曲线或索引页峰值。逐次窗口原始计数和采样可以追溯；命中率为页面请求口径。
 
 最终报告只由 `npm run mysql:formal` 的完整正式运行发布，旧/短collector不能覆盖。资源原始记录通过本地Docker Stats API采集，不是额外诊断场景；CPU平均值按实际采样覆盖时间加权。
+
+## Redis 报告
+
+```bash
+npm run test:site
+npm run test:site:redis-browser
+```
+
+Redis 详情页为 `/redis.html`，只读 `site/data/redis.json`；原始数据由 `/artifacts/redis/` 路由提供，路由映射在 `site/artifact-routes.mjs`，拒绝路径穿越。MySQL 页面与路由不受影响。
+
+- 数据按场景分节（`scenarios[].points[]`），每个点含汇总值、全部观测、Redis `INFO` 窗口差分、两端 CPU 占配额比例和 `loadgenBound`。页面不重新计算均值或中位数。
+- 七个场景使用与自变量匹配的图：命令基线与持久化、慢命令为条形图；Pipeline、Value 大小、连接数为折线（可切换对数/线性刻度，默认对数）；内存淘汰为指标卡。每个图配数值表和逐次观测。
+- “实验结论”由页面从正式数据推导，每条带范围与稳定性；任一来源缺失、观测不足或指标无效时对应条目不生成，全部缺失时区块隐藏。百分比和倍数按实际方向显示。
+- 压测端 CPU 达到配额 90% 以上的点显示“压测端受限”标记，不得解释为 Redis 上限。有效载荷带宽不含协议开销，Pipeline 延迟为每批请求延迟。
+- 索引页的 Redis 条目由 `redis-index.js` 独立加载，数据不可用时只隐藏该条目，不影响 MySQL。最高观测值标明场景范围与单位（ops/s）。
+- `site/test/redis-browser.mjs` 通过请求拦截注入夹具，不写入 `site/data`，验证四种视口、刻度切换、提示、缺失与错误状态、索引入口和原始链接。

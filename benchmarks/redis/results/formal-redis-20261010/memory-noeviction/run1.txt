@@ -1,0 +1,23 @@
+2         Threads
+8         Connections per thread
+60        Seconds
+
+
+ALL STATS
+============================================================================================================================================================
+Type         Ops/sec     Hits/sec   Misses/sec    Avg. Latency     p50 Latency     p95 Latency     p99 Latency   p99.9 Latency p99.990 Latency       KB/sec 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sets        10241.05          ---          ---         0.15397         0.15100         0.27900         0.43900         1.24700         4.63900     11254.97 
+Gets        92168.21     40667.60     51500.61         0.15526         0.15100         0.27900         0.43900         1.24700         4.52700     44371.22 
+Waits           0.00          ---          ---             ---             ---             ---             ---             ---             ---          --- 
+Totals     102409.26     40667.60     51500.61         0.15513         0.15100         0.27900         0.43900         1.24700         4.54300     55626.19 
+
+Json file /workspace/results/formal-redis-20261010/memory-noeviction/run1.json created...
+Writing results to stdout
+[RUN #1] Preparing benchmark client...
+[RUN #1] Launching threads now...
+server 192.168.163.2:6379 handle error response: -OOM command not allowed when used memory > 'maxmemory'.
+[trimmed after the run: 614563 identical OOM error lines like the one above were removed from run1.txt; the rejection count recorded by Redis is in the matching *-info.json]
+[RUN #1 100%,  60 secs]  0 threads:     6145594 ops,   88417 (avg:  102410) ops/sec, 46.76MB/sec (avg: 54.32MB/sec),  0.18 (avg:  0.15) msec latency
+
+Json file closed.
