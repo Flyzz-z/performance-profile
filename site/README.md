@@ -60,7 +60,7 @@ Redis 详情页为 `/redis.html`，只读 `site/data/redis.json`；原始数据�
 
 - 数据按场景分节（`scenarios[].points[]`），每个点含汇总值、全部观测、Redis `INFO` 窗口差分、两端 CPU 占配额比例和 `loadgenBound`。页面不重新计算均值或中位数。
 - 七个场景使用与自变量匹配的图：命令基线与持久化、慢命令为条形图；Pipeline、Value 大小、连接数为折线（可切换对数/线性刻度，默认对数）；内存淘汰为指标卡。每个图配数值表和逐次观测。
-- “实验结论”由页面从正式数据推导，每条带范围与稳定性；任一来源缺失、观测不足或指标无效时对应条目不生成，全部缺失时区块隐藏。百分比和倍数按实际方向显示。
+- “实验结论”由作者手写，存放于 `site/data/conclusions.json`，按实验 id 填写（MySQL：`formal-dashboard`、`buffer-pool`、`hot-update`；Redis：各场景 id）。每段结论显示在对应实验上方；空字符串不显示，对应实验不可见时结论也不显示。页面不根据数据生成结论文字。
 - 压测端 CPU 达到配额 90% 以上的点显示“压测端受限”标记，不得解释为 Redis 上限。有效载荷带宽不含协议开销，Pipeline 延迟为每批请求延迟。
 - 索引页的 Redis 条目由 `redis-index.js` 独立加载，数据不可用时只隐藏该条目，不影响 MySQL。最高观测值标明场景范围与单位（ops/s）。
 - `site/test/redis-browser.mjs` 通过请求拦截注入夹具，不写入 `site/data`，验证四种视口、刻度切换、提示、缺失与错误状态、索引入口和原始链接。

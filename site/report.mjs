@@ -267,67 +267,6 @@ export function stabilityLabel(value) {
   return { stable: "稳定", acceptable: "可接受", unstable: "不稳定", failed: "失败" }[value] ?? MISSING;
 }
 
-export function experimentConclusions(data) {
-  if (data.formalExperiment?.purpose !== "formal") return [];
-  const items = [];
-  const point = scenario => {
-    const series = data.series?.find(s => s.scenario === scenario && s.sourceRole !== "verification");
-    return series?.points?.find(p => p.concurrency === 16 && p.status !== "failed" && p.sourceRole !== "verification");
-  };
-  const positive = value => validMetric(value) && value > 0;
-  const round = value => formatNumber(Number(value.toFixed(1)));
-  const change = (after, before) => `${after >= before ? "+" : "-"}${round(Math.abs(after / before - 1) * 100)}%`;
-  const stability = (label, source) => ({ label, value: source.stability });
-  const read = point("point_select");
-  const write = point("update_index");
-  const asyncWrite = point("update_index_async");
-  const noIndex = point("update_no_secondary_index");
-  if (positive(read?.tps) && positive(write?.tps) && validMetric(read.p99Ms) && validMetric(write.p99Ms)) {
-    items.push({ id: "read-write", title: "读写性能差异", headline: `约 ${(read.tps / write.tps).toLocaleString("zh-CN", { maximumSignificantDigits: 3 })} 倍`,
-      headlineLabel: "点查 / 同步更新吞吐", scope: `16 并发 · ${formatNumber(data.dataset?.actualRows)} 行`,
-      metrics: [["主键点查", `${formatNumber(Math.round(read.tps))} TPS`],
-        ["同步索引更新", `${formatNumber(Math.round(write.tps))} TPS`],
-        ["p99（查 / 写）", `${formatNumber(read.p99Ms)} / ${formatNumber(write.p99Ms)} ms`]],
-      note: read.tps > write.tps ? "单行点查明显快于维护二级索引、同步持久化日志的单行更新。" : "本配置下，点查吞吐未高于同步索引更新。",
-      stability: [stability("点查", read), stability("更新", write)] });
-  }
-  if (positive(write?.tps) && positive(asyncWrite?.tps)) {
-    items.push({ id: "write-policy", title: "写入策略的影响", headline: `${round(asyncWrite.tps / write.tps)} 倍`,
-      headlineLabel: "异步 / 同步更新吞吐", scope: "16 并发 · redo / binlog：1/1 → 2/0",
-      metrics: [["同步索引更新", `${formatNumber(Math.round(write.tps))} TPS`],
-        ["异步索引更新", `${formatNumber(Math.round(asyncWrite.tps))} TPS`]],
-      note: positive(noIndex?.tps) ? `去掉 k 二级索引后，同步更新吞吐 ${change(noIndex.tps, write.tps)}。` : "相同索引更新 SQL，对比两组日志策略。",
-      stability: [stability("同步", write), stability("异步", asyncWrite)] });
-  }
-  const cache = data.bufferPoolExperiment;
-  const small = cache?.groups?.find(g => g.gib === 1);
-  const large = cache?.groups?.find(g => g.gib === 2);
-  if (cache?.purpose === "formal" && cache.concurrency === 16 && positive(cache.dataset?.dataBytes)
-    && positive(small?.selected?.qps) && positive(large?.selected?.qps)
-    && [small.selected.p99Ms, large.selected.p99Ms, small.selected.readsPerSecond, large.selected.readsPerSecond].every(validMetric)) {
-    items.push({ id: "buffer-pool", title: "缓存容量的影响", headline: change(large.selected.qps, small.selected.qps),
-      headlineLabel: "查询吞吐", scope: `独立实验 · ${cache.concurrency} 并发 · 1 → 2 GiB`,
-      metrics: [["p99", `${formatNumber(small.selected.p99Ms)} → ${formatNumber(large.selected.p99Ms)} ms`],
-        ["缺页 / 秒", `${formatNumber(small.selected.readsPerSecond)} → ${formatNumber(large.selected.readsPerSecond)}`]],
-      note: `主键页约 ${round(cache.dataset.dataBytes / 1024 ** 3)} GiB；缺页指标为 Buffer Pool 未命中的页面读取。`,
-      stability: [stability("1 GiB", small), stability("2 GiB", large)] });
-  }
-  const hot = data.hotUpdateExperiment;
-  const distributed = hot?.groups?.find(g => g.id === "distributed");
-  const concentrated = hot?.groups?.find(g => g.id === "hot");
-  if (hot?.purpose === "formal" && hot.protocol?.concurrency === 16 && hot.protocol.repeats === 1
-    && positive(concentrated?.activeRows) && positive(distributed?.metrics?.tps) && positive(concentrated?.metrics?.tps)
-    && [distributed.locks?.waitsPerSecond, concentrated.locks?.waitsPerSecond].every(validMetric)) {
-    items.push({ id: "hot-update", title: "热点竞争的影响", headline: change(concentrated.metrics.tps, distributed.metrics.tps),
-      headlineLabel: "更新吞吐", scope: `独立实验 · ${hot.protocol.concurrency} 并发 · 每组 ${hot.protocol.repeats} 次`,
-      metrics: [["分散 / 热点 TPS", `${formatNumber(Math.round(distributed.metrics.tps))} / ${formatNumber(Math.round(concentrated.metrics.tps))}`],
-        ["行锁等待 / 秒", `${formatNumber(distributed.locks.waitsPerSecond)} → ${formatNumber(concentrated.locks.waitsPerSecond)}`]],
-      note: `更新集中到 ${formatNumber(concentrated.activeRows)} 条记录后，${concentrated.locks.waitsPerSecond > distributed.locks.waitsPerSecond ? "行锁竞争明显增加" : "未观察到行锁等待速率增加"}。`,
-      stability: [] });
-  }
-  return items;
-}
-
 export function artifactUrl(rawPath) {
   const prefix = "benchmarks/mysql/results/";
   if (typeof rawPath !== "string" || !rawPath.startsWith(prefix)) return null;

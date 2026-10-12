@@ -1,6 +1,6 @@
 import {
   MISSING, METRICS, projectReport, peakPoint, environmentGroups,
-  formatNumber, formatLatency, formatMemory, formatDate, text, stabilityLabel, artifactUrl, experimentConclusions,
+  formatNumber, formatLatency, formatMemory, formatDate, text, stabilityLabel, artifactUrl,
 } from "./report.mjs";
 import { MetricChart } from "./charts.mjs";
 
@@ -62,19 +62,23 @@ function renderEnvironment() {
       `<div class="${row.value.length > 65 ? "long-value" : ""}"><dt>${escape(row.label)}</dt><dd>${escape(row.value)}</dd></div>`).join("")}</dl></details>`).join("");
 }
 
-function renderConclusions() {
-  const items = experimentConclusions(report.data);
-  document.getElementById("experiment-conclusions").hidden = items.length === 0;
-  const container = report.data.environment?.container ?? {};
-  setText("conclusion-scope", `${text(container.platform)} · MySQL ${formatNumber(container.mysqlCpuLimit)} CPU · sysbench ${formatNumber(container.loadGeneratorCpuLimit)} CPU`);
-  document.getElementById("conclusion-grid").innerHTML = items.map(item =>
-    `<article class="conclusion-item" data-conclusion="${item.id}">
-      <h3>${escape(item.title)}</h3><p class="conclusion-condition">${escape(item.scope)}</p>
-      <p class="conclusion-headline"><strong>${escape(item.headline)}</strong><span>${escape(item.headlineLabel)}</span></p>
-      <dl>${item.metrics.map(([label, value]) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join("")}</dl>
-      <p class="conclusion-note">${escape(item.note)}</p>
-      ${item.stability.length ? `<div class="conclusion-stability">${item.stability.map(source => `<span>${escape(source.label)} ${badge(source.value)}</span>`).join("")}</div>` : ""}
-    </article>`).join("");
+// 结论由作者逐条手写，存放于 data/conclusions.json；空字符串不显示。
+function renderSummaries(conclusions) {
+  document.querySelectorAll("[data-summary]").forEach((slot) => {
+    const content = conclusions[slot.dataset.summary] ?? "";
+    const experiment = slot.dataset.experiment ? document.getElementById(slot.dataset.experiment) : null;
+    slot.querySelector(".summary-text").textContent = content;
+    slot.hidden = !content.trim() || Boolean(experiment?.hidden);
+  });
+}
+
+async function loadConclusions() {
+  try {
+    const response = await fetch("./data/conclusions.json", { cache: "no-store" });
+    return response.ok ? (await response.json()).mysql ?? {} : {};
+  } catch {
+    return {};
+  }
 }
 
 function renderControls() {
@@ -251,7 +255,7 @@ async function loadData() {
   status.dataset.state = "loading";
   status.textContent = "正在读取测试结果...";
   try {
-    const response = await fetch("./data/mysql.json", { cache: "no-store" });
+    const [response, conclusions] = await Promise.all([fetch("./data/mysql.json", { cache: "no-store" }), loadConclusions()]);
     if (!response.ok) throw new Error(`请求失败（HTTP ${response.status}）`);
     const data = await response.json();
     if (request !== requestNumber) return;
@@ -262,12 +266,12 @@ async function loadData() {
     content.hidden = false;
     if (document.body.dataset.page === "mysql") {
       renderEnvironment();
-      renderConclusions();
       renderControls();
       renderDashboard();
       renderResults();
       renderBufferPool();
       renderHotUpdate();
+      renderSummaries(conclusions);
     } else renderIndex();
     status.hidden = true;
   } catch (error) {

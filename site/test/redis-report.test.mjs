@@ -4,7 +4,7 @@ import { mkdtempSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
-  projectRedisReport, redisConclusions, chartSpecs, scenarioColumns, peakOps, describePoint, artifactUrl, bandwidthMBps, percentChange,
+  projectRedisReport, chartSpecs, scenarioColumns, peakOps, describePoint, artifactUrl, bandwidthMBps, percentChange,
   signedPercent, ratioLabel, environmentSummary, environmentRows, memoryCards, SCENARIO_ORDER, coverageInfo,
 } from "../redis-report.mjs";
 import { indexSummary } from "../redis-index.js";
@@ -42,43 +42,6 @@ test("combinations without enough observations are not drawn", () => {
   assert.equal(projectRedisReport(undefined).points.size, 0);
 });
 
-test("conclusions follow the data direction and scope and never mutate the report", () => {
-  const rates = { "pipeline-get-d1": 80000, "pipeline-get-d16": 400000, "pipeline-get-d64": 700000, "pipeline-get-d256": 900000,
-    "persistence-off-c16": 100000, "persistence-aof-always-c16": 25000, "persistence-aof-everysec-c16": 98000, "persistence-rdb-c16": 91000, "blocking-keys": 45000, "blocking-hgetall": 81000 };
-  const data = fixture(combo => ({ opsPerSec: rates[combo.id] ?? 90000, p99Ms: combo.id === "blocking-keys" ? 30 : 0.6 }));
-  const before = JSON.stringify(data);
-  const items = redisConclusions(data);
-  assert.deepEqual(items.map(item => item.id), ["pipeline", "value-size", "persistence", "memory", "blocking"]);
-  const byId = Object.fromEntries(items.map(item => [item.id, item]));
-  assert.equal(byId.pipeline.headline.value, "11.3×");
-  assert.equal(byId.persistence.headline.value, "-75%");
-  assert.equal(byId.persistence.rows[1][1], "-2%");
-  assert.equal(byId.blocking.headline.value, "-50%");
-  assert.equal(byId.blocking.rows[0][1], "-10%");
-  assert.equal(byId.blocking.rows[2][1], "50×");
-  assert.match(byId.blocking.note, /p99.99/);
-  assert.match(byId.pipeline.condition, /16 连接/);
-  assert.match(byId.pipeline.note, /每批请求延迟/);
-  assert.equal(JSON.stringify(data), before);
-});
-
-test("a missing, failed or non-formal source suppresses only its conclusion", () => {
-  const data = fixture();
-  const point = data.scenarios.find(item => item.id === "value-size").points.find(item => item.id === "value-size-get-102400");
-  point.attempts = 0;
-  assert.deepEqual(redisConclusions(data).map(item => item.id), ["pipeline", "persistence", "memory", "blocking"]);
-  assert.deepEqual(redisConclusions({ ...fixture(), purpose: "verification" }), []);
-  assert.deepEqual(redisConclusions({}), []);
-});
-
-test("a memory conclusion without valid hit ratios is not generated", () => {
-  const data = fixture();
-  const uniform = data.scenarios.find(item => item.id === "memory").points.find(point => point.id === "memory-lru-uniform");
-  assert.equal(redisConclusions(data).find(item => item.id === "memory").headline.value, "50%");
-  uniform.redis.hitRatioPercent = null;
-  assert.deepEqual(redisConclusions(data).map(item => item.id), ["pipeline", "value-size", "persistence", "blocking"]);
-});
-
 test("upward and downward changes are signed by their actual direction", () => {
   assert.equal(signedPercent(percentChange(100, 130)), "+30%");
   assert.equal(signedPercent(percentChange(100, 70)), "-30%");
@@ -92,8 +55,6 @@ test("loadgen-bound points are flagged without hiding values", () => {
   const report = projectRedisReport(data);
   assert.deepEqual(report.flagged.map(point => point.id), ["pipeline-get-d256"]);
   assert.equal(report.point("pipeline-get-d256").selected.opsPerSec, 90000);
-  const conclusion = redisConclusions(data).find(item => item.id === "pipeline");
-  assert.equal(conclusion.flagged, true);
   const peak = peakOps(report);
   assert.ok(peak.ops > 0);
   assert.equal(chartSpecs(report).pipeline.flags["get:256"], true);
@@ -184,10 +145,4 @@ test("coverage describes which scenario groups were measured", () => {
   assert.deepEqual(coverageInfo(legacy).groups, ["pipeline", "blocking"]);
   assert.equal(indexSummary(partial).loadgen.includes("已覆盖 2/7 个场景"), true);
   assert.equal(indexSummary(full).loadgen.includes("已覆盖"), false);
-});
-
-test("conclusions only appear for measured scenario groups", () => {
-  const partial = fixture();
-  partial.scenarios = partial.scenarios.filter(item => ["pipeline", "blocking"].includes(item.id));
-  assert.deepEqual(redisConclusions(partial).map(item => item.id), ["pipeline", "blocking"]);
 });

@@ -21,10 +21,6 @@
           </div>
           <a class="subtle-link" href="#environment">环境明细</a>
         </section>
-        <section class="experiment-conclusions" id="experiment-conclusions" aria-labelledby="conclusions-title" hidden>
-          <div class="section-heading"><h2 id="conclusions-title">实验结论</h2><span id="conclusion-scope" class="muted"></span></div>
-          <div id="conclusion-grid" class="conclusion-grid"></div>
-        </section>
         <section class="resources" aria-label="MySQL 容器资源限制">
           <div><span>MySQL 容器 CPU 上限</span><strong id="cpu-limit"></strong><small>配置配额，非独占物理核</small></div>
           <div><span>MySQL 容器内存上限</span><strong id="memory-limit"></strong><small>容器限制，非实际使用量</small></div>
@@ -32,6 +28,10 @@
           <div><span>数据集</span><strong id="dataset-size"></strong><small id="dataset-detail"></small></div>
         </section>
         <div class="protocol-strip" id="protocol-strip"></div>
+        <section class="experiment-summary" data-summary="formal-dashboard" aria-labelledby="summary-dashboard-title" hidden>
+          <h2 id="summary-dashboard-title">实验结论</h2>
+          <div class="summary-text"></div>
+        </section>
         <section class="dashboard" aria-labelledby="dashboard-title">
           <div class="section-heading">
             <div><h2 id="dashboard-title">性能看板</h2><p class="muted" id="dashboard-scope">读、写、混合负载</p></div>
@@ -54,9 +54,17 @@
           <div class="section-heading"><h2 id="results-title">结果明细</h2><span class="muted">汇总与逐次运行</span></div>
           <div id="result-details" class="result-details"></div>
         </section>
+        <section class="experiment-summary" data-summary="buffer-pool" data-experiment="buffer-pool-experiment" aria-labelledby="summary-buffer-title" hidden>
+          <h2 id="summary-buffer-title">实验结论</h2>
+          <div class="summary-text"></div>
+        </section>
         <section class="section-band" id="buffer-pool-experiment" aria-labelledby="buffer-title" hidden>
           <div class="section-heading"><h2 id="buffer-title">Buffer Pool 容量对比</h2><span class="muted">1 GiB / 2 GiB</span></div>
           <div id="buffer-pool-results"></div>
+        </section>
+        <section class="experiment-summary" data-summary="hot-update" data-experiment="hot-update-experiment" aria-labelledby="summary-hot-title" hidden>
+          <h2 id="summary-hot-title">实验结论</h2>
+          <div class="summary-text"></div>
         </section>
         <section class="section-band" id="hot-update-experiment" aria-labelledby="hot-update-title" hidden>
           <div class="section-heading"><h2 id="hot-update-title">热点更新与行锁等待</h2><span class="muted">16 并发</span></div>

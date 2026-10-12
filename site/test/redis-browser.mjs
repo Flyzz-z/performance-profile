@@ -44,6 +44,8 @@ mkdirSync(screenshots, { recursive: true });
 
 async function serve(page, body, status = 200) {
   await page.route("**/data/redis.json", route => route.fulfill({ status, contentType: "application/json", body: typeof body === "string" ? body : JSON.stringify(body) }));
+  await page.route("**/data/conclusions.json", route => route.fulfill({ contentType: "application/json",
+    body: JSON.stringify({ redis: { pipeline: "测试结论：Pipeline 放大", persistence: "" } }) }));
 }
 
 async function noOverflow(page) {
@@ -68,14 +70,14 @@ try {
 
   assert.equal(await page.locator("section.scenario").count(), 7);
   assert.equal(await page.locator("#coverage-note").isHidden(), true);
-  assert.equal(await page.locator(".conclusion-item").count(), 5);
+  assert.equal(await page.locator(".experiment-summary:visible").count(), 1);
+  assert.equal(await page.locator('[data-summary="pipeline"] .summary-text').innerText(), "测试结论：Pipeline 放大");
+  assert.ok((await page.locator('[data-summary="pipeline"]').boundingBox()).y < (await page.locator("#scenario-pipeline").boundingBox()).y, "summary sits above its scenario");
   assert.equal(await page.locator(".chart-panel").count(), 13);
   assert.equal(await page.locator(".chart-panel svg").count(), 13);
   assert.equal(await page.locator("#redis-version").innerText(), "7.4.2");
   assert.match(await page.locator("#redis-resources").innerText(), /2 CPU \/ 4 GiB/);
   assert.match(await page.locator("#redis-resources").innerText(), /4 CPU \/ 1 GiB/);
-  assert.match(await page.locator("[data-conclusion=pipeline] .conclusion-headline").innerText(), /11\.3×/);
-  assert.match(await page.locator("[data-conclusion=persistence] .conclusion-headline").innerText(), /-72\.2%|-72%/);
   assert.equal(await page.locator("#scenario-nav a").count(), 7);
   assert.equal(await page.locator(".redis-card").count(), 4);
   const bodyText = await page.locator("body").innerText();

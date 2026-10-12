@@ -68,16 +68,17 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.route("**/data/conclusions.json", route => route.fulfill({ contentType: "application/json",
+    body: JSON.stringify({ mysql: { "formal-dashboard": "测试结论：读写对比", "buffer-pool": "测试结论：缓存", "hot-update": "" } }) }));
   await ready(page);
   await noProcessNotice(page);
-  assert.equal(await page.locator("#experiment-conclusions").isVisible(), true);
-  assert.equal(await page.locator(".conclusion-item").count(), 4);
-  assert.equal(await page.locator('[data-conclusion="read-write"] strong').textContent(), "约 140 倍");
-  assert.ok((await page.locator('[data-conclusion="read-write"]').textContent()).includes("0.22 / 43.39 ms"));
-  assert.equal(await page.locator('[data-conclusion="write-policy"] strong').textContent(), "5.4 倍");
-  assert.equal(await page.locator('[data-conclusion="buffer-pool"] strong').textContent(), "+15.5%");
-  assert.equal(await page.locator('[data-conclusion="hot-update"] strong').textContent(), "-27.3%");
-  const conclusionText = await page.locator("#experiment-conclusions").textContent();
+  assert.equal(await page.locator("#experiment-conclusions").count(), 0);
+  assert.equal(await page.locator('[data-summary="formal-dashboard"] .summary-text').innerText(), "测试结论：读写对比");
+  assert.equal(await page.locator('[data-summary="buffer-pool"] .summary-text').innerText(), "测试结论：缓存");
+  assert.equal(await page.locator('[data-summary="hot-update"]').isHidden(), true, "empty summaries stay hidden");
+  const above = async (summary, experiment) => (await page.locator(summary).boundingBox()).y < (await page.locator(experiment).boundingBox()).y;
+  assert.equal(await above('[data-summary="formal-dashboard"]', ".dashboard"), true, "summary sits above its experiment");
+  assert.equal(await above('[data-summary="buffer-pool"]', "#buffer-pool-experiment"), true, "summary sits above its experiment");
   assert.equal(await page.locator(".chart-panel").count(), 4);
   assert.equal(await page.locator(".chart-dot").count(), data.series.flatMap((s) => s.points).length * 4);
   assert.equal(await page.locator("#comparison-grid").count(), 0);
@@ -99,7 +100,6 @@ try {
     }
   }
   await page.getByRole("button", { name: "并发 8", exact: true }).click();
-  assert.equal(await page.locator("#experiment-conclusions").textContent(), conclusionText);
   assert.equal(await page.locator("#selected-concurrency").textContent(), "8");
   const read = page.locator('#selected-body tr[data-scenario="point_select"]');
   assert.ok((await read.textContent()).includes(formatNumber(read8.qps)));
@@ -172,11 +172,8 @@ try {
     await page.setViewportSize({ width, height });
     await page.waitForTimeout(150);
     await noOverflow(page);
-    assert.equal(await page.locator(".conclusion-item").evaluateAll(nodes =>
+    assert.equal(await page.locator(".experiment-summary").evaluateAll(nodes =>
       nodes.some(node => node.scrollWidth > node.clientWidth + 1)), false, "summary text must fit");
-    if (width === 1440 || width === 375) {
-      await page.locator("#experiment-conclusions").screenshot({ path: path.join(screenshotDirectory, `conclusions-${width}.png`) });
-    }
     const geometry = await page.locator(".chart").evaluateAll((nodes) => nodes.map((node) => {
       const svg = node.querySelector("svg");
       return { clientWidth: node.clientWidth, svgWidth: svg.getBoundingClientRect().width };

@@ -1,5 +1,5 @@
 import {
-  MISSING, SCENARIO_ORDER, projectRedisReport, redisConclusions, chartSpecs, scenarioColumns, memoryCards, environmentSummary,
+  MISSING, SCENARIO_ORDER, projectRedisReport, chartSpecs, scenarioColumns, memoryCards, environmentSummary,
   environmentRows, coverageInfo, describePoint, artifactUrl, formatNumber, formatOps, formatCount, formatLatency, formatMemory, formatDate, text, percentText,
 } from "./redis-report.mjs";
 import { RedisChart } from "./redis-charts.mjs";
@@ -8,6 +8,9 @@ const escape = value => String(value).replaceAll("&", "&amp;").replaceAll("<", "
 const setText = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
 const STABILITY = { stable: "稳定", acceptable: "可接受", unstable: "不稳定" };
 const badge = value => `<span class="status status-${STABILITY[value] ? value : "missing"}">${STABILITY[value] ?? MISSING}</span>`;
+// 结论由作者逐条手写，存放于 data/conclusions.json；空字符串不显示。
+const summaryBlock = (id, content) => `<section class="experiment-summary" data-summary="${id}" aria-label="实验结论"${content.trim() ? "" : " hidden"}>
+  <h2>实验结论</h2><div class="summary-text">${escape(content)}</div></section>`;
 
 const SCENARIO_INFO = {
   commands: { title: "命令与数据结构基线", scope: "16 连接 · 无 Pipeline",
@@ -47,21 +50,6 @@ function renderCoverage(data) {
   if (!coverage.partial) return;
   const titles = ids => ids.map(id => SCENARIO_INFO[id]?.title ?? id).join("、");
   note.textContent = `已覆盖 ${coverage.groups.length}/${coverage.total} 个场景：${titles(coverage.groups)}。其余场景尚未测量：${titles(coverage.pending)}。`;
-}
-
-function renderConclusions(data) {
-  const items = redisConclusions(data);
-  const section = document.getElementById("experiment-conclusions");
-  section.hidden = items.length === 0;
-  document.getElementById("conclusion-grid").innerHTML = items.map(item => `
-    <article class="conclusion-item" data-conclusion="${item.id}">
-      <h3>${escape(item.title)}</h3>
-      <p class="conclusion-condition">${escape(item.condition)}</p>
-      <p class="conclusion-headline"><strong>${escape(item.headline.value)}</strong><span>${escape(item.headline.label)}</span></p>
-      <dl>${item.rows.map(([label, value]) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join("")}</dl>
-      <p class="conclusion-note">${escape(item.note)}</p>
-      <div class="conclusion-stability">${item.stability ? badge(item.stability) : ""}${item.flagged ? '<span class="bound-flag">含压测端受限点</span>' : ""}</div>
-    </article>`).join("");
 }
 
 function renderRunTable(point) {
@@ -134,11 +122,11 @@ function mountCharts(specs) {
   }
 }
 
-function renderScenarios() {
+function renderScenarios(conclusions) {
   const specs = chartSpecs(report);
   const available = SCENARIO_ORDER.filter(id => report.scenarios.has(id));
   document.getElementById("scenario-nav").innerHTML = available.map(id => `<a href="#scenario-${id}">${SCENARIO_ORDER.indexOf(id) + 1} ${escape(SCENARIO_INFO[id].title)}</a>`).join("");
-  document.getElementById("scenarios").innerHTML = available.map(id => renderScenario(id, specs[id])).join("");
+  document.getElementById("scenarios").innerHTML = available.map(id => summaryBlock(id, conclusions[id] ?? "") + renderScenario(id, specs[id])).join("");
   mountCharts(specs);
 }
 
@@ -147,6 +135,15 @@ function renderEnvironment(data) {
     <details class="environment-detail"><summary>${escape(group.name)}</summary>
       <dl>${group.rows.map(row => `<div><dt>${escape(row.label)}</dt><dd>${escape(row.value)}</dd></div>`).join("")}</dl></details>`).join("")
     + (artifactUrl(data.datasetPath) ? `<p class="muted dataset-link"><a href="${escape(artifactUrl(data.datasetPath))}" target="_blank" rel="noreferrer">数据装载清单</a></p>` : "");
+}
+
+async function loadConclusions() {
+  try {
+    const response = await fetch("./data/conclusions.json", { cache: "no-store" });
+    return response.ok ? (await response.json()).redis ?? {} : {};
+  } catch {
+    return {};
+  }
 }
 
 async function loadData() {
@@ -160,15 +157,14 @@ async function loadData() {
   status.dataset.state = "loading";
   status.textContent = "正在读取测试结果...";
   try {
-    const response = await fetch("./data/redis.json", { cache: "no-store" });
+    const [response, conclusions] = await Promise.all([fetch("./data/redis.json", { cache: "no-store" }), loadConclusions()]);
     if (!response.ok) throw new Error(`请求失败（HTTP ${response.status}）`);
     const data = await response.json();
     if (request !== requestNumber) return;
     report = projectRedisReport(data);
     renderHeader(data);
     renderCoverage(data);
-    renderConclusions(data);
-    renderScenarios();
+    renderScenarios(conclusions);
     renderEnvironment(data);
     content.hidden = false;
     status.hidden = true;
