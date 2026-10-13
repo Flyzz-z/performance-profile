@@ -1,0 +1,14 @@
+{
+  "runGroup": "index-read-formal-20261013-c",
+  "logging": {
+    "logBinEnabled": true,
+    "flushLogAtTransactionCommit": 1,
+    "syncBinlog": 1,
+    "flushLogAtTimeout": 1
+  },
+  "bufferPoolBytes": 3221225472,
+  "ownedLoadsStopped": true,
+  "originalBeforePath": "benchmarks/mysql/results/index-read-formal-20261013-c-original-before.json",
+  "originalAfterPath": "benchmarks/mysql/results/index-read-formal-20261013-c-original-after.json",
+  "checkedAt": "2026-10-13T09:00:00.470Z"
+}

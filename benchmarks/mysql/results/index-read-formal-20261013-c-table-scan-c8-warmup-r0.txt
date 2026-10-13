@@ -1,0 +1,176 @@
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+INDEX_READ_SQL=SELECT c FROM sbtestN WHERE k=?
+INDEX_READ_RESULT=one-row;payload=c;prepared=true
+Running the test with following options:
+Number of threads: 8
+Report intermediate results every 10 second(s)
+Initializing random number generator from seed (42).
+
+
+Initializing worker threads...
+
+Threads started!
+
+[ 10s ] thds: 8 tps: 569.95 qps: 569.95 (r/w/o: 569.95/0.00/0.00) lat (ms,99%): 32.53 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 8 tps: 580.91 qps: 580.91 (r/w/o: 580.91/0.00/0.00) lat (ms,99%): 21.50 err/s: 0.00 reconn/s: 0.00
+INDEX_READ_VALIDATED thread=5 events=2133
+INDEX_READ_VALIDATED thread=1 events=2153
+INDEX_READ_VALIDATED thread=4 events=2183
+INDEX_READ_VALIDATED thread=7 events=2209
+INDEX_READ_VALIDATED thread=2 events=2117
+INDEX_READ_VALIDATED thread=0 events=2119
+INDEX_READ_VALIDATED thread=3 events=2197
+[ 30s ] thds: 8 tps: 580.46 qps: 580.46 (r/w/o: 580.46/0.00/0.00) lat (ms,99%): 32.53 err/s: 0.00 reconn/s: 0.00
+INDEX_READ_VALIDATED thread=6 events=2210
+Latency histogram (values are in milliseconds)
+       value  ------------- distribution ------------- count
+      10.460 |*                                        46
+      10.651 |**************************************** 2393
+      10.844 |*********************                    1272
+      11.041 |**********                               569
+      11.242 |*******                                  391
+      11.446 |******                                   375
+      11.654 |******                                   333
+      11.866 |*****                                    320
+      12.081 |*****                                    284
+      12.301 |******                                   333
+      12.524 |*****                                    295
+      12.752 |******                                   354
+      12.984 |*******                                  423
+      13.219 |********                                 471
+      13.460 |**********                               569
+      13.704 |***********                              673
+      13.953 |**************                           847
+      14.207 |***************                          883
+      14.465 |****************                         964
+      14.728 |***************                          927
+      14.995 |**************                           843
+      15.268 |************                             696
+      15.545 |**********                               576
+      15.828 |********                                 462
+      16.115 |******                                   356
+      16.408 |****                                     254
+      16.706 |***                                      182
+      17.010 |***                                      156
+      17.319 |**                                       115
+      17.633 |**                                       100
+      17.954 |*                                        84
+      18.280 |*                                        60
+      18.612 |*                                        61
+      18.950 |*                                        54
+      19.295 |*                                        40
+      19.645 |*                                        35
+      20.002 |*                                        37
+      20.366 |*                                        34
+      20.736 |*                                        31
+      21.112 |*                                        33
+      21.496 |*                                        31
+      21.886 |                                         15
+      22.284 |                                         24
+      22.689 |                                         25
+      23.101 |                                         15
+      23.521 |                                         14
+      23.948 |                                         14
+      24.384 |                                         20
+      24.827 |                                         9
+      25.278 |                                         11
+      25.737 |                                         10
+      26.205 |                                         9
+      26.681 |                                         11
+      27.165 |                                         3
+      27.659 |                                         8
+      28.162 |                                         6
+      28.673 |                                         7
+      29.194 |                                         8
+      29.725 |                                         4
+      30.265 |                                         8
+      30.815 |                                         1
+      31.375 |                                         8
+      31.945 |                                         7
+      32.525 |                                         6
+      33.116 |                                         5
+      33.718 |                                         7
+      34.330 |                                         8
+      35.589 |                                         3
+      36.236 |                                         4
+      36.894 |                                         3
+      37.565 |                                         1
+      38.247 |                                         3
+      38.942 |                                         3
+      39.650 |                                         1
+      40.370 |                                         2
+      41.104 |                                         2
+      41.851 |                                         1
+      42.611 |                                         1
+      44.173 |                                         4
+      44.976 |                                         3
+      45.793 |                                         1
+      46.625 |                                         2
+      47.472 |                                         3
+      49.213 |                                         1
+      50.107 |                                         3
+      52.889 |                                         5
+      54.828 |                                         2
+      55.824 |                                         1
+      56.839 |                                         2
+      57.871 |                                         1
+      59.993 |                                         5
+      62.193 |                                         2
+      63.323 |                                         2
+      64.474 |                                         1
+      66.838 |                                         1
+      68.053 |                                         1
+      69.289 |                                         4
+      73.135 |                                         1
+      74.464 |                                         1
+      75.817 |                                         2
+      77.194 |                                         3
+      78.597 |                                         1
+      80.025 |                                         1
+      81.479 |                                         2
+      84.467 |                                         3
+      86.002 |                                         1
+      87.564 |                                         2
+      89.155 |                                         1
+      92.424 |                                         1
+      94.104 |                                         2
+      97.555 |                                         2
+     110.659 |                                         1
+     112.670 |                                         1
+     130.128 |                                         1
+     132.492 |                                         1
+     134.899 |                                         1
+ 
+SQL statistics:
+    queries performed:
+        read:                            17321
+        write:                           0
+        other:                           0
+        total:                           17321
+    transactions:                        17321  (576.94 per sec.)
+    queries:                             17321  (576.94 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          30.0218s
+    total number of events:              17321
+
+Latency (ms):
+         min:                                   10.49
+         avg:                                   13.86
+         max:                                  135.23
+         99th percentile:                       27.66
+         sum:                               240012.66
+
+Threads fairness:
+    events (avg/stddev):           2165.1250/36.91
+    execution time (avg/stddev):   30.0016/0.00
+
+
+ Container performance-profile-mysql-mysql-1 Running 
+ Container performance-profile-mysql-mysql-1 Waiting 
+ Container performance-profile-mysql-mysql-1 Healthy 
+ Container pp-ir-70191d871a66ad10-table-scan-c8-warmup-r0 Creating 
+ Container pp-ir-70191d871a66ad10-table-scan-c8-warmup-r0 Created 

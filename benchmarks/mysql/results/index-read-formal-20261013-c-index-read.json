@@ -1,0 +1,3123 @@
+{
+  "schemaVersion": 1,
+  "purpose": "formal",
+  "runGroup": "index-read-formal-20261013-c",
+  "testedAt": "2026-10-13T08:35:54.113Z",
+  "protocol": {
+    "concurrency": [
+      1,
+      8,
+      16
+    ],
+    "warmupSeconds": 30,
+    "durationSeconds": 90,
+    "repeats": 2,
+    "thresholdPercent": 30
+  },
+  "restorationVerified": true,
+  "groups": [
+    {
+      "id": "indexed",
+      "label": "二级索引查询",
+      "runGroup": "index-read-formal-20261013-c",
+      "database": "pp_index_read_70191d871a66ad10_indexed",
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-13T08:35:57.287Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": false,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 8,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "7d756da4e1c25d2698c0c9dc37bbc5de7f4681977ef613f3eb64971f74d4cd68"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "transactionIsolation": "REPEATABLE-READ",
+          "logBinEnabled": true,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "flushLogAtTimeout": 1
+        },
+        "loadGenerator": {
+          "image": "performance-profile/mysql-sysbench:1.0.0",
+          "imageId": "sha256:84066a5dabc6169a37e67ac54c586ca96ca7045f2e03dbe52bb61033a85ae5ff",
+          "imagePlatform": "linux/arm64",
+          "sysbenchVersion": "sysbench 1.0.20"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs"
+        },
+        "host": {
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184,
+          "architecture": "arm64"
+        }
+      },
+      "datasetPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-dataset.json",
+      "plansPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-plans.json",
+      "runs": [
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c1-warmup-r0",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "warmup",
+          "repeat": 0,
+          "concurrency": 1,
+          "startedAt": "2026-10-13T08:37:14.949Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=1",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-warmup-r0-environment.json",
+          "finishedAt": "2026-10-13T08:37:46.633Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-warmup-r0.txt",
+          "metrics": {
+            "transactions": 979794,
+            "queries": 979794,
+            "tps": 32636.52,
+            "qps": 32636.52,
+            "averageLatencyMs": 0.03,
+            "p95Ms": 0.041,
+            "p99Ms": 0.08,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c1-measured-r1",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "measured",
+          "repeat": 1,
+          "concurrency": 1,
+          "startedAt": "2026-10-13T08:37:47.575Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=1",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r1-environment.json",
+          "finishedAt": "2026-10-13T08:39:19.270Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r1.txt",
+          "metrics": {
+            "transactions": 2810927,
+            "queries": 2810927,
+            "tps": 31218.64,
+            "qps": 31218.64,
+            "averageLatencyMs": 0.03,
+            "p95Ms": 0.045,
+            "p99Ms": 0.07,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r1-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.249,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.25,
+              "maxGapSeconds": 5.062,
+              "meanCpuPercent": 78.63383225806452,
+              "meanQuotaPercent": 9.829229032258064,
+              "maxCpuPercent": 79.89773314774308,
+              "throttledPeriods": 0,
+              "periods": 852,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.249,
+              "maxGapSeconds": 5.062,
+              "meanCpuPercent": 22.51408579572781,
+              "meanQuotaPercent": 5.628521448931952,
+              "maxCpuPercent": 22.83328685258964,
+              "throttledPeriods": 0,
+              "periods": 852,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c1-measured-r2",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "measured",
+          "repeat": 2,
+          "concurrency": 1,
+          "startedAt": "2026-10-13T08:39:20.151Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=1",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r2-environment.json",
+          "finishedAt": "2026-10-13T08:40:51.699Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r2.txt",
+          "metrics": {
+            "transactions": 2798262,
+            "queries": 2798262,
+            "tps": 31087.21,
+            "qps": 31087.21,
+            "averageLatencyMs": 0.03,
+            "p95Ms": 0.047,
+            "p99Ms": 0.08,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r2-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.487,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.487,
+              "maxGapSeconds": 5.297,
+              "meanCpuPercent": 77.98122521552985,
+              "meanQuotaPercent": 9.74765315194123,
+              "maxCpuPercent": 78.948708780294,
+              "throttledPeriods": 0,
+              "periods": 854,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.488,
+              "maxGapSeconds": 5.299,
+              "meanCpuPercent": 22.737150243309003,
+              "meanQuotaPercent": 5.684287560827251,
+              "maxCpuPercent": 23.578896882494004,
+              "throttledPeriods": 0,
+              "periods": 855,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c8-warmup-r0",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "warmup",
+          "repeat": 0,
+          "concurrency": 8,
+          "startedAt": "2026-10-13T08:48:07.456Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=8",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-warmup-r0-environment.json",
+          "finishedAt": "2026-10-13T08:48:39.317Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-warmup-r0.txt",
+          "metrics": {
+            "transactions": 7022039,
+            "queries": 7022039,
+            "tps": 233981.78,
+            "qps": 233981.78,
+            "averageLatencyMs": 0.03,
+            "p95Ms": 0.039,
+            "p99Ms": 0.08,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c8-measured-r1",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "measured",
+          "repeat": 1,
+          "concurrency": 8,
+          "startedAt": "2026-10-13T08:48:40.106Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=8",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r1-environment.json",
+          "finishedAt": "2026-10-13T08:50:12.054Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r1.txt",
+          "metrics": {
+            "transactions": 20279131,
+            "queries": 20279131,
+            "tps": 225292.78,
+            "qps": 225292.78,
+            "averageLatencyMs": 0.04,
+            "p95Ms": 0.042,
+            "p99Ms": 0.1,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r1-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.416,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.419,
+              "maxGapSeconds": 5.159,
+              "meanCpuPercent": 624.8501398986174,
+              "meanQuotaPercent": 78.10626748732717,
+              "maxCpuPercent": 630.768294141092,
+              "throttledPeriods": 0,
+              "periods": 854,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.416,
+              "maxGapSeconds": 5.126,
+              "meanCpuPercent": 170.63617120914114,
+              "meanQuotaPercent": 42.659042802285285,
+              "maxCpuPercent": 171.69572939533026,
+              "throttledPeriods": 0,
+              "periods": 854,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c8-measured-r2",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "measured",
+          "repeat": 2,
+          "concurrency": 8,
+          "startedAt": "2026-10-13T08:50:12.819Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=8",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r2-environment.json",
+          "finishedAt": "2026-10-13T08:51:44.806Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r2.txt",
+          "metrics": {
+            "transactions": 20732192,
+            "queries": 20732192,
+            "tps": 230303.96,
+            "qps": 230303.96,
+            "averageLatencyMs": 0.03,
+            "p95Ms": 0.042,
+            "p99Ms": 0.09,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r2-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.295,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.297,
+              "maxGapSeconds": 5.074,
+              "meanCpuPercent": 626.3494143990997,
+              "meanQuotaPercent": 78.29367679988746,
+              "maxCpuPercent": 629.8724875124875,
+              "throttledPeriods": 0,
+              "periods": 853,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.295,
+              "maxGapSeconds": 5.074,
+              "meanCpuPercent": 169.7543994372472,
+              "meanQuotaPercent": 42.4385998593118,
+              "maxCpuPercent": 170.92670795045944,
+              "throttledPeriods": 0,
+              "periods": 853,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c16-warmup-r0",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "warmup",
+          "repeat": 0,
+          "concurrency": 16,
+          "startedAt": "2026-10-13T08:51:45.588Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-warmup-r0-environment.json",
+          "finishedAt": "2026-10-13T08:52:18.117Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-warmup-r0.txt",
+          "metrics": {
+            "transactions": 7054309,
+            "queries": 7054309,
+            "tps": 235064.25,
+            "qps": 235064.25,
+            "averageLatencyMs": 0.07,
+            "p95Ms": 0.108,
+            "p99Ms": 0.25,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c16-measured-r1",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "measured",
+          "repeat": 1,
+          "concurrency": 16,
+          "startedAt": "2026-10-13T08:52:18.927Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r1-environment.json",
+          "finishedAt": "2026-10-13T08:53:51.616Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r1.txt",
+          "metrics": {
+            "transactions": 19852024,
+            "queries": 19852024,
+            "tps": 220511.33,
+            "qps": 220511.33,
+            "averageLatencyMs": 0.07,
+            "p95Ms": 0.12,
+            "p99Ms": 0.32,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r1-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.762,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.762,
+              "maxGapSeconds": 5.496,
+              "meanCpuPercent": 707.4380833002962,
+              "meanQuotaPercent": 88.42976041253702,
+              "maxCpuPercent": 709.7508190171794,
+              "throttledPeriods": 0,
+              "periods": 857,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.764,
+              "maxGapSeconds": 5.489,
+              "meanCpuPercent": 189.45145399001913,
+              "meanQuotaPercent": 47.36286349750478,
+              "maxCpuPercent": 191.8751497005988,
+              "throttledPeriods": 0,
+              "periods": 858,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-indexed-c16-measured-r2",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "indexed",
+          "kind": "measured",
+          "repeat": 2,
+          "concurrency": 16,
+          "startedAt": "2026-10-13T08:53:52.450Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2-environment.json",
+          "finishedAt": "2026-10-13T08:55:24.963Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2.txt",
+          "metrics": {
+            "transactions": 20276385,
+            "queries": 20276385,
+            "tps": 225237.71,
+            "qps": 225237.71,
+            "averageLatencyMs": 0.07,
+            "p95Ms": 0.118,
+            "p99Ms": 0.28,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 17,
+            "coverageSeconds": 80.692,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 80.693,
+              "maxGapSeconds": 5.423,
+              "meanCpuPercent": 708.5479892927515,
+              "meanQuotaPercent": 88.56849866159394,
+              "maxCpuPercent": 711.9002197802198,
+              "throttledPeriods": 2,
+              "periods": 807,
+              "throttledTimeSeconds": 0.015882
+            },
+            "loadgen": {
+              "coverageSeconds": 80.692,
+              "maxGapSeconds": 5.41,
+              "meanCpuPercent": 188.14893050116493,
+              "meanQuotaPercent": 47.03723262529123,
+              "maxCpuPercent": 189.85178180370298,
+              "throttledPeriods": 0,
+              "periods": 807,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        }
+      ],
+      "points": [
+        {
+          "concurrency": 1,
+          "tps": 31152.925,
+          "qps": 31152.925,
+          "p95Ms": 0.046,
+          "p99Ms": 0.07500000000000001,
+          "queriesPerTransaction": 1,
+          "attempts": 2,
+          "stability": "unstable",
+          "stats": {
+            "transactions": {
+              "mean": 2804594.5,
+              "median": 2804594.5,
+              "min": 2798262,
+              "max": 2810927,
+              "relativeSpreadPercent": 0.4515804334637325
+            },
+            "queries": {
+              "mean": 2804594.5,
+              "median": 2804594.5,
+              "min": 2798262,
+              "max": 2810927,
+              "relativeSpreadPercent": 0.4515804334637325
+            },
+            "tps": {
+              "mean": 31152.925,
+              "median": 31152.925,
+              "min": 31087.21,
+              "max": 31218.64,
+              "relativeSpreadPercent": 0.4218865483738695
+            },
+            "qps": {
+              "mean": 31152.925,
+              "median": 31152.925,
+              "min": 31087.21,
+              "max": 31218.64,
+              "relativeSpreadPercent": 0.4218865483738695
+            },
+            "averageLatencyMs": {
+              "mean": 0.03,
+              "median": 0.03,
+              "min": 0.03,
+              "max": 0.03,
+              "relativeSpreadPercent": 0
+            },
+            "p95Ms": {
+              "mean": 0.046,
+              "median": 0.046,
+              "min": 0.045,
+              "max": 0.047,
+              "relativeSpreadPercent": 4.347826086956526
+            },
+            "p99Ms": {
+              "mean": 0.07500000000000001,
+              "median": 0.07500000000000001,
+              "min": 0.07,
+              "max": 0.08,
+              "relativeSpreadPercent": 13.333333333333325
+            },
+            "queriesPerTransaction": {
+              "mean": 1,
+              "median": 1,
+              "min": 1,
+              "max": 1,
+              "relativeSpreadPercent": 0
+            }
+          },
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 78.30707579493607,
+              "meanQuotaPercent": 9.788384474367009,
+              "maxCpuPercent": 79.89773314774308,
+              "periods": 1706,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.737
+            },
+            "loadgen": {
+              "meanCpuPercent": 22.62577414385868,
+              "meanQuotaPercent": 5.65644353596467,
+              "maxCpuPercent": 23.578896882494004,
+              "periods": 1707,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.737
+            }
+          },
+          "runs": [
+            {
+              "runId": "index-read-formal-20261013-c-indexed-c1-measured-r1",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "indexed",
+              "kind": "measured",
+              "repeat": 1,
+              "concurrency": 1,
+              "startedAt": "2026-10-13T08:37:47.575Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=1",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r1-environment.json",
+              "finishedAt": "2026-10-13T08:39:19.270Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r1.txt",
+              "metrics": {
+                "transactions": 2810927,
+                "queries": 2810927,
+                "tps": 31218.64,
+                "qps": 31218.64,
+                "averageLatencyMs": 0.03,
+                "p95Ms": 0.045,
+                "p99Ms": 0.07,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r1-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.249,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.25,
+                  "maxGapSeconds": 5.062,
+                  "meanCpuPercent": 78.63383225806452,
+                  "meanQuotaPercent": 9.829229032258064,
+                  "maxCpuPercent": 79.89773314774308,
+                  "throttledPeriods": 0,
+                  "periods": 852,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.249,
+                  "maxGapSeconds": 5.062,
+                  "meanCpuPercent": 22.51408579572781,
+                  "meanQuotaPercent": 5.628521448931952,
+                  "maxCpuPercent": 22.83328685258964,
+                  "throttledPeriods": 0,
+                  "periods": 852,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            },
+            {
+              "runId": "index-read-formal-20261013-c-indexed-c1-measured-r2",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "indexed",
+              "kind": "measured",
+              "repeat": 2,
+              "concurrency": 1,
+              "startedAt": "2026-10-13T08:39:20.151Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=1",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r2-environment.json",
+              "finishedAt": "2026-10-13T08:40:51.699Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r2.txt",
+              "metrics": {
+                "transactions": 2798262,
+                "queries": 2798262,
+                "tps": 31087.21,
+                "qps": 31087.21,
+                "averageLatencyMs": 0.03,
+                "p95Ms": 0.047,
+                "p99Ms": 0.08,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c1-measured-r2-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.487,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.487,
+                  "maxGapSeconds": 5.297,
+                  "meanCpuPercent": 77.98122521552985,
+                  "meanQuotaPercent": 9.74765315194123,
+                  "maxCpuPercent": 78.948708780294,
+                  "throttledPeriods": 0,
+                  "periods": 854,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.488,
+                  "maxGapSeconds": 5.299,
+                  "meanCpuPercent": 22.737150243309003,
+                  "meanQuotaPercent": 5.684287560827251,
+                  "maxCpuPercent": 23.578896882494004,
+                  "throttledPeriods": 0,
+                  "periods": 855,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            }
+          ]
+        },
+        {
+          "concurrency": 8,
+          "tps": 227798.37,
+          "qps": 227798.37,
+          "p95Ms": 0.042,
+          "p99Ms": 0.095,
+          "queriesPerTransaction": 1,
+          "attempts": 2,
+          "stability": "unstable",
+          "stats": {
+            "transactions": {
+              "mean": 20505661.5,
+              "median": 20505661.5,
+              "min": 20279131,
+              "max": 20732192,
+              "relativeSpreadPercent": 2.209443474915452
+            },
+            "queries": {
+              "mean": 20505661.5,
+              "median": 20505661.5,
+              "min": 20279131,
+              "max": 20732192,
+              "relativeSpreadPercent": 2.209443474915452
+            },
+            "tps": {
+              "mean": 227798.37,
+              "median": 227798.37,
+              "min": 225292.78,
+              "max": 230303.96,
+              "relativeSpreadPercent": 2.1998313684158464
+            },
+            "qps": {
+              "mean": 227798.37,
+              "median": 227798.37,
+              "min": 225292.78,
+              "max": 230303.96,
+              "relativeSpreadPercent": 2.1998313684158464
+            },
+            "averageLatencyMs": {
+              "mean": 0.035,
+              "median": 0.035,
+              "min": 0.03,
+              "max": 0.04,
+              "relativeSpreadPercent": 28.571428571428577
+            },
+            "p95Ms": {
+              "mean": 0.042,
+              "median": 0.042,
+              "min": 0.042,
+              "max": 0.042,
+              "relativeSpreadPercent": 0
+            },
+            "p99Ms": {
+              "mean": 0.095,
+              "median": 0.095,
+              "min": 0.09,
+              "max": 0.1,
+              "relativeSpreadPercent": 10.526315789473694
+            },
+            "queriesPerTransaction": {
+              "mean": 1,
+              "median": 1,
+              "min": 1,
+              "max": 1,
+              "relativeSpreadPercent": 0
+            }
+          },
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 625.5992414302116,
+              "meanQuotaPercent": 78.19990517877645,
+              "maxCpuPercent": 630.768294141092,
+              "periods": 1707,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.716
+            },
+            "loadgen": {
+              "meanCpuPercent": 170.19559782322168,
+              "meanQuotaPercent": 42.54889945580542,
+              "maxCpuPercent": 171.69572939533026,
+              "periods": 1707,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.711
+            }
+          },
+          "runs": [
+            {
+              "runId": "index-read-formal-20261013-c-indexed-c8-measured-r1",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "indexed",
+              "kind": "measured",
+              "repeat": 1,
+              "concurrency": 8,
+              "startedAt": "2026-10-13T08:48:40.106Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=8",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r1-environment.json",
+              "finishedAt": "2026-10-13T08:50:12.054Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r1.txt",
+              "metrics": {
+                "transactions": 20279131,
+                "queries": 20279131,
+                "tps": 225292.78,
+                "qps": 225292.78,
+                "averageLatencyMs": 0.04,
+                "p95Ms": 0.042,
+                "p99Ms": 0.1,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r1-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.416,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.419,
+                  "maxGapSeconds": 5.159,
+                  "meanCpuPercent": 624.8501398986174,
+                  "meanQuotaPercent": 78.10626748732717,
+                  "maxCpuPercent": 630.768294141092,
+                  "throttledPeriods": 0,
+                  "periods": 854,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.416,
+                  "maxGapSeconds": 5.126,
+                  "meanCpuPercent": 170.63617120914114,
+                  "meanQuotaPercent": 42.659042802285285,
+                  "maxCpuPercent": 171.69572939533026,
+                  "throttledPeriods": 0,
+                  "periods": 854,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            },
+            {
+              "runId": "index-read-formal-20261013-c-indexed-c8-measured-r2",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "indexed",
+              "kind": "measured",
+              "repeat": 2,
+              "concurrency": 8,
+              "startedAt": "2026-10-13T08:50:12.819Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=8",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r2-environment.json",
+              "finishedAt": "2026-10-13T08:51:44.806Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r2.txt",
+              "metrics": {
+                "transactions": 20732192,
+                "queries": 20732192,
+                "tps": 230303.96,
+                "qps": 230303.96,
+                "averageLatencyMs": 0.03,
+                "p95Ms": 0.042,
+                "p99Ms": 0.09,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c8-measured-r2-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.295,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.297,
+                  "maxGapSeconds": 5.074,
+                  "meanCpuPercent": 626.3494143990997,
+                  "meanQuotaPercent": 78.29367679988746,
+                  "maxCpuPercent": 629.8724875124875,
+                  "throttledPeriods": 0,
+                  "periods": 853,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.295,
+                  "maxGapSeconds": 5.074,
+                  "meanCpuPercent": 169.7543994372472,
+                  "meanQuotaPercent": 42.4385998593118,
+                  "maxCpuPercent": 170.92670795045944,
+                  "throttledPeriods": 0,
+                  "periods": 853,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            }
+          ]
+        },
+        {
+          "concurrency": 16,
+          "tps": 222874.52,
+          "qps": 222874.52,
+          "p95Ms": 0.119,
+          "p99Ms": 0.30000000000000004,
+          "queriesPerTransaction": 1,
+          "attempts": 2,
+          "stability": "unstable",
+          "stats": {
+            "transactions": {
+              "mean": 20064204.5,
+              "median": 20064204.5,
+              "min": 19852024,
+              "max": 20276385,
+              "relativeSpreadPercent": 2.1150153249285313
+            },
+            "queries": {
+              "mean": 20064204.5,
+              "median": 20064204.5,
+              "min": 19852024,
+              "max": 20276385,
+              "relativeSpreadPercent": 2.1150153249285313
+            },
+            "tps": {
+              "mean": 222874.52,
+              "median": 222874.52,
+              "min": 220511.33,
+              "max": 225237.71,
+              "relativeSpreadPercent": 2.120646182434854
+            },
+            "qps": {
+              "mean": 222874.52,
+              "median": 222874.52,
+              "min": 220511.33,
+              "max": 225237.71,
+              "relativeSpreadPercent": 2.120646182434854
+            },
+            "averageLatencyMs": {
+              "mean": 0.07,
+              "median": 0.07,
+              "min": 0.07,
+              "max": 0.07,
+              "relativeSpreadPercent": 0
+            },
+            "p95Ms": {
+              "mean": 0.119,
+              "median": 0.119,
+              "min": 0.118,
+              "max": 0.12,
+              "relativeSpreadPercent": 1.6806722689075646
+            },
+            "p99Ms": {
+              "mean": 0.30000000000000004,
+              "median": 0.30000000000000004,
+              "min": 0.28,
+              "max": 0.32,
+              "relativeSpreadPercent": 13.333333333333325
+            },
+            "queriesPerTransaction": {
+              "mean": 1,
+              "median": 1,
+              "min": 1,
+              "max": 1,
+              "relativeSpreadPercent": 0
+            }
+          },
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 707.9761364933466,
+              "meanQuotaPercent": 88.49701706166833,
+              "maxCpuPercent": 711.9002197802198,
+              "periods": 1664,
+              "throttledPeriods": 2,
+              "throttledTimeSeconds": 0.015882,
+              "coverageSeconds": 166.45499999999998
+            },
+            "loadgen": {
+              "meanCpuPercent": 188.82003652616908,
+              "meanQuotaPercent": 47.20500913154227,
+              "maxCpuPercent": 191.8751497005988,
+              "periods": 1665,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 166.456
+            }
+          },
+          "runs": [
+            {
+              "runId": "index-read-formal-20261013-c-indexed-c16-measured-r1",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "indexed",
+              "kind": "measured",
+              "repeat": 1,
+              "concurrency": 16,
+              "startedAt": "2026-10-13T08:52:18.927Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=16",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r1-environment.json",
+              "finishedAt": "2026-10-13T08:53:51.616Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r1.txt",
+              "metrics": {
+                "transactions": 19852024,
+                "queries": 19852024,
+                "tps": 220511.33,
+                "qps": 220511.33,
+                "averageLatencyMs": 0.07,
+                "p95Ms": 0.12,
+                "p99Ms": 0.32,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r1-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.762,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.762,
+                  "maxGapSeconds": 5.496,
+                  "meanCpuPercent": 707.4380833002962,
+                  "meanQuotaPercent": 88.42976041253702,
+                  "maxCpuPercent": 709.7508190171794,
+                  "throttledPeriods": 0,
+                  "periods": 857,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.764,
+                  "maxGapSeconds": 5.489,
+                  "meanCpuPercent": 189.45145399001913,
+                  "meanQuotaPercent": 47.36286349750478,
+                  "maxCpuPercent": 191.8751497005988,
+                  "throttledPeriods": 0,
+                  "periods": 858,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            },
+            {
+              "runId": "index-read-formal-20261013-c-indexed-c16-measured-r2",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "indexed",
+              "kind": "measured",
+              "repeat": 2,
+              "concurrency": 16,
+              "startedAt": "2026-10-13T08:53:52.450Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=16",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2-environment.json",
+              "finishedAt": "2026-10-13T08:55:24.963Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2.txt",
+              "metrics": {
+                "transactions": 20276385,
+                "queries": 20276385,
+                "tps": 225237.71,
+                "qps": 225237.71,
+                "averageLatencyMs": 0.07,
+                "p95Ms": 0.118,
+                "p99Ms": 0.28,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 17,
+                "coverageSeconds": 80.692,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 80.693,
+                  "maxGapSeconds": 5.423,
+                  "meanCpuPercent": 708.5479892927515,
+                  "meanQuotaPercent": 88.56849866159394,
+                  "maxCpuPercent": 711.9002197802198,
+                  "throttledPeriods": 2,
+                  "periods": 807,
+                  "throttledTimeSeconds": 0.015882
+                },
+                "loadgen": {
+                  "coverageSeconds": 80.692,
+                  "maxGapSeconds": 5.41,
+                  "meanCpuPercent": 188.14893050116493,
+                  "meanQuotaPercent": 47.03723262529123,
+                  "maxCpuPercent": 189.85178180370298,
+                  "throttledPeriods": 0,
+                  "periods": 807,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            }
+          ]
+        }
+      ],
+      "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-environment.json",
+      "finalDatasetPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-dataset-final.json",
+      "finalPlansPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-plans-final.json"
+    },
+    {
+      "id": "table-scan",
+      "label": "无二级索引（全表扫描）",
+      "runGroup": "index-read-formal-20261013-c",
+      "database": "pp_index_read_70191d871a66ad10_scan",
+      "environment": {
+        "schemaVersion": 1,
+        "generatedAt": "2026-10-13T08:35:57.287Z",
+        "environmentLabel": "local Docker benchmark",
+        "exploratory": false,
+        "container": {
+          "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+          "imagePlatform": "linux/arm64",
+          "repositoryDigests": [
+            "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+          ],
+          "platform": "linux/arm64",
+          "mysqlCpuLimit": 8,
+          "mysqlMemoryLimit": "6g",
+          "loadGeneratorCpuLimit": 4,
+          "loadGeneratorMemoryLimit": "1g",
+          "containerId": "7d756da4e1c25d2698c0c9dc37bbc5de7f4681977ef613f3eb64971f74d4cd68"
+        },
+        "mysql": {
+          "version": "8.4.11",
+          "bufferPoolBytes": 3221225472,
+          "maxConnections": 512,
+          "transactionIsolation": "REPEATABLE-READ",
+          "logBinEnabled": true,
+          "flushLogAtTransactionCommit": 1,
+          "syncBinlog": 1,
+          "flushLogAtTimeout": 1
+        },
+        "loadGenerator": {
+          "image": "performance-profile/mysql-sysbench:1.0.0",
+          "imageId": "sha256:84066a5dabc6169a37e67ac54c586ca96ca7045f2e03dbe52bb61033a85ae5ff",
+          "imagePlatform": "linux/arm64",
+          "sysbenchVersion": "sysbench 1.0.20"
+        },
+        "runtime": {
+          "dockerServer": "29.4.0|linux/arm64",
+          "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs"
+        },
+        "host": {
+          "model": "MacBookPro18,1",
+          "cpuCount": 10,
+          "memoryBytes": 17179869184,
+          "architecture": "arm64"
+        }
+      },
+      "datasetPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-dataset.json",
+      "plansPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-plans.json",
+      "runs": [
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c1-warmup-r0",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "warmup",
+          "repeat": 0,
+          "concurrency": 1,
+          "startedAt": "2026-10-13T08:40:52.503Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=1",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-warmup-r0-environment.json",
+          "finishedAt": "2026-10-13T08:41:23.906Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-warmup-r0.txt",
+          "metrics": {
+            "transactions": 2930,
+            "queries": 2930,
+            "tps": 97.63,
+            "qps": 97.63,
+            "averageLatencyMs": 10.24,
+            "p95Ms": 10.844,
+            "p99Ms": 16.71,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c1-measured-r1",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "measured",
+          "repeat": 1,
+          "concurrency": 1,
+          "startedAt": "2026-10-13T08:41:24.723Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=1",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r1-environment.json",
+          "finishedAt": "2026-10-13T08:42:56.185Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r1.txt",
+          "metrics": {
+            "transactions": 8702,
+            "queries": 8702,
+            "tps": 96.67,
+            "qps": 96.67,
+            "averageLatencyMs": 10.34,
+            "p95Ms": 11.654,
+            "p99Ms": 15.55,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r1-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.3,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.3,
+              "maxGapSeconds": 5.137,
+              "meanCpuPercent": 100.75529073856974,
+              "meanQuotaPercent": 12.594411342321218,
+              "maxCpuPercent": 101.52553276239793,
+              "throttledPeriods": 0,
+              "periods": 853,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.3,
+              "maxGapSeconds": 5.137,
+              "meanCpuPercent": 0.5741101992966002,
+              "meanQuotaPercent": 0.14352754982415006,
+              "maxCpuPercent": 0.7293106893106893,
+              "throttledPeriods": 0,
+              "periods": 818,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c1-measured-r2",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "measured",
+          "repeat": 2,
+          "concurrency": 1,
+          "startedAt": "2026-10-13T08:42:57.061Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=1",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r2-environment.json",
+          "finishedAt": "2026-10-13T08:44:28.513Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r2.txt",
+          "metrics": {
+            "transactions": 8839,
+            "queries": 8839,
+            "tps": 98.19,
+            "qps": 98.19,
+            "averageLatencyMs": 10.18,
+            "p95Ms": 10.844,
+            "p99Ms": 12.3,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r2-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.216,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.216,
+              "maxGapSeconds": 5.103,
+              "meanCpuPercent": 100.55064541870071,
+              "meanQuotaPercent": 12.568830677337589,
+              "maxCpuPercent": 101.29693471337579,
+              "throttledPeriods": 0,
+              "periods": 852,
+              "throttledTimeSeconds": 0
+            },
+            "loadgen": {
+              "coverageSeconds": 85.217,
+              "maxGapSeconds": 5.1,
+              "meanCpuPercent": 0.5488188976377953,
+              "meanQuotaPercent": 0.13720472440944884,
+              "maxCpuPercent": 0.788709032773781,
+              "throttledPeriods": 0,
+              "periods": 808,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c8-warmup-r0",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "warmup",
+          "repeat": 0,
+          "concurrency": 8,
+          "startedAt": "2026-10-13T08:44:29.309Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=8",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-warmup-r0-environment.json",
+          "finishedAt": "2026-10-13T08:45:01.261Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-warmup-r0.txt",
+          "metrics": {
+            "transactions": 17321,
+            "queries": 17321,
+            "tps": 576.94,
+            "qps": 576.94,
+            "averageLatencyMs": 13.86,
+            "p95Ms": 17.633,
+            "p99Ms": 27.66,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c8-measured-r1",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "measured",
+          "repeat": 1,
+          "concurrency": 8,
+          "startedAt": "2026-10-13T08:45:02.078Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=8",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r1-environment.json",
+          "finishedAt": "2026-10-13T08:46:33.959Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r1.txt",
+          "metrics": {
+            "transactions": 56994,
+            "queries": 56994,
+            "tps": 633.14,
+            "qps": 633.14,
+            "averageLatencyMs": 12.63,
+            "p95Ms": 16.115,
+            "p99Ms": 20,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r1-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.39,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.396,
+              "maxGapSeconds": 5.049,
+              "meanCpuPercent": 796.9574944962293,
+              "meanQuotaPercent": 99.61968681202866,
+              "maxCpuPercent": 797.6473862055258,
+              "throttledPeriods": 246,
+              "periods": 854,
+              "throttledTimeSeconds": 0.523327
+            },
+            "loadgen": {
+              "coverageSeconds": 85.39,
+              "maxGapSeconds": 5.049,
+              "meanCpuPercent": 2.532773158449467,
+              "meanQuotaPercent": 0.6331932896123668,
+              "maxCpuPercent": 2.7720740445859873,
+              "throttledPeriods": 0,
+              "periods": 853,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c8-measured-r2",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "measured",
+          "repeat": 2,
+          "concurrency": 8,
+          "startedAt": "2026-10-13T08:46:34.802Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=8",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r2-environment.json",
+          "finishedAt": "2026-10-13T08:48:06.709Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r2.txt",
+          "metrics": {
+            "transactions": 54687,
+            "queries": 54687,
+            "tps": 607.49,
+            "qps": 607.49,
+            "averageLatencyMs": 13.17,
+            "p95Ms": 16.706,
+            "p99Ms": 21.5,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r2-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.364,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.368,
+              "maxGapSeconds": 5.055,
+              "meanCpuPercent": 797.1181777715303,
+              "meanQuotaPercent": 99.63977222144129,
+              "maxCpuPercent": 798.2171314741036,
+              "throttledPeriods": 259,
+              "periods": 854,
+              "throttledTimeSeconds": 0.497199
+            },
+            "loadgen": {
+              "coverageSeconds": 85.364,
+              "maxGapSeconds": 5.054,
+              "meanCpuPercent": 2.4823930462490043,
+              "meanQuotaPercent": 0.6205982615622511,
+              "maxCpuPercent": 2.8809986130374483,
+              "throttledPeriods": 0,
+              "periods": 853,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c16-warmup-r0",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "warmup",
+          "repeat": 0,
+          "concurrency": 16,
+          "startedAt": "2026-10-13T08:55:25.791Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=30",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-warmup-r0-environment.json",
+          "finishedAt": "2026-10-13T08:55:58.403Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-warmup-r0.txt",
+          "metrics": {
+            "transactions": 18821,
+            "queries": 18821,
+            "tps": 626.86,
+            "qps": 626.86,
+            "averageLatencyMs": 25.51,
+            "p95Ms": 47.472,
+            "p99Ms": 58.92,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c16-measured-r1",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "measured",
+          "repeat": 1,
+          "concurrency": 16,
+          "startedAt": "2026-10-13T08:55:59.203Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r1-environment.json",
+          "finishedAt": "2026-10-13T08:57:32.182Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r1.txt",
+          "metrics": {
+            "transactions": 54211,
+            "queries": 54211,
+            "tps": 601.13,
+            "qps": 601.13,
+            "averageLatencyMs": 26.59,
+            "p95Ms": 47.472,
+            "p99Ms": 61.08,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r1-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.319,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.319,
+              "maxGapSeconds": 5.056,
+              "meanCpuPercent": 799.8511820344823,
+              "meanQuotaPercent": 99.9813977543103,
+              "maxCpuPercent": 801.0420298507462,
+              "throttledPeriods": 851,
+              "periods": 853,
+              "throttledTimeSeconds": 80.92688
+            },
+            "loadgen": {
+              "coverageSeconds": 85.32,
+              "maxGapSeconds": 5.056,
+              "meanCpuPercent": 2.77446319737459,
+              "meanQuotaPercent": 0.6936157993436475,
+              "maxCpuPercent": 6.130135620263263,
+              "throttledPeriods": 0,
+              "periods": 852,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        },
+        {
+          "runId": "index-read-formal-20261013-c-table-scan-c16-measured-r2",
+          "runGroup": "index-read-formal-20261013-c",
+          "group": "table-scan",
+          "kind": "measured",
+          "repeat": 2,
+          "concurrency": 16,
+          "startedAt": "2026-10-13T08:57:33.307Z",
+          "arguments": [
+            "/workspace/scripts/index-read.lua",
+            "--db-driver=mysql",
+            "--mysql-host=mysql",
+            "--mysql-port=3306",
+            "--mysql-user=root",
+            "--mysql-password=***",
+            "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+            "--tables=10",
+            "--table-size=100000",
+            "--threads=16",
+            "--time=90",
+            "--report-interval=10",
+            "--percentile=99",
+            "--histogram=on",
+            "--rand-type=uniform",
+            "--rand-seed=42",
+            "--mysql-ssl=off",
+            "run"
+          ],
+          "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r2-environment.json",
+          "finishedAt": "2026-10-13T08:59:05.688Z",
+          "exitCode": 0,
+          "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r2.txt",
+          "metrics": {
+            "transactions": 51956,
+            "queries": 51956,
+            "tps": 577.09,
+            "qps": 577.09,
+            "averageLatencyMs": 27.72,
+            "p95Ms": 49.213,
+            "p99Ms": 70.55,
+            "p95Source": "histogram",
+            "p99Source": "sysbench",
+            "ignoredErrors": 0,
+            "reconnects": 0,
+            "queriesPerTransaction": 1,
+            "errors": 0,
+            "queriesPerSecondPerTransaction": 1
+          },
+          "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r2-resources.json",
+          "resources": {
+            "valid": true,
+            "status": "complete",
+            "sampleCount": 18,
+            "coverageSeconds": 85.465,
+            "expectedSeconds": 90,
+            "limits": {
+              "mysql": {
+                "cpus": 8,
+                "memoryBytes": 6442450944
+              },
+              "loadgen": {
+                "cpus": 4,
+                "memoryBytes": 1073741824
+              }
+            },
+            "mysql": {
+              "coverageSeconds": 85.465,
+              "maxGapSeconds": 5.125,
+              "meanCpuPercent": 799.7204071842274,
+              "meanQuotaPercent": 99.96505089802842,
+              "maxCpuPercent": 801.0294489433143,
+              "throttledPeriods": 848,
+              "periods": 854,
+              "throttledTimeSeconds": 79.015524
+            },
+            "loadgen": {
+              "coverageSeconds": 85.472,
+              "maxGapSeconds": 5.131,
+              "meanCpuPercent": 2.8583933919880193,
+              "meanQuotaPercent": 0.7145983479970048,
+              "maxCpuPercent": 4.0596606786427145,
+              "throttledPeriods": 0,
+              "periods": 852,
+              "throttledTimeSeconds": 0
+            },
+            "errors": [],
+            "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+          }
+        }
+      ],
+      "points": [
+        {
+          "concurrency": 1,
+          "tps": 97.43,
+          "qps": 97.43,
+          "p95Ms": 11.248999999999999,
+          "p99Ms": 13.925,
+          "queriesPerTransaction": 1,
+          "attempts": 2,
+          "stability": "unstable",
+          "stats": {
+            "transactions": {
+              "mean": 8770.5,
+              "median": 8770.5,
+              "min": 8702,
+              "max": 8839,
+              "relativeSpreadPercent": 1.562054614902229
+            },
+            "queries": {
+              "mean": 8770.5,
+              "median": 8770.5,
+              "min": 8702,
+              "max": 8839,
+              "relativeSpreadPercent": 1.562054614902229
+            },
+            "tps": {
+              "mean": 97.43,
+              "median": 97.43,
+              "min": 96.67,
+              "max": 98.19,
+              "relativeSpreadPercent": 1.5600944267679318
+            },
+            "qps": {
+              "mean": 97.43,
+              "median": 97.43,
+              "min": 96.67,
+              "max": 98.19,
+              "relativeSpreadPercent": 1.5600944267679318
+            },
+            "averageLatencyMs": {
+              "mean": 10.26,
+              "median": 10.26,
+              "min": 10.18,
+              "max": 10.34,
+              "relativeSpreadPercent": 1.5594541910331399
+            },
+            "p95Ms": {
+              "mean": 11.248999999999999,
+              "median": 11.248999999999999,
+              "min": 10.844,
+              "max": 11.654,
+              "relativeSpreadPercent": 7.200640056893952
+            },
+            "p99Ms": {
+              "mean": 13.925,
+              "median": 13.925,
+              "min": 12.3,
+              "max": 15.55,
+              "relativeSpreadPercent": 23.33931777378815
+            },
+            "queriesPerTransaction": {
+              "mean": 1,
+              "median": 1,
+              "min": 1,
+              "max": 1,
+              "relativeSpreadPercent": 0
+            }
+          },
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 100.65301848506884,
+              "meanQuotaPercent": 12.581627310633605,
+              "maxCpuPercent": 101.52553276239793,
+              "periods": 1705,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.516
+            },
+            "loadgen": {
+              "meanCpuPercent": 0.561470703800794,
+              "meanQuotaPercent": 0.1403676759501985,
+              "maxCpuPercent": 0.788709032773781,
+              "periods": 1626,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.517
+            }
+          },
+          "runs": [
+            {
+              "runId": "index-read-formal-20261013-c-table-scan-c1-measured-r1",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "table-scan",
+              "kind": "measured",
+              "repeat": 1,
+              "concurrency": 1,
+              "startedAt": "2026-10-13T08:41:24.723Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=1",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r1-environment.json",
+              "finishedAt": "2026-10-13T08:42:56.185Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r1.txt",
+              "metrics": {
+                "transactions": 8702,
+                "queries": 8702,
+                "tps": 96.67,
+                "qps": 96.67,
+                "averageLatencyMs": 10.34,
+                "p95Ms": 11.654,
+                "p99Ms": 15.55,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r1-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.3,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.3,
+                  "maxGapSeconds": 5.137,
+                  "meanCpuPercent": 100.75529073856974,
+                  "meanQuotaPercent": 12.594411342321218,
+                  "maxCpuPercent": 101.52553276239793,
+                  "throttledPeriods": 0,
+                  "periods": 853,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.3,
+                  "maxGapSeconds": 5.137,
+                  "meanCpuPercent": 0.5741101992966002,
+                  "meanQuotaPercent": 0.14352754982415006,
+                  "maxCpuPercent": 0.7293106893106893,
+                  "throttledPeriods": 0,
+                  "periods": 818,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            },
+            {
+              "runId": "index-read-formal-20261013-c-table-scan-c1-measured-r2",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "table-scan",
+              "kind": "measured",
+              "repeat": 2,
+              "concurrency": 1,
+              "startedAt": "2026-10-13T08:42:57.061Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=1",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r2-environment.json",
+              "finishedAt": "2026-10-13T08:44:28.513Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r2.txt",
+              "metrics": {
+                "transactions": 8839,
+                "queries": 8839,
+                "tps": 98.19,
+                "qps": 98.19,
+                "averageLatencyMs": 10.18,
+                "p95Ms": 10.844,
+                "p99Ms": 12.3,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c1-measured-r2-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.216,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.216,
+                  "maxGapSeconds": 5.103,
+                  "meanCpuPercent": 100.55064541870071,
+                  "meanQuotaPercent": 12.568830677337589,
+                  "maxCpuPercent": 101.29693471337579,
+                  "throttledPeriods": 0,
+                  "periods": 852,
+                  "throttledTimeSeconds": 0
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.217,
+                  "maxGapSeconds": 5.1,
+                  "meanCpuPercent": 0.5488188976377953,
+                  "meanQuotaPercent": 0.13720472440944884,
+                  "maxCpuPercent": 0.788709032773781,
+                  "throttledPeriods": 0,
+                  "periods": 808,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            }
+          ]
+        },
+        {
+          "concurrency": 8,
+          "tps": 620.315,
+          "qps": 620.315,
+          "p95Ms": 16.4105,
+          "p99Ms": 20.75,
+          "queriesPerTransaction": 1,
+          "attempts": 2,
+          "stability": "acceptable",
+          "stats": {
+            "transactions": {
+              "mean": 55840.5,
+              "median": 55840.5,
+              "min": 54687,
+              "max": 56994,
+              "relativeSpreadPercent": 4.131409998119644
+            },
+            "queries": {
+              "mean": 55840.5,
+              "median": 55840.5,
+              "min": 54687,
+              "max": 56994,
+              "relativeSpreadPercent": 4.131409998119644
+            },
+            "tps": {
+              "mean": 620.315,
+              "median": 620.315,
+              "min": 607.49,
+              "max": 633.14,
+              "relativeSpreadPercent": 4.134995929487434
+            },
+            "qps": {
+              "mean": 620.315,
+              "median": 620.315,
+              "min": 607.49,
+              "max": 633.14,
+              "relativeSpreadPercent": 4.134995929487434
+            },
+            "averageLatencyMs": {
+              "mean": 12.9,
+              "median": 12.9,
+              "min": 12.63,
+              "max": 13.17,
+              "relativeSpreadPercent": 4.1860465116279
+            },
+            "p95Ms": {
+              "mean": 16.4105,
+              "median": 16.4105,
+              "min": 16.115,
+              "max": 16.706,
+              "relativeSpreadPercent": 3.601352792419495
+            },
+            "p99Ms": {
+              "mean": 20.75,
+              "median": 20.75,
+              "min": 20,
+              "max": 21.5,
+              "relativeSpreadPercent": 7.228915662650602
+            },
+            "queriesPerTransaction": {
+              "mean": 1,
+              "median": 1,
+              "min": 1,
+              "max": 1,
+              "relativeSpreadPercent": 0
+            }
+          },
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 797.0378229603429,
+              "meanQuotaPercent": 99.62972787004286,
+              "maxCpuPercent": 798.2171314741036,
+              "periods": 1708,
+              "throttledPeriods": 505,
+              "throttledTimeSeconds": 1.020526,
+              "coverageSeconds": 170.764
+            },
+            "loadgen": {
+              "meanCpuPercent": 2.5075869379341036,
+              "meanQuotaPercent": 0.6268967344835259,
+              "maxCpuPercent": 2.8809986130374483,
+              "periods": 1706,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.75400000000002
+            }
+          },
+          "runs": [
+            {
+              "runId": "index-read-formal-20261013-c-table-scan-c8-measured-r1",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "table-scan",
+              "kind": "measured",
+              "repeat": 1,
+              "concurrency": 8,
+              "startedAt": "2026-10-13T08:45:02.078Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=8",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r1-environment.json",
+              "finishedAt": "2026-10-13T08:46:33.959Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r1.txt",
+              "metrics": {
+                "transactions": 56994,
+                "queries": 56994,
+                "tps": 633.14,
+                "qps": 633.14,
+                "averageLatencyMs": 12.63,
+                "p95Ms": 16.115,
+                "p99Ms": 20,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r1-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.39,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.396,
+                  "maxGapSeconds": 5.049,
+                  "meanCpuPercent": 796.9574944962293,
+                  "meanQuotaPercent": 99.61968681202866,
+                  "maxCpuPercent": 797.6473862055258,
+                  "throttledPeriods": 246,
+                  "periods": 854,
+                  "throttledTimeSeconds": 0.523327
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.39,
+                  "maxGapSeconds": 5.049,
+                  "meanCpuPercent": 2.532773158449467,
+                  "meanQuotaPercent": 0.6331932896123668,
+                  "maxCpuPercent": 2.7720740445859873,
+                  "throttledPeriods": 0,
+                  "periods": 853,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            },
+            {
+              "runId": "index-read-formal-20261013-c-table-scan-c8-measured-r2",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "table-scan",
+              "kind": "measured",
+              "repeat": 2,
+              "concurrency": 8,
+              "startedAt": "2026-10-13T08:46:34.802Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=8",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r2-environment.json",
+              "finishedAt": "2026-10-13T08:48:06.709Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r2.txt",
+              "metrics": {
+                "transactions": 54687,
+                "queries": 54687,
+                "tps": 607.49,
+                "qps": 607.49,
+                "averageLatencyMs": 13.17,
+                "p95Ms": 16.706,
+                "p99Ms": 21.5,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c8-measured-r2-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.364,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.368,
+                  "maxGapSeconds": 5.055,
+                  "meanCpuPercent": 797.1181777715303,
+                  "meanQuotaPercent": 99.63977222144129,
+                  "maxCpuPercent": 798.2171314741036,
+                  "throttledPeriods": 259,
+                  "periods": 854,
+                  "throttledTimeSeconds": 0.497199
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.364,
+                  "maxGapSeconds": 5.054,
+                  "meanCpuPercent": 2.4823930462490043,
+                  "meanQuotaPercent": 0.6205982615622511,
+                  "maxCpuPercent": 2.8809986130374483,
+                  "throttledPeriods": 0,
+                  "periods": 853,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            }
+          ]
+        },
+        {
+          "concurrency": 16,
+          "tps": 589.11,
+          "qps": 589.11,
+          "p95Ms": 48.3425,
+          "p99Ms": 65.815,
+          "queriesPerTransaction": 1,
+          "attempts": 2,
+          "stability": "unstable",
+          "stats": {
+            "transactions": {
+              "mean": 53083.5,
+              "median": 53083.5,
+              "min": 51956,
+              "max": 54211,
+              "relativeSpreadPercent": 4.248024339013065
+            },
+            "queries": {
+              "mean": 53083.5,
+              "median": 53083.5,
+              "min": 51956,
+              "max": 54211,
+              "relativeSpreadPercent": 4.248024339013065
+            },
+            "tps": {
+              "mean": 589.11,
+              "median": 589.11,
+              "min": 577.09,
+              "max": 601.13,
+              "relativeSpreadPercent": 4.080731951587983
+            },
+            "qps": {
+              "mean": 589.11,
+              "median": 589.11,
+              "min": 577.09,
+              "max": 601.13,
+              "relativeSpreadPercent": 4.080731951587983
+            },
+            "averageLatencyMs": {
+              "mean": 27.155,
+              "median": 27.155,
+              "min": 26.59,
+              "max": 27.72,
+              "relativeSpreadPercent": 4.161296262198486
+            },
+            "p95Ms": {
+              "mean": 48.3425,
+              "median": 48.3425,
+              "min": 47.472,
+              "max": 49.213,
+              "relativeSpreadPercent": 3.601385944045094
+            },
+            "p99Ms": {
+              "mean": 65.815,
+              "median": 65.815,
+              "min": 61.08,
+              "max": 70.55,
+              "relativeSpreadPercent": 14.388817138950087
+            },
+            "queriesPerTransaction": {
+              "mean": 1,
+              "median": 1,
+              "min": 1,
+              "max": 1,
+              "relativeSpreadPercent": 0
+            }
+          },
+          "resources": {
+            "mysql": {
+              "meanCpuPercent": 799.7857387108862,
+              "meanQuotaPercent": 99.97321733886078,
+              "maxCpuPercent": 801.0420298507462,
+              "periods": 1707,
+              "throttledPeriods": 1699,
+              "throttledTimeSeconds": 159.942404,
+              "coverageSeconds": 170.784
+            },
+            "loadgen": {
+              "meanCpuPercent": 2.816465642418849,
+              "meanQuotaPercent": 0.7041164106047122,
+              "maxCpuPercent": 6.130135620263263,
+              "periods": 1704,
+              "throttledPeriods": 0,
+              "throttledTimeSeconds": 0,
+              "coverageSeconds": 170.79199999999997
+            }
+          },
+          "runs": [
+            {
+              "runId": "index-read-formal-20261013-c-table-scan-c16-measured-r1",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "table-scan",
+              "kind": "measured",
+              "repeat": 1,
+              "concurrency": 16,
+              "startedAt": "2026-10-13T08:55:59.203Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=16",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r1-environment.json",
+              "finishedAt": "2026-10-13T08:57:32.182Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r1.txt",
+              "metrics": {
+                "transactions": 54211,
+                "queries": 54211,
+                "tps": 601.13,
+                "qps": 601.13,
+                "averageLatencyMs": 26.59,
+                "p95Ms": 47.472,
+                "p99Ms": 61.08,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r1-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.319,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.319,
+                  "maxGapSeconds": 5.056,
+                  "meanCpuPercent": 799.8511820344823,
+                  "meanQuotaPercent": 99.9813977543103,
+                  "maxCpuPercent": 801.0420298507462,
+                  "throttledPeriods": 851,
+                  "periods": 853,
+                  "throttledTimeSeconds": 80.92688
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.32,
+                  "maxGapSeconds": 5.056,
+                  "meanCpuPercent": 2.77446319737459,
+                  "meanQuotaPercent": 0.6936157993436475,
+                  "maxCpuPercent": 6.130135620263263,
+                  "throttledPeriods": 0,
+                  "periods": 852,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            },
+            {
+              "runId": "index-read-formal-20261013-c-table-scan-c16-measured-r2",
+              "runGroup": "index-read-formal-20261013-c",
+              "group": "table-scan",
+              "kind": "measured",
+              "repeat": 2,
+              "concurrency": 16,
+              "startedAt": "2026-10-13T08:57:33.307Z",
+              "arguments": [
+                "/workspace/scripts/index-read.lua",
+                "--db-driver=mysql",
+                "--mysql-host=mysql",
+                "--mysql-port=3306",
+                "--mysql-user=root",
+                "--mysql-password=***",
+                "--mysql-db=pp_index_read_70191d871a66ad10_scan",
+                "--tables=10",
+                "--table-size=100000",
+                "--threads=16",
+                "--time=90",
+                "--report-interval=10",
+                "--percentile=99",
+                "--histogram=on",
+                "--rand-type=uniform",
+                "--rand-seed=42",
+                "--mysql-ssl=off",
+                "run"
+              ],
+              "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r2-environment.json",
+              "finishedAt": "2026-10-13T08:59:05.688Z",
+              "exitCode": 0,
+              "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r2.txt",
+              "metrics": {
+                "transactions": 51956,
+                "queries": 51956,
+                "tps": 577.09,
+                "qps": 577.09,
+                "averageLatencyMs": 27.72,
+                "p95Ms": 49.213,
+                "p99Ms": 70.55,
+                "p95Source": "histogram",
+                "p99Source": "sysbench",
+                "ignoredErrors": 0,
+                "reconnects": 0,
+                "queriesPerTransaction": 1,
+                "errors": 0,
+                "queriesPerSecondPerTransaction": 1
+              },
+              "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-c16-measured-r2-resources.json",
+              "resources": {
+                "valid": true,
+                "status": "complete",
+                "sampleCount": 18,
+                "coverageSeconds": 85.465,
+                "expectedSeconds": 90,
+                "limits": {
+                  "mysql": {
+                    "cpus": 8,
+                    "memoryBytes": 6442450944
+                  },
+                  "loadgen": {
+                    "cpus": 4,
+                    "memoryBytes": 1073741824
+                  }
+                },
+                "mysql": {
+                  "coverageSeconds": 85.465,
+                  "maxGapSeconds": 5.125,
+                  "meanCpuPercent": 799.7204071842274,
+                  "meanQuotaPercent": 99.96505089802842,
+                  "maxCpuPercent": 801.0294489433143,
+                  "throttledPeriods": 848,
+                  "periods": 854,
+                  "throttledTimeSeconds": 79.015524
+                },
+                "loadgen": {
+                  "coverageSeconds": 85.472,
+                  "maxGapSeconds": 5.131,
+                  "meanCpuPercent": 2.8583933919880193,
+                  "meanQuotaPercent": 0.7145983479970048,
+                  "maxCpuPercent": 4.0596606786427145,
+                  "throttledPeriods": 0,
+                  "periods": 852,
+                  "throttledTimeSeconds": 0
+                },
+                "errors": [],
+                "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+              }
+            }
+          ]
+        }
+      ],
+      "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-environment.json",
+      "finalDatasetPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-dataset-final.json",
+      "finalPlansPath": "benchmarks/mysql/results/index-read-formal-20261013-c-table-scan-plans-final.json"
+    }
+  ],
+  "baselineEnvironmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-baseline-environment.json",
+  "workload": {
+    "sql": "SELECT c FROM sbtestN WHERE k=?",
+    "script": "/workspace/scripts/index-read.lua",
+    "scriptSha256": "f0485b75696cb76cf578535d077ef91077d4a75203a5e735bc862f26d95f7f1e",
+    "scriptSnapshotPath": "benchmarks/mysql/results/index-read-formal-20261013-c-workload.lua",
+    "seed": 42,
+    "returnedRows": 1,
+    "queriesPerEvent": 1
+  },
+  "restorationPath": "benchmarks/mysql/results/index-read-formal-20261013-c-restoration.json"
+}

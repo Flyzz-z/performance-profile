@@ -1,0 +1,119 @@
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+INDEX_READ_SQL=SELECT c FROM sbtestN WHERE k=?
+INDEX_READ_RESULT=one-row;payload=c;prepared=true
+Running the test with following options:
+Number of threads: 1
+Report intermediate results every 10 second(s)
+Initializing random number generator from seed (42).
+
+
+Initializing worker threads...
+
+Threads started!
+
+[ 10s ] thds: 1 tps: 95.55 qps: 95.55 (r/w/o: 95.55/0.00/0.00) lat (ms,99%): 18.61 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 1 tps: 91.43 qps: 91.43 (r/w/o: 91.43/0.00/0.00) lat (ms,99%): 21.50 err/s: 0.00 reconn/s: 0.00
+[ 30s ] thds: 1 tps: 98.07 qps: 98.07 (r/w/o: 98.07/0.00/0.00) lat (ms,99%): 13.70 err/s: 0.00 reconn/s: 0.00
+[ 40s ] thds: 1 tps: 93.10 qps: 93.10 (r/w/o: 93.10/0.00/0.00) lat (ms,99%): 16.41 err/s: 0.00 reconn/s: 0.00
+[ 50s ] thds: 1 tps: 98.05 qps: 98.05 (r/w/o: 98.05/0.00/0.00) lat (ms,99%): 12.98 err/s: 0.00 reconn/s: 0.00
+[ 60s ] thds: 1 tps: 98.85 qps: 98.85 (r/w/o: 98.85/0.00/0.00) lat (ms,99%): 12.75 err/s: 0.00 reconn/s: 0.00
+[ 70s ] thds: 1 tps: 98.30 qps: 98.30 (r/w/o: 98.30/0.00/0.00) lat (ms,99%): 12.30 err/s: 0.00 reconn/s: 0.00
+[ 80s ] thds: 1 tps: 98.14 qps: 98.14 (r/w/o: 98.14/0.00/0.00) lat (ms,99%): 14.46 err/s: 0.00 reconn/s: 0.00
+INDEX_READ_VALIDATED thread=0 events=8702
+[ 90s ] thds: 1 tps: 98.66 qps: 98.66 (r/w/o: 98.66/0.00/0.00) lat (ms,99%): 11.87 err/s: 0.00 reconn/s: 0.00
+Latency histogram (values are in milliseconds)
+       value  ------------- distribution ------------- count
+       9.734 |**************                           909
+       9.910 |**************************************** 2669
+      10.090 |**********************************       2270
+      10.274 |**************                           962
+      10.460 |********                                 565
+      10.651 |******                                   368
+      10.844 |***                                      220
+      11.041 |**                                       118
+      11.242 |*                                        97
+      11.446 |*                                        78
+      11.654 |*                                        82
+      11.866 |*                                        50
+      12.081 |                                         33
+      12.301 |                                         27
+      12.524 |                                         24
+      12.752 |                                         14
+      12.984 |                                         21
+      13.219 |                                         10
+      13.460 |                                         12
+      13.704 |                                         18
+      13.953 |                                         13
+      14.207 |                                         5
+      14.465 |                                         18
+      14.728 |                                         12
+      14.995 |                                         6
+      15.268 |                                         6
+      15.545 |                                         14
+      15.828 |                                         4
+      16.115 |                                         7
+      16.408 |                                         4
+      16.706 |                                         4
+      17.010 |                                         4
+      17.319 |                                         2
+      17.633 |                                         1
+      17.954 |                                         4
+      18.280 |                                         3
+      18.612 |                                         3
+      18.950 |                                         5
+      19.295 |                                         5
+      19.645 |                                         2
+      20.002 |                                         5
+      20.736 |                                         2
+      21.496 |                                         4
+      22.284 |                                         1
+      23.101 |                                         1
+      23.521 |                                         1
+      24.384 |                                         3
+      24.827 |                                         2
+      25.278 |                                         1
+      26.205 |                                         1
+      26.681 |                                         2
+      30.265 |                                         1
+      30.815 |                                         1
+      31.375 |                                         2
+      35.589 |                                         1
+      38.247 |                                         1
+      39.650 |                                         1
+      44.976 |                                         1
+      46.625 |                                         1
+      47.472 |                                         1
+ 
+SQL statistics:
+    queries performed:
+        read:                            8702
+        write:                           0
+        other:                           0
+        total:                           8702
+    transactions:                        8702   (96.67 per sec.)
+    queries:                             8702   (96.67 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          90.0190s
+    total number of events:              8702
+
+Latency (ms):
+         min:                                    9.68
+         avg:                                   10.34
+         max:                                   47.39
+         99th percentile:                       15.55
+         sum:                                89984.02
+
+Threads fairness:
+    events (avg/stddev):           8702.0000/0.00
+    execution time (avg/stddev):   89.9840/0.00
+
+
+ Container performance-profile-mysql-mysql-1 Running 
+ Container performance-profile-mysql-mysql-1 Waiting 
+ Container performance-profile-mysql-mysql-1 Healthy 
+ Container pp-ir-70191d871a66ad10-table-scan-c1-measured-r1 Creating 
+ Container pp-ir-70191d871a66ad10-table-scan-c1-measured-r1 Created 

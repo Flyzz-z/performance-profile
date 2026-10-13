@@ -1,0 +1,1557 @@
+{
+  "database": "pp_index_read_70191d871a66ad10_scan",
+  "group": "table-scan",
+  "sql": "SELECT c FROM sbtestN WHERE k=?",
+  "samples": [
+    {
+      "table": "sbtest1",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest1",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest1`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "33313435313337333538362D31353638383135333733342D37393732393539333639342D39363530393239393833392D38333732343839383237352D38363731313833333533392D37383938313333373432322D33353034393639303537332D35313732343137333936312D3837343734363936323533"
+    },
+    {
+      "table": "sbtest1",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest1",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest1`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "33323334373536313233322D33373336343831393433372D39333234353638393231312D37393834333037333137392D39363532343835383534322D30303933393833383133382D34333635333534303539342D32373838323539303539312D37363630353036393336362D3534393230303631323838"
+    },
+    {
+      "table": "sbtest1",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest1",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest1`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "31353235313739303935342D31363034373939353338322D32373433393133373231382D39373638353539303334362D33333439343639303131332D37363936323539373833392D30353830333239323834352D33303730393037343933372D39373438343036393630352D3438303636333833333533"
+    },
+    {
+      "table": "sbtest1",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest1",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest1`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "37363132393632323432352D31363639323733383935372D37303835393038363736372D32313730323036343539352D31323232383433383233392D30303338353633383133372D31333837353230303231342D37393030323231383938322D31303931373033303430362D3334323837383237313635"
+    },
+    {
+      "table": "sbtest1",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest1",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest1`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "39323534333032363635342D30313438343333323037372D35343639393335353434352D32323631383837323336322D38363033323131363033302D30353231333935323231382D32313939393638303733312D30373034333338353933392D35353630373138393338332D3634383638383537393337"
+    },
+    {
+      "table": "sbtest2",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest2",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest2`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "34333033333830323130302D37373736343631303834352D33393739393131323836392D33393532323038323135372D32393939313334333335312D30333130343534363430332D34343231383035353431312D34343735333838363336372D30363731333031333635312D3131333339393539313637"
+    },
+    {
+      "table": "sbtest2",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest2",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest2`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "31363239383931353133362D34313536383333393434392D34383932373039373538382D38303937373133373634342D36313835313334313238342D34393732313131373531342D33333330303039363537382D34353138373739323532362D37313333333332323630332D3038343035333535303232"
+    },
+    {
+      "table": "sbtest2",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest2",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest2`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "38313739323737303930332D30323434383137343734312D38353936343131373635312D32303234303837343536322D35353632373830323637372D38343537393731383839312D37323335343139323231362D31383431353732363739382D33343532363536363531332D3933353739373636323336"
+    },
+    {
+      "table": "sbtest2",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest2",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest2`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "38333934333335393637332D31393139353637393638352D35303537363430363931382D38303530303736313335382D35303935323434303637332D31343933323535323734332D35373035323731303439392D39323432373839313530392D34323531383430303330352D3731313439383335353936"
+    },
+    {
+      "table": "sbtest2",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest2",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest2`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "32373336323034313830342D38373235363234393033332D34343238313037303531372D34383436333736363335322D36323932313730393635382D32313330393331303930302D31353334313435343631372D39393537353030303936342D39343531383038393233392D3330393931303230353337"
+    },
+    {
+      "table": "sbtest3",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest3",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest3`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "30353531373637303337382D39323636363536363735372D38393131373832313532342D37363035383334303139332D34383434373631373031362D33313130313536313337352D31313138373534393237362D34313235383035373433392D32363534333130393038372D3330323839383631333732"
+    },
+    {
+      "table": "sbtest3",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest3",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest3`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "33373037343433363934352D32343738323234373036382D39303737343938393633332D35323339313230303335352D33363438333135393538322D31353636333730383231342D39343033393034353533302D32323833383835333731302D31323736373936323932362D3834303937353835313432"
+    },
+    {
+      "table": "sbtest3",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest3",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest3`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "31393334333937393338392D33393835343537343837312D35363739363035353834392D31313433373635383232362D32333132373237353235312D39333332343931383539382D39373238313538373232342D30363138323632323636332D31343234313833333631372D3133343034363539313236"
+    },
+    {
+      "table": "sbtest3",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest3",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest3`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "37323539383239333830322D34313933313937303830382D34343735393234353839302D38343035383430383334322D31353035353739313338362D33373531303133323332312D39373635363930353439372D37313032343039303333322D38303333373435383632382D3331383935343931323732"
+    },
+    {
+      "table": "sbtest3",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest3",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest3`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "39313634323434303037392D32313236303038313034382D32353430313139363639322D36383836393235343330392D35373034333536363432322D36353437373431393338352D38393731353732353235302D38373531353439343337312D30303931343234303438352D3734323832323735303634"
+    },
+    {
+      "table": "sbtest4",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest4",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest4`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "37373335393234373236372D36363130313931353736362D34373536383737383632332D30363130323836343635392D30393835393131313536362D35303337383136343032382D33383937373430333339312D35323537353635313832332D30313831343733343534322D3033373333343734383531"
+    },
+    {
+      "table": "sbtest4",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest4",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest4`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "36343030373232343737372D38353339393936363532392D33343231323535353533372D35373332343937333033312D30373339393232343330382D39333838383338303830302D30353937383932313336342D32333031303334343330312D37323735393932303538362D3336363330383338393130"
+    },
+    {
+      "table": "sbtest4",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest4",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest4`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "32373333383138343037312D31333639383932313836382D38343431313935373037372D30323333383537323436372D34323832343438363039302D30313031393337393032342D33343337333434373730322D36383231303135363138382D34343530363936333336372D3139373033343432343837"
+    },
+    {
+      "table": "sbtest4",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest4",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest4`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "38393430383837363731382D37303736383630363433352D39373331383837383830342D35373230323136343132322D30373830383035343238302D37353432383239353435322D30313935363639323236322D30343730303433303230352D31303336373832383132382D3139303639373136333931"
+    },
+    {
+      "table": "sbtest4",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest4",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest4`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "30323839373638383034302D30373433373031343039362D36313539353639303035332D30363233323635353730312D36393431333438333438362D35373039383130323138342D35333736383633353331382D34313030373534393137332D36353638373439313339302D3331333231333234313634"
+    },
+    {
+      "table": "sbtest5",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest5",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest5`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "33393130393538303137372D39353535393833393832342D33303335383039303931342D30333536313533363933362D38323332333937383237312D32373739373538313532332D33383236373133353735362D37353436333736353335372D38333532323639373234342D3836383234343539333836"
+    },
+    {
+      "table": "sbtest5",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest5",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest5`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "39343938363433363831312D33323237363631353630302D37303636303730393735392D30373836313031383930312D39323639363434333936372D34373436363339313432362D37323439363338313433332D30333237373033383235352D36333834313837353939312D3437323438333333353331"
+    },
+    {
+      "table": "sbtest5",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest5",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest5`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "37343133393032363131342D30343138323730333131312D33313636313733363031382D30323134383536393739382D33393637343931303237342D32343632363932303833332D38323337323934373438392D39383236393435373036332D35323630373633363936322D3435323230383639383739"
+    },
+    {
+      "table": "sbtest5",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest5",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest5`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "34373430323438323036332D34323630393236323139382D35393931343630303937312D33313136303338313933302D32303739313239333734352D38353637323034323935352D37313831393036343730312D39373534303034373532352D33323439383036383536332D3334383138343234393937"
+    },
+    {
+      "table": "sbtest5",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest5",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest5`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "36373330333337333634372D33393830313839373532352D36343832383230333232352D33383832313433353235362D31303338343632353332312D31373034303239353637322D32373332383335313035342D36383732363239393332322D34303534363930343232332D3433333039333335393035"
+    },
+    {
+      "table": "sbtest6",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest6",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest6`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "32323735313730393630322D36303939383238353032332D30373538303039373731382D39383430383031333433332D36303433383132313133312D39323935323333393934312D36383832363431333033312D34373833353931323136332D32393730383331313437392D3734323930313531383235"
+    },
+    {
+      "table": "sbtest6",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest6",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest6`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "39333433343337343830362D37353439383333333638312D36343835303834303732342D37343232393633393939352D30343031313435363233322D34333531383537303330312D36353636393533333939382D37313237393830393134342D30383331333532393334392D3930393837303537353933"
+    },
+    {
+      "table": "sbtest6",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest6",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest6`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "34383836393935383934352D31383630383031363433392D37393139353037383235312D39333434353336313731362D35393439363333383335372D37333639323235383235372D32393432343735363236362D33303830303938363931372D39363634303131323231332D3631343731333136333337"
+    },
+    {
+      "table": "sbtest6",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest6",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest6`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "36383036363832313639372D32373933393935353339332D34303935353839373432372D32363938343433313832372D35333434363139383533312D38353630353231373437342D31303637353837313332392D31393237303233343434342D31373437393231363737342D3933373439343135323430"
+    },
+    {
+      "table": "sbtest6",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest6",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest6`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "30303434323935313138312D36393432363937303334342D31383232383531393739342D37373835393336353230372D34333539333236373630372D36393732373634343632332D36313033353937323134392D35353134383135353938322D34343739353030313136342D3630343834343637353033"
+    },
+    {
+      "table": "sbtest7",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest7",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest7`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "31313534333738373535342D38363730333531363237352D37343838343635303839352D34333539333432373930372D37333532393034383738352D34383736313034343237372D37333539323331343630372D38313931333036383836362D31303034383333313030312D3135393731373337333131"
+    },
+    {
+      "table": "sbtest7",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest7",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest7`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "30363936303939303538372D37313533323837383532312D38393132323434313038362D30353831353833303333382D37303130363739303934362D39343338383531363238342D32383938383636343730392D36353635363230353436322D38313234303231313530352D3732323737363038373635"
+    },
+    {
+      "table": "sbtest7",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest7",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest7`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "38363931353433383139352D33313834313832313937392D34343731353432313831322D34313537383330353633362D39353531303931303635372D39353332333534323633372D31343839313030343330382D32373831393335383037372D31303334363136333036372D3132363139363331363431"
+    },
+    {
+      "table": "sbtest7",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest7",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest7`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "33353430363231373234332D34363536343432333537352D37333536353539383834332D35373136383632363430312D33303432303337383732312D31373635303239343336322D35383539383932313632392D34373337303039323032372D36333532313730393934302D3139353239363130363139"
+    },
+    {
+      "table": "sbtest7",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest7",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest7`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "36393230343639333830382D38323634353032353533372D38333036383339373832332D33393132383833333139312D35333336353331323735352D33383036383332333336372D31373530383236373231372D31353435353934383931392D30343636333935313831332D3937323231353633343633"
+    },
+    {
+      "table": "sbtest8",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest8",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest8`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "37343738333036313530342D34313333323931393133322D34383035303830313831312D31353038373633393437322D33303738363331313431362D37393833373935353635342D38373230363838353339382D34303635353139343834392D35313838393032343433342D3639393339373930343430"
+    },
+    {
+      "table": "sbtest8",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest8",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest8`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "31373239373931393832352D32333836303036393333322D35323533333831373537362D36303531363830393636332D31383731303233393830332D32343031323731313134352D36373633303133353839332D38323136363833373433392D39383535353830323438332D3331373032393234323137"
+    },
+    {
+      "table": "sbtest8",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest8",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest8`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "33393430333139363733322D34373036393633333730382D33363033333131363333342D35303830303837363536372D39383738313434313530382D33353630303232373235302D38343739373234323937352D33313635363630313636322D39303834313037343635332D3632393932393231353333"
+    },
+    {
+      "table": "sbtest8",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest8",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest8`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "37333732363737323438372D33343838353237313336362D36383935333433393136332D39373033303934393739332D39323736323536303539332D38313833313630343835362D30343134363334363839342D34393238353130393136302D34333838353937333930322D3739353239323031303339"
+    },
+    {
+      "table": "sbtest8",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest8",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest8`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "39363238353430383832342D32393432343230343535342D30383534333235343133302D38363536303530343530302D32343136313530383936392D33363437303837363139382D34343630363632323932312D32393132373532383137362D38363631363539363032342D3132393336323932373835"
+    },
+    {
+      "table": "sbtest9",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest9",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest9`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "34353232373137313733342D34353832343332333138342D30323937343234363130382D34343034383537363439332D36323430373937393338322D36363233373539393631342D35303136353836333037372D39363034303433353335392D34303231323237323831322D3231393730393630303833"
+    },
+    {
+      "table": "sbtest9",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest9",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest9`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "38393132343732353834322D31343731363034343830312D37323436333835373438382D35343132363335353035342D36303634333337303438392D37373233323935383236382D31363833383038323634332D30303936303036323436302D38363133343432343930302D3635373334303637373839"
+    },
+    {
+      "table": "sbtest9",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest9",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest9`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "34363639393130373334362D37333938393138383036382D37333438363538343935372D39343631353032393332382D33383335393132353034342D35323834303038373237362D35363234353939353235342D37383039363539323835302D34303939323436393136312D3038373239383530303635"
+    },
+    {
+      "table": "sbtest9",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest9",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest9`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "34323931383639353231372D38353135303730373139342D35393931303538333237332D34373633313531343236302D37323739393334363237382D38383133393638383736332D31333538353736353730342D35393237303539313834342D38303132333330323232342D3934323132393239313733"
+    },
+    {
+      "table": "sbtest9",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest9",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest9`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "31373338323735353935382D33333738363538333233312D30373031373732393436392D32333035373438313935362D33353734353038363139322D37393032393837393935392D33323236343533333230362D36303232393932393334322D32373134303631373339332D3137353535353034323635"
+    },
+    {
+      "table": "sbtest10",
+      "key": 1,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest10",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest10`.`k` = 1)"
+          }
+        }
+      },
+      "resultHex": "30303836313731363834302D37353038393732383239332D35393638323436353330332D38313630383533383739302D34373133373632313537362D33363133373135373131372D37373231393136393630322D38393833373238393638352D33373836383733343138362D3432353439353435303133"
+    },
+    {
+      "table": "sbtest10",
+      "key": 50000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest10",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest10`.`k` = 50000)"
+          }
+        }
+      },
+      "resultHex": "32323035313132383631332D33393734303132373336342D39373634333937363334322D37343635393637303336342D30343239343234393835382D36333639333033343338362D35323537363731313635302D34303232343038383234342D36353238383137363433332D3937363539313237343530"
+    },
+    {
+      "table": "sbtest10",
+      "key": 100000,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest10",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest10`.`k` = 100000)"
+          }
+        }
+      },
+      "resultHex": "31323632323637383939342D36303031353830313536392D33323731303236373230342D31323733393638353931342D31353431323434303436352D34313837313835363230392D37333436343930313738392D34373532313638353436382D33313535353836323535352D3434343038333130373339"
+    },
+    {
+      "table": "sbtest10",
+      "key": 14274,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest10",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest10`.`k` = 14274)"
+          }
+        }
+      },
+      "resultHex": "39383230363837373833312D30383334303231343234382D33353035383738313336352D37323930303435343432322D37393736353834343036322D37363630393531363931332D37303639343338383232372D38313631343830343339362D35313537323436353334342D3933373437383937323931"
+    },
+    {
+      "table": "sbtest10",
+      "key": 94189,
+      "plan": {
+        "query_block": {
+          "select_id": 1,
+          "cost_info": {
+            "query_cost": "10215.95"
+          },
+          "table": {
+            "table_name": "sbtest10",
+            "access_type": "ALL",
+            "rows_examined_per_scan": 98712,
+            "rows_produced_per_join": 9871,
+            "filtered": "10.00",
+            "cost_info": {
+              "read_cost": "9228.83",
+              "eval_cost": "987.12",
+              "prefix_cost": "10215.95",
+              "data_read_per_join": "6M"
+            },
+            "used_columns": [
+              "k",
+              "c"
+            ],
+            "attached_condition": "(`pp_index_read_70191d871a66ad10_scan`.`sbtest10`.`k` = 94189)"
+          }
+        }
+      },
+      "resultHex": "34363732303235383030322D33313234323333323835312D32303738323234313336382D38393638333637383534352D37343538303433393834392D37363434333732393639372D30333638353138373732302D30353038333738363737352D32333635323935363932332D3834343237383931323138"
+    }
+  ]
+}

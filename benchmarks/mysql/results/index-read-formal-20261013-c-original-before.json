@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 1,
+  "database": "sbtest",
+  "tableCount": 10,
+  "tableSize": 100000,
+  "actualRows": 1000000,
+  "tables": [
+    {
+      "name": "sbtest1",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_1",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63254,
+      "minK": 1,
+      "maxK": 100000,
+      "kEqualsId": 0,
+      "rowDigest": "dd3a8325086a899b08c0029da374c8417bed6e92322956a8af32324e5be01040"
+    },
+    {
+      "name": "sbtest2",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_2",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63272,
+      "minK": 2,
+      "maxK": 100002,
+      "kEqualsId": 1,
+      "rowDigest": "2c5549a21fc5f38060eb0227b228ae4cc2b4e3f13f2b8df99b2202e9de23d8bf"
+    },
+    {
+      "name": "sbtest3",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_3",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63398,
+      "minK": 1,
+      "maxK": 100001,
+      "kEqualsId": 1,
+      "rowDigest": "eafe10d3e0a7f702881bf47446e12f3e19f9535ab95130732976723c4f654753"
+    },
+    {
+      "name": "sbtest4",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_4",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63237,
+      "minK": 1,
+      "maxK": 100001,
+      "kEqualsId": 0,
+      "rowDigest": "e17b70ee70fdd23a600a58a19a549b98e536fc1eb6d993d3aa509ead1d330add"
+    },
+    {
+      "name": "sbtest5",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_5",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63092,
+      "minK": 1,
+      "maxK": 100003,
+      "kEqualsId": 1,
+      "rowDigest": "b3e3adb43b6e753e26c23a14f11aa552595a53d5c44d86c4ec4d6f475f42ce33"
+    },
+    {
+      "name": "sbtest6",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_6",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63232,
+      "minK": 4,
+      "maxK": 100000,
+      "kEqualsId": 2,
+      "rowDigest": "32336971c18a39af052b6aa82f6eb9c34f94b3e8b124ea539c408cdcf533157b"
+    },
+    {
+      "name": "sbtest7",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_7",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63356,
+      "minK": 1,
+      "maxK": 99999,
+      "kEqualsId": 0,
+      "rowDigest": "45334f601474737dfd7c2bb1c47f5bd3398979904cd2cc2b6f76d21858eec3fb"
+    },
+    {
+      "name": "sbtest8",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_8",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63182,
+      "minK": 1,
+      "maxK": 100000,
+      "kEqualsId": 1,
+      "rowDigest": "fbef49e5c5cc57663294b3b419c7977ce7d5cade657b00632f8cb04987d63777"
+    },
+    {
+      "name": "sbtest9",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_9",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63242,
+      "minK": 1,
+      "maxK": 100002,
+      "kEqualsId": 1,
+      "rowDigest": "110603e47cd2e874b36569d9adff53848af9f47331aa3af259c6dc5fc774b248"
+    },
+    {
+      "name": "sbtest10",
+      "columns": [
+        [
+          "id",
+          "int",
+          "PRI",
+          "auto_increment"
+        ],
+        [
+          "k",
+          "int",
+          "MUL",
+          ""
+        ],
+        [
+          "c",
+          "char(120)",
+          "",
+          ""
+        ],
+        [
+          "pad",
+          "char(60)"
+        ]
+      ],
+      "indexes": [
+        [
+          "k_10",
+          "k",
+          "1"
+        ],
+        [
+          "PRIMARY",
+          "id",
+          "0"
+        ]
+      ],
+      "rows": 100000,
+      "distinctK": 63160,
+      "minK": 2,
+      "maxK": 100000,
+      "kEqualsId": 0,
+      "rowDigest": "5db5ce26e162cd726eb92c9041f784e8567d0f6fae32a4a793885d67fd26668d"
+    }
+  ]
+}

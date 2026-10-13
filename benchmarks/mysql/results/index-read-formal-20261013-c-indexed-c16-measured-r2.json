@@ -1,0 +1,89 @@
+{
+  "runId": "index-read-formal-20261013-c-indexed-c16-measured-r2",
+  "runGroup": "index-read-formal-20261013-c",
+  "group": "indexed",
+  "kind": "measured",
+  "repeat": 2,
+  "concurrency": 16,
+  "startedAt": "2026-10-13T08:53:52.450Z",
+  "arguments": [
+    "/workspace/scripts/index-read.lua",
+    "--db-driver=mysql",
+    "--mysql-host=mysql",
+    "--mysql-port=3306",
+    "--mysql-user=root",
+    "--mysql-password=***",
+    "--mysql-db=pp_index_read_70191d871a66ad10_indexed",
+    "--tables=10",
+    "--table-size=100000",
+    "--threads=16",
+    "--time=90",
+    "--report-interval=10",
+    "--percentile=99",
+    "--histogram=on",
+    "--rand-type=uniform",
+    "--rand-seed=42",
+    "--mysql-ssl=off",
+    "run"
+  ],
+  "environmentPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2-environment.json",
+  "finishedAt": "2026-10-13T08:55:24.963Z",
+  "exitCode": 0,
+  "rawOutputPath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2.txt",
+  "metrics": {
+    "transactions": 20276385,
+    "queries": 20276385,
+    "tps": 225237.71,
+    "qps": 225237.71,
+    "averageLatencyMs": 0.07,
+    "p95Ms": 0.118,
+    "p99Ms": 0.28,
+    "p95Source": "histogram",
+    "p99Source": "sysbench",
+    "ignoredErrors": 0,
+    "reconnects": 0,
+    "queriesPerTransaction": 1,
+    "errors": 0,
+    "queriesPerSecondPerTransaction": 1
+  },
+  "resourcePath": "benchmarks/mysql/results/index-read-formal-20261013-c-indexed-c16-measured-r2-resources.json",
+  "resources": {
+    "valid": true,
+    "status": "complete",
+    "sampleCount": 17,
+    "coverageSeconds": 80.692,
+    "expectedSeconds": 90,
+    "limits": {
+      "mysql": {
+        "cpus": 8,
+        "memoryBytes": 6442450944
+      },
+      "loadgen": {
+        "cpus": 4,
+        "memoryBytes": 1073741824
+      }
+    },
+    "mysql": {
+      "coverageSeconds": 80.693,
+      "maxGapSeconds": 5.423,
+      "meanCpuPercent": 708.5479892927515,
+      "meanQuotaPercent": 88.56849866159394,
+      "maxCpuPercent": 711.9002197802198,
+      "throttledPeriods": 2,
+      "periods": 807,
+      "throttledTimeSeconds": 0.015882
+    },
+    "loadgen": {
+      "coverageSeconds": 80.692,
+      "maxGapSeconds": 5.41,
+      "meanCpuPercent": 188.14893050116493,
+      "meanQuotaPercent": 47.03723262529123,
+      "maxCpuPercent": 189.85178180370298,
+      "throttledPeriods": 0,
+      "periods": 807,
+      "throttledTimeSeconds": 0
+    },
+    "errors": [],
+    "note": "CPU% is relative to one CPU; quota% divides by CPU limit. Throttled time is the kernel's cumulative throttling-time counter, not a wall-clock utilization percentage."
+  }
+}

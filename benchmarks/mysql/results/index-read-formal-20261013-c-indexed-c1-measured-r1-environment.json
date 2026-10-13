@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-13T08:37:47.530Z",
+  "environmentLabel": "local Docker benchmark",
+  "exploratory": false,
+  "container": {
+    "mysqlImage": "mysql:8.4@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+    "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+    "imagePlatform": "linux/arm64",
+    "repositoryDigests": [
+      "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+    ],
+    "platform": "linux/arm64",
+    "mysqlCpuLimit": 8,
+    "mysqlMemoryLimit": "6g",
+    "loadGeneratorCpuLimit": 4,
+    "loadGeneratorMemoryLimit": "1g",
+    "containerId": "7d756da4e1c25d2698c0c9dc37bbc5de7f4681977ef613f3eb64971f74d4cd68"
+  },
+  "mysql": {
+    "version": "8.4.11",
+    "bufferPoolBytes": 3221225472,
+    "maxConnections": 512,
+    "transactionIsolation": "REPEATABLE-READ",
+    "logBinEnabled": true,
+    "flushLogAtTransactionCommit": 1,
+    "syncBinlog": 1,
+    "flushLogAtTimeout": 1
+  },
+  "loadGenerator": {
+    "image": "performance-profile/mysql-sysbench:1.0.0",
+    "imageId": "sha256:84066a5dabc6169a37e67ac54c586ca96ca7045f2e03dbe52bb61033a85ae5ff",
+    "imagePlatform": "linux/arm64",
+    "sysbenchVersion": "sysbench 1.0.20"
+  },
+  "runtime": {
+    "dockerServer": "29.4.0|linux/arm64",
+    "dockerInfo": "OrbStack|7.0.14-orbstack-00380-ga7e0a2dc9535|10|8393289728|overlayfs"
+  },
+  "host": {
+    "model": "MacBookPro18,1",
+    "cpuCount": 10,
+    "memoryBytes": 17179869184,
+    "architecture": "arm64"
+  }
+}
