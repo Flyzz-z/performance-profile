@@ -1,5 +1,5 @@
 import {
-  MISSING, METRICS, projectReport, peakPoint, environmentGroups,
+  MISSING, METRICS, projectReport, projectDashboard, projectIndexReadExperiment, peakPoint, environmentGroups,
   formatNumber, formatLatency, formatMemory, formatDate, text, stabilityLabel, artifactUrl,
 } from "./report.mjs";
 import { MetricChart } from "./charts.mjs";
@@ -11,6 +11,7 @@ const badge = (value) => `<span class="status status-${["stable", "acceptable", 
 const scenarioName = (series) => `<span class="scenario-name"><i class="swatch" style="background:${series.color}"></i>${escape(series.label)}</span>`;
 const quotaPercent = (value) => typeof value === "number" && Number.isFinite(value) ? `${formatNumber(value)}%` : MISSING;
 let report;
+let dashboard;
 let state;
 let charts = [];
 let requestNumber = 0;
@@ -42,7 +43,7 @@ function renderEnvironment() {
   const dataset = data.dataset ?? {};
   const formal = data.formalExperiment?.purpose === "formal";
   setText("dashboard-scope", formal
-    ? `sysbench ${formatNumber(container.loadGeneratorCpuLimit)} CPU / ${formatMemory(container.loadGeneratorMemoryLimit)} · ${report.series.length} 场景正式实验`
+    ? `sysbench ${formatNumber(container.loadGeneratorCpuLimit)} CPU / ${formatMemory(container.loadGeneratorMemoryLimit)} · ${dashboard.series.length} 场景正式实验`
     : "读、写、混合负载");
   document.querySelectorAll("[data-resource-column]").forEach((node) => { node.hidden = !formal; });
   setText("resource-unit-note", formal ? `CPU为各自配额占比：MySQL ${formatNumber(container.mysqlCpuLimit)} CPU / 压测 ${formatNumber(container.loadGeneratorCpuLimit)} CPU` : "");
@@ -65,9 +66,21 @@ function renderEnvironment() {
 // 结论由作者逐条手写，存放于 data/conclusions.json；空字符串不显示。
 function renderSummaries(conclusions) {
   document.querySelectorAll("[data-summary]").forEach((slot) => {
-    const content = conclusions[slot.dataset.summary] ?? "";
+    const content = [conclusions[slot.dataset.summary] ?? "",
+      slot.dataset.summary === "formal-dashboard" && projectIndexReadExperiment(report.data) ? conclusions["index-read"] ?? "" : "",
+    ].filter(value => value.trim()).join("\n");
     const experiment = slot.dataset.experiment ? document.getElementById(slot.dataset.experiment) : null;
-    slot.querySelector(".summary-text").textContent = content;
+    const summaryText = slot.querySelector(".summary-text");
+    if (["formal-dashboard", "index-read"].includes(slot.dataset.summary)) {
+      summaryText.innerHTML = content.split("\n").map((line) => {
+        const separator = line.indexOf("：");
+        return separator >= 0
+          ? `<strong>${escape(line.slice(0, separator + 1))}</strong>${escape(line.slice(separator + 1))}`
+          : escape(line);
+      }).join("\n");
+    } else {
+      summaryText.textContent = content;
+    }
     slot.hidden = !content.trim() || Boolean(experiment?.hidden);
   });
 }
@@ -82,7 +95,7 @@ async function loadConclusions() {
 }
 
 function renderControls() {
-  document.getElementById("scenario-controls").innerHTML = report.series.map((s) =>
+  document.getElementById("scenario-controls").innerHTML = dashboard.series.map((s) =>
     `<label class="scenario-option"><input type="checkbox" value="${s.id}" checked aria-label="${escape(s.label)}"/>
       <i class="swatch" style="background:${s.color}"></i>${escape(s.label)}</label>`).join("");
   document.getElementById("scenario-controls").onchange = (event) => {
@@ -90,7 +103,7 @@ function renderControls() {
     else state.visible.delete(event.target.value);
     renderDashboard();
   };
-  document.getElementById("concurrency-controls").innerHTML = report.concurrency.map((value) =>
+  document.getElementById("concurrency-controls").innerHTML = dashboard.concurrency.map((value) =>
     `<button type="button" data-concurrency="${value}" aria-label="并发 ${value}" aria-pressed="${value === state.selectedConcurrency}">${value}</button>`).join("");
   document.getElementById("concurrency-controls").onclick = (event) => {
     const button = event.target.closest("button[data-concurrency]");
@@ -123,14 +136,14 @@ function selectConcurrency(level) {
 }
 
 function renderDashboard() {
-  const visibleSeries = report.series.filter((s) => state.visible.has(s.id));
+  const visibleSeries = dashboard.series.filter((s) => state.visible.has(s.id));
   document.querySelectorAll("[data-concurrency]").forEach((button) => {
     if (button.tagName === "BUTTON") button.setAttribute("aria-pressed", String(Number(button.dataset.concurrency) === state.selectedConcurrency));
   });
   charts.forEach((chart) => {
     const mode = state.scales[chart.metric.key];
     chart.panel.querySelectorAll("[data-scale]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.scale === mode)));
-    chart.update({ series: visibleSeries, concurrency: report.concurrency, selectedConcurrency: state.selectedConcurrency, mode });
+    chart.update({ series: visibleSeries, concurrency: dashboard.concurrency, selectedConcurrency: state.selectedConcurrency, mode });
   });
   setText("selected-concurrency", state.selectedConcurrency ?? MISSING);
   const measuredSeries = visibleSeries.filter(series => series.points.some(p => p.concurrency === state.selectedConcurrency));
@@ -143,6 +156,27 @@ function renderDashboard() {
         <td>${badge(point?.stability)}</td></tr>`;
     }).join("")
     : `<tr><td colspan="${report.data.formalExperiment?.purpose === "formal" ? 9 : 7}">${visibleSeries.length ? "该并发无已测结果" : "未选择场景"}</td></tr>`;
+  const indexRead = projectIndexReadExperiment(report.data);
+  const comparison = indexRead?.comparisons.find(item => item.concurrency === state.selectedConcurrency);
+  const comparisonNode = document.getElementById("index-read-comparison");
+  comparisonNode.hidden = !comparison || comparison.qpsRatio === null || !indexRead.groups.every(group => state.visible.has(group.id));
+  comparisonNode.textContent = comparison ? `索引读同并发对比：二级索引点查吞吐为全表扫描的 ${formatNumber(comparison.qpsRatio)} 倍。` : "";
+}
+
+function renderIndexRead() {
+  const experiment=projectIndexReadExperiment(report.data);
+  const section=document.getElementById("index-read-experiment");
+  section.hidden=!experiment;
+  const description = document.getElementById("index-read-description");
+  description.hidden = !experiment;
+  if (!experiment) return;
+  const groups = experiment.groups;
+  description.innerHTML = `<p class="run-context">索引读对照 · ${escape(formatDate(experiment.testedAt))} UTC+8 · 每组 10 表 × 100,000 行 · 每查询返回一行 · SELECT c FROM 表 WHERE k=? · 二级索引回表 / 全表扫描</p>`;
+  const link=(file,label)=>{const url=artifactUrl(file);return url?`<a class="index-read-artifact-link" href="${escape(url)}" target="_blank" rel="noreferrer">${label}</a>`:MISSING;};
+  document.getElementById("index-read-details").innerHTML=groups.map(group=>`
+    <details class="environment-detail"><summary>${escape(group.label)} · 环境、数据与访问计划</summary><p class="run-context">报告日期 ${escape(formatDate(experiment.testedAt))} UTC+8 · MySQL ${escape(group.environment.mysql.version)} · ${escape(group.environment.container.platform)} · 8 CPU / 6 GiB · sysbench 4 CPU / 1 GiB · Buffer Pool 3 GiB · redo 1 / sync_binlog 1 / binlog ON</p>
+      <p>${link(group.environmentPath,"环境清单")} · ${link(group.datasetPath,"冻结数据与索引")} · ${link(group.finalDatasetPath,"结束数据核验")} · ${link(group.plansPath,"执行计划与查询结果")} · ${link(group.finalPlansPath,"结束访问计划")} · ${link(experiment.workload.scriptSnapshotPath,"SQL负载脚本")} · ${link(experiment.restorationPath,"结束配置核验")}</p></details>
+    ${group.points.map(p=>`<details class="result-detail index-read-detail"><summary><span>${scenarioName(group)} · 并发 ${p.concurrency}</span><span>QPS ${formatNumber(p.qps)} · p99 ${formatLatency(p.p99Ms)} · ${p.attempts} 次</span>${badge(p.stability)}</summary><div class="table-scroll"><table><thead><tr><th>运行</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>MySQL CPU</th><th>压测 CPU</th><th>原始资料</th></tr></thead><tbody>${p.runs.map(run=>`<tr><td>第 ${run.repeat} 次</td><td>${formatNumber(run.metrics.qps)}</td><td>${formatNumber(run.metrics.tps)}</td><td>${formatLatency(run.metrics.p95Ms)}</td><td>${formatLatency(run.metrics.p99Ms)}</td><td>${quotaPercent(run.resources.mysql.meanQuotaPercent)}</td><td>${quotaPercent(run.resources.loadgen.meanQuotaPercent)}</td><td>${link(run.rawOutputPath,"原始输出")} · ${link(run.resourcePath,"资源采样")} · ${link(run.environmentPath,"本次环境")}</td></tr>`).join("")}</tbody></table></div></details>`).join("")}`).join("");
 }
 
 function renderBufferPool() {
@@ -159,9 +193,10 @@ function renderBufferPool() {
     {key:"hitPercent",label:"页面命中率",unit:"%",format:value=>`${formatNumber(value)}%`},
     {key:"readsPerSecond",label:"缺页读取",unit:"pages/s",format:formatNumber},
   ];
-  document.getElementById("buffer-pool-results").innerHTML = `
+  document.getElementById("buffer-pool-description").innerHTML = `
     <p class="run-context">并发 ${experiment.concurrency} · ${formatNumber(dataset.actualRows)} 行 / ${dataset.tableCount} 表
-      · 主键页占用 ${formatMemory(dataset.dataBytes)} · 预热 ${experiment.protocol.warmupSeconds}s / 测量 ${experiment.protocol.durationSeconds}s</p>
+      · 主键页占用 ${formatMemory(dataset.dataBytes)} · 预热 ${experiment.protocol.warmupSeconds}s / 测量 ${experiment.protocol.durationSeconds}s</p>`;
+  document.getElementById("buffer-pool-results").innerHTML = `
     <div class="cache-metrics">${fields.map(field=>{
       const max = Math.max(...groups.map(group=>group.selected[field.key]),Number.EPSILON);
       return `<article class="cache-metric" aria-label="${field.label}"><h3>${field.label}<small>${field.unit}</small></h3>${groups.map(group=>
@@ -189,9 +224,10 @@ function renderHotUpdate() {
     { label: "平均每次等待", unit: "ms", value: g => g.locks.meanWaitMs, format: formatLatency },
   ];
   const link = (file, label) => `<a class="hot-artifact-link" href="${escape(artifactUrl(file))}" target="_blank" rel="noreferrer">${label}</a>`;
-  document.getElementById("hot-update-results").innerHTML = `
+  document.getElementById("hot-update-description").innerHTML = `
     <p class="run-context">${escape(formatDate(experiment.testedAt))} · 16 并发 · 预热 30s / 测量 60s · 每组 1 次</p>
-    <p class="run-context">10 表 / 共 100 万行 · 分散更新：100 万条活动记录 · 热点更新：每表 id=1，共 10 条活动记录</p>
+    <p class="run-context">10 表 / 共 100 万行 · 分散更新：100 万条活动记录 · 热点更新：每表 id=1，共 10 条活动记录</p>`;
+  document.getElementById("hot-update-results").innerHTML = `
     <div class="cache-metrics">${fields.map(field => {
       const max = Math.max(...groups.map(field.value), Number.EPSILON);
       return `<article class="cache-metric"><h3>${field.label}<small>${field.unit}</small></h3>${groups.map(g =>
@@ -210,7 +246,10 @@ function renderResults() {
   const validRuns = (rows) => (Array.isArray(rows) ? rows : [])
     .filter((r) => r.status !== "failed" && r.errors === 0);
   const points = report.series.flatMap((series) => series.points.map((point) => ({ series, point })));
-  setText("result-count", `${points.length} 个组合 · ${(data.rawResults ?? []).filter((r) => r.status === "passed").length} 次测量`);
+  const indexRead = projectIndexReadExperiment(data);
+  const indexPoints = indexRead?.groups.flatMap(group => group.points) ?? [];
+  const indexRuns = indexRead?.groups.flatMap(group => group.runs).filter(run => run.kind === "measured") ?? [];
+  setText("result-count", `${points.length + indexPoints.length} 个组合 · ${(data.rawResults ?? []).filter((r) => r.status === "passed").length + indexRuns.length} 次测量`);
   document.getElementById("result-details").innerHTML = points.length ? points.map(({ series, point }) => {
     const combination = (data.stability ?? []).find((s) => s.scenario === series.id && s.concurrency === point.concurrency);
     const runs = validRuns(combination?.runs);
@@ -260,7 +299,8 @@ async function loadData() {
     const data = await response.json();
     if (request !== requestNumber) return;
     report = projectReport(data);
-    state = { visible: new Set(report.series.map((s) => s.id)), selectedConcurrency: report.selectedConcurrency,
+    dashboard = projectDashboard(report);
+    state = { visible: new Set(dashboard.series.map((s) => s.id)), selectedConcurrency: dashboard.selectedConcurrency,
       scales: Object.fromEntries(METRICS.map((m) => [m.key, "log"])) };
     renderCommon();
     content.hidden = false;
@@ -269,6 +309,7 @@ async function loadData() {
       renderControls();
       renderDashboard();
       renderResults();
+      renderIndexRead();
       renderBufferPool();
       renderHotUpdate();
       renderSummaries(conclusions);

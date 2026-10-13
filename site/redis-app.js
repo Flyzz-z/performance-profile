@@ -10,7 +10,7 @@ const STABILITY = { stable: "稳定", acceptable: "可接受", unstable: "不稳
 const badge = value => `<span class="status status-${STABILITY[value] ? value : "missing"}">${STABILITY[value] ?? MISSING}</span>`;
 // 结论由作者逐条手写，存放于 data/conclusions.json；空字符串不显示。
 const summaryBlock = (id, content) => `<section class="experiment-summary" data-summary="${id}" aria-label="实验结论"${content.trim() ? "" : " hidden"}>
-  <h2>实验结论</h2><div class="summary-text">${escape(content)}</div></section>`;
+  <h3>实验结论</h3><div class="summary-text">${escape(content)}</div></section>`;
 
 const SCENARIO_INFO = {
   commands: { title: "命令与数据结构基线", scope: "16 连接 · 无 Pipeline",
@@ -77,7 +77,7 @@ function renderMemoryCards() {
       <div><dt>used_memory</dt><dd>${formatMemory(point.redis?.usedMemoryBytes)}</dd></div></dl></article>`).join("")}</div>`;
 }
 
-function renderScenario(id, spec) {
+function renderScenario(id, spec, conclusion) {
   const info = SCENARIO_INFO[id];
   const scenario = report.scenarios.get(id);
   const points = (scenario?.points ?? []).filter(point => report.point(point.id));
@@ -88,6 +88,7 @@ function renderScenario(id, spec) {
   return `<section class="section-band scenario" id="scenario-${id}" aria-labelledby="title-${id}">
     <div class="section-heading"><h2 id="title-${id}">${index}. ${escape(info.title)}</h2><span class="muted">${escape(info.scope)}</span></div>
     <p class="scenario-note">${escape(info.note)}</p>
+    ${summaryBlock(id, conclusion)}
     ${points.length ? `${id === "memory" ? renderMemoryCards() : ""}
     <div class="chart-grid redis-chart-grid">${panels.map(panel => `
       <div class="chart-panel" data-scenario="${id}" data-panel="${panel.key}">
@@ -99,7 +100,10 @@ function renderScenario(id, spec) {
       ${points.map(point => `<tr data-point="${escape(point.id)}"><td>${escape(describePoint(point))}${flagMark(point)}</td>${columns.map(column => `<td>${escape(column.value(point))}</td>`).join("")}<td>${badge(point.stability)}</td></tr>`).join("")}
     </tbody></table></div></div>
     ${flagged ? '<p class="muted flag-note">标记“压测端受限”的点，压测端 CPU 达到配额的 90% 以上，结果可能受压测端限制，不能当作 Redis 的性能上限。</p>' : ""}
-    <div class="result-details">${points.map(renderRunTable).join("")}</div>` : '<p class="muted">暂无有效结果</p>'}
+    <details class="section-band results-disclosure" id="results-${id}" aria-labelledby="results-title-${id}">
+      <summary class="section-heading"><h3 id="results-title-${id}">结果明细</h3><span class="muted">汇总与逐次运行</span></summary>
+      <div class="result-details">${points.map(renderRunTable).join("")}</div>
+    </details>` : '<p class="muted">暂无有效结果</p>'}
   </section>`;
 }
 
@@ -126,7 +130,7 @@ function renderScenarios(conclusions) {
   const specs = chartSpecs(report);
   const available = SCENARIO_ORDER.filter(id => report.scenarios.has(id));
   document.getElementById("scenario-nav").innerHTML = available.map(id => `<a href="#scenario-${id}">${SCENARIO_ORDER.indexOf(id) + 1} ${escape(SCENARIO_INFO[id].title)}</a>`).join("");
-  document.getElementById("scenarios").innerHTML = available.map(id => summaryBlock(id, conclusions[id] ?? "") + renderScenario(id, specs[id])).join("");
+  document.getElementById("scenarios").innerHTML = available.map(id => renderScenario(id, specs[id], conclusions[id] ?? "")).join("");
   mountCharts(specs);
 }
 

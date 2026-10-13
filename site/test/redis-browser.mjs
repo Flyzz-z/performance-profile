@@ -72,7 +72,11 @@ try {
   assert.equal(await page.locator("#coverage-note").isHidden(), true);
   assert.equal(await page.locator(".experiment-summary:visible").count(), 1);
   assert.equal(await page.locator('[data-summary="pipeline"] .summary-text').innerText(), "测试结论：Pipeline 放大");
-  assert.ok((await page.locator('[data-summary="pipeline"]').boundingBox()).y < (await page.locator("#scenario-pipeline").boundingBox()).y, "summary sits above its scenario");
+  const pipelineSummary = await page.locator('[data-summary="pipeline"]').boundingBox();
+  const pipelineNote = await page.locator("#scenario-pipeline .scenario-note").boundingBox();
+  const pipelineCharts = await page.locator("#scenario-pipeline .chart-grid").boundingBox();
+  assert.equal(await page.locator('#scenario-pipeline > .scenario-note + [data-summary="pipeline"]').count(), 1, "summary follows its experiment description");
+  assert.ok(pipelineSummary.y >= pipelineNote.y + pipelineNote.height && pipelineSummary.y + pipelineSummary.height <= pipelineCharts.y, "summary sits between its description and charts");
   assert.equal(await page.locator(".chart-panel").count(), 13);
   assert.equal(await page.locator(".chart-panel svg").count(), 13);
   assert.equal(await page.locator("#redis-version").innerText(), "7.4.2");

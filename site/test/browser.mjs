@@ -4,11 +4,12 @@ import { readFileSync, mkdirSync } from "node:fs";
 import { createServer } from "node:net";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { formatNumber, formatLatency, formatMemory, formatDate, peakPoint, projectReport, stabilityLabel } from "../report.mjs";
+import { formatNumber, formatLatency, formatMemory, formatDate, peakPoint, projectReport, projectDashboard, stabilityLabel } from "../report.mjs";
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const data = JSON.parse(readFileSync(path.join(project, "site/data/mysql.json")));
-const seriesCount = data.series.length;
+const dashboardData = projectDashboard(projectReport(data));
+const seriesCount = dashboardData.series.length;
 const expectedPeak = peakPoint(projectReport(data));
 const readSeries = data.series.find((s) => s.scenario === "point_select");
 const read8 = readSeries.points.find((p) => p.concurrency === 8);
@@ -39,7 +40,7 @@ mkdirSync(screenshotDirectory, { recursive: true });
 async function ready(page, route = "mysql.html") {
   await page.goto(`${url}/${route}`);
   await page.locator("#report").waitFor({ state: "visible" });
-  if (route === "mysql.html") await page.locator(".chart-panel").first().waitFor();
+  if (route === "mysql.html") await page.locator(".dashboard .chart-panel").first().waitFor();
 }
 
 async function noOverflow(page) {
@@ -76,24 +77,31 @@ try {
   assert.equal(await page.locator('[data-summary="formal-dashboard"] .summary-text').innerText(), "测试结论：读写对比");
   assert.equal(await page.locator('[data-summary="buffer-pool"] .summary-text').innerText(), "测试结论：缓存");
   assert.equal(await page.locator('[data-summary="hot-update"]').isHidden(), true, "empty summaries stay hidden");
-  const above = async (summary, experiment) => (await page.locator(summary).boundingBox()).y < (await page.locator(experiment).boundingBox()).y;
-  assert.equal(await above('[data-summary="formal-dashboard"]', ".dashboard"), true, "summary sits above its experiment");
-  assert.equal(await above('[data-summary="buffer-pool"]', "#buffer-pool-experiment"), true, "summary sits above its experiment");
-  assert.equal(await page.locator(".chart-panel").count(), 4);
-  assert.equal(await page.locator(".chart-dot").count(), data.series.flatMap((s) => s.points).length * 4);
+  assert.equal(await page.locator('.dashboard > #index-read-description + [data-summary="formal-dashboard"]').count(), 1, "summary sits below dashboard heading");
+  assert.equal(await page.locator('#buffer-pool-experiment > #buffer-pool-description + [data-summary="buffer-pool"]').count(), 1, "summary follows buffer pool description");
+  const bufferSummary = await page.locator('[data-summary="buffer-pool"]').boundingBox();
+  const bufferDescription = await page.locator("#buffer-pool-description").boundingBox();
+  const bufferResults = await page.locator("#buffer-pool-results").boundingBox();
+  assert.ok(bufferDescription.y + bufferDescription.height <= bufferSummary.y && bufferSummary.y + bufferSummary.height <= bufferResults.y, "summary sits between buffer pool description and results");
+  assert.equal(await page.locator(".dashboard .chart-panel").count(), 4);
+  assert.equal(await page.locator(".dashboard .chart-dot").count(), dashboardData.series.flatMap((s) => s.points).length * 4);
+  assert.equal(await page.locator('.dashboard .chart-dot[data-concurrency="32"]').count(), 0);
+  assert.equal(await page.locator('#concurrency-controls [data-concurrency="32"]').count(), 0);
+  assert.equal(await page.locator('.result-detail[data-level="32"]').count(), 2);
+  assert.equal(await page.locator('#environment-groups summary').filter({ hasText: "32 并发实验" }).count(), 1);
   assert.equal(await page.locator("#comparison-grid").count(), 0);
   assert.equal(await page.locator("#cpu-limit").textContent(), `${data.environment.container.mysqlCpuLimit} CPU`);
   assert.equal(await page.locator("#memory-limit").textContent(), "6 GiB");
   assert.equal(await page.locator("#buffer-pool").textContent(), "3 GiB");
   assert.equal(await page.locator("#report-time").textContent(), formatDate(data.component.testedAt));
-  const highestConcurrency = Math.max(...projectReport(data).concurrency);
+  const highestConcurrency = Math.max(...projectReport(data).concurrency.filter(level => level !== 32));
   assert.equal(await page.locator("#selected-concurrency").textContent(), String(highestConcurrency));
   assert.equal(await page.locator("#selected-body tr[data-scenario]").count(),
-    data.series.filter(s=>s.points.some(p=>p.concurrency===highestConcurrency)).length);
+    dashboardData.series.filter(s=>s.points.some(p=>p.concurrency===highestConcurrency)).length);
   for (const metric of ["qps", "tps", "p95Ms", "p99Ms"]) {
     const panel = page.locator(`[data-metric="${metric}"]`);
     for (const series of data.series) {
-      for (const point of series.points) {
+      for (const point of series.points.filter(point => point.concurrency !== 32)) {
         const dot = panel.locator(`.chart-dot[data-scenario="${series.scenario}"][data-concurrency="${point.concurrency}"]`);
         assert.equal(Number(await dot.getAttribute("data-value")), point[metric]);
       }
@@ -108,11 +116,11 @@ try {
   assert.equal(await page.getByRole("button", { name: "TPS 线性刻度", exact: true }).getAttribute("aria-pressed"), "true");
   assert.match(await page.locator('[data-metric="tps"] svg').getAttribute("aria-label"), /线性/);
   await page.locator('input[value="update_index"]').uncheck();
-  assert.equal(await page.locator('.chart-dot[data-scenario="update_index"]').count(), 0);
+  assert.equal(await page.locator('.dashboard .chart-dot[data-scenario="update_index"]').count(), 0);
   assert.equal(await page.locator("#selected-body tr").count(), seriesCount - 1);
   assert.equal(await page.locator("#selected-concurrency").textContent(), "8");
   for (const checkbox of await page.locator("#scenario-controls input").all()) await checkbox.uncheck();
-  assert.equal(await page.locator(".chart-empty").count(), 4);
+  assert.equal(await page.locator(".dashboard .chart-empty").count(), 4);
   for (const checkbox of await page.locator("#scenario-controls input").all()) await checkbox.check();
   await page.getByRole("button", { name: "TPS 对数刻度", exact: true }).click();
   const keyboardButton = page.getByRole("button", { name: "并发 1", exact: true });
@@ -128,7 +136,7 @@ try {
   assert.ok(tooltipBox.x >= chartBox.x && tooltipBox.x + tooltipBox.width <= chartBox.x + chartBox.width + 1);
   await page.locator("h1").hover();
   assert.equal(await page.locator(".chart-tooltip").count(), 0);
-  assert.equal(await page.locator(".result-detail").count(), data.series.flatMap((s) => s.points).length);
+  assert.equal(await page.locator(".result-detail").count(), data.series.flatMap((s) => s.points).length + (data.indexReadExperiment?.groups.flatMap(g=>g.points).length ?? 0));
   const mixedLabel = "读写混合（读:写 = 7:2）";
   for (const selector of ["#scenario-controls", "#selected-body"]) {
     assert.ok((await page.locator(selector).textContent()).includes(mixedLabel));
@@ -233,7 +241,7 @@ try {
     await page.route("**/data/mysql.json", (request) => request.fulfill({ json: empty }));
     await ready(page, route);
     if (route === "mysql.html") {
-      assert.equal(await page.locator(".chart-empty").count(), 4);
+      assert.equal(await page.locator(".dashboard .chart-empty").count(), 4);
       assert.equal(await page.locator("#cpu-limit").textContent(), "未记录");
     } else assert.equal(await page.locator("#index-peak").textContent(), "暂无有效数据");
     await page.unroute("**/data/mysql.json");
@@ -251,11 +259,12 @@ try {
   assert.ok((await page.locator('[data-metric="qps"] .chart-note').textContent()).includes("零值"));
   await page.getByRole("button", { name: "QPS 线性刻度", exact: true }).click();
   assert.equal(await page.locator('[data-metric="qps"] .chart-dot[data-scenario="update_index"][data-concurrency="1"]').getAttribute("data-value"), "0");
-  assert.equal(await page.locator('.chart-dot[data-scenario="point_select"][data-concurrency="8"]').count(), 0);
+  assert.equal(await page.locator('.dashboard .chart-dot[data-scenario="point_select"][data-concurrency="8"]').count(), 0);
   await page.locator(".result-detail").first().locator("summary").click();
   assert.equal(await page.locator(".result-detail").first().locator("a.run-link").count(), data.stability[0].runs.length);
   await page.unroute("**/data/mysql.json");
   const four = structuredClone(data);
+  delete four.indexReadExperiment;
   delete four.concurrencySupplement;
   for(const series of four.series) series.points = series.points.filter(p=>p.concurrency!==32);
   four.stability = four.stability.filter(row=>row.concurrency!==32);
@@ -274,7 +283,7 @@ try {
   await ready(page);
   assert.equal(await page.locator("#scenario-controls input").count(), 4);
   assert.equal(await page.locator("#hot-update-experiment").isVisible(), false);
-  assert.equal(await page.locator('.chart-dot[data-scenario="update_index_async"]').count(), 12);
+  assert.equal(await page.locator('.dashboard .chart-dot[data-scenario="update_index_async"]').count(), 12);
   await noProcessNotice(page);
   const asyncEnvironment = page.locator(".environment-detail").filter({ hasText: "索引更新（异步刷盘） · 日志配置" });
   await asyncEnvironment.locator("summary").click();
@@ -324,7 +333,7 @@ try {
   await page.route("**/data/mysql.json", request=>request.fulfill({json:expanded}));
   await ready(page);
   assert.equal(await page.locator("#scenario-controls input").count(),6);
-  assert.equal(await page.locator(".chart-dot").count(),72);
+  assert.equal(await page.locator(".dashboard .chart-dot").count(),72);
   assert.equal(await page.locator("#cpu-limit").textContent(),"8 CPU");
   assert.equal(await page.locator("#selected-concurrency").textContent(),"16");
   assert.equal(await page.locator(".cache-bar-row").count(),8);
@@ -346,20 +355,19 @@ try {
     series.points.push({...structuredClone(series.points.at(-1)),concurrency:32,
       testedAt:"2026-10-08T09:00:00Z",runGroup:"fixture-supplement"});
   }
+  sparse.concurrencySupplement = structuredClone(data.concurrencySupplement);
   await page.route("**/data/mysql.json",request=>request.fulfill({json:sparse}));
   await ready(page);
-  assert.equal(await page.locator("#selected-concurrency").textContent(),"32");
-  assert.deepEqual(await page.locator("#selected-body tr").evaluateAll(nodes=>nodes.map(n=>n.dataset.scenario)),
-    ["point_select","update_index"]);
-  assert.equal(await page.locator('.chart-dot[data-concurrency="32"]').count(),8);
-  await page.locator('[data-metric="qps"] .chart-dot[data-scenario="point_select"][data-concurrency="32"]').hover();
-  assert.equal(await page.locator(".chart-tooltip > div").count(),2);
-  assert.ok(!(await page.locator(".chart-tooltip").textContent()).includes("未记录"));
-  await page.locator("h1").hover();
+  assert.equal(await page.locator("#selected-concurrency").textContent(),"16");
+  assert.equal(await page.locator("#selected-body tr[data-scenario]").count(),6);
+  assert.equal(await page.locator('.dashboard .chart-dot[data-concurrency="32"]').count(),0);
+  assert.equal(await page.locator('#concurrency-controls [data-concurrency="32"]').count(),0);
+  assert.equal(await page.locator('.result-detail[data-level="32"]').count(),2);
+  assert.equal(await page.locator('#environment-groups summary').filter({ hasText: "32 并发实验" }).count(),1);
   const independentCache = await page.locator("#buffer-pool-results").textContent();
   await page.locator('input[value="point_select"]').uncheck();
   await page.locator('input[value="update_index"]').uncheck();
-  assert.ok((await page.locator("#selected-body").textContent()).includes("该并发无已测结果"));
+  assert.equal(await page.locator("#selected-body tr[data-scenario]").count(),4);
   assert.equal(await page.locator("#buffer-pool-results").textContent(),independentCache);
   for(const checkbox of await page.locator("#scenario-controls input").all()) await checkbox.check();
   for(const width of [1440,375]) {

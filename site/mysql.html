@@ -28,15 +28,16 @@
           <div><span>数据集</span><strong id="dataset-size"></strong><small id="dataset-detail"></small></div>
         </section>
         <div class="protocol-strip" id="protocol-strip"></div>
-        <section class="experiment-summary" data-summary="formal-dashboard" aria-labelledby="summary-dashboard-title" hidden>
-          <h2 id="summary-dashboard-title">实验结论</h2>
-          <div class="summary-text"></div>
-        </section>
         <section class="dashboard" aria-labelledby="dashboard-title">
           <div class="section-heading">
             <div><h2 id="dashboard-title">性能看板</h2><p class="muted" id="dashboard-scope">读、写、混合负载</p></div>
             <span id="result-count" class="muted"></span>
           </div>
+          <div id="index-read-description" hidden></div>
+          <section class="experiment-summary" data-summary="formal-dashboard" aria-labelledby="summary-dashboard-title" hidden>
+            <h2 id="summary-dashboard-title">实验结论</h2>
+            <div class="summary-text"></div>
+          </section>
           <div class="dashboard-toolbar">
             <fieldset class="scenario-filter"><legend class="visually-hidden">场景筛选</legend><div id="scenario-controls"></div></fieldset>
             <fieldset class="concurrency-filter"><legend>并发</legend><div class="segmented" id="concurrency-controls"></div></fieldset>
@@ -48,26 +49,30 @@
               <table aria-label="选中并发的指标"><thead><tr><th>场景</th><th>QPS</th><th>TPS</th><th>p95</th><th>p99</th><th>查询 / 事件</th><th data-resource-column hidden>MySQL CPU</th><th data-resource-column hidden>压测 CPU</th><th>稳定性</th></tr></thead><tbody id="selected-body"></tbody></table>
             </div>
             <p class="muted" id="resource-unit-note"></p>
+            <p class="run-context" id="index-read-comparison" hidden></p>
           </div>
         </section>
-        <section class="section-band" aria-labelledby="results-title">
-          <div class="section-heading"><h2 id="results-title">结果明细</h2><span class="muted">汇总与逐次运行</span></div>
+        <details class="section-band results-disclosure" id="results-disclosure" aria-labelledby="results-title">
+          <summary class="section-heading"><h2 id="results-title">结果明细</h2><span class="muted">汇总与逐次运行</span></summary>
           <div id="result-details" class="result-details"></div>
-        </section>
-        <section class="experiment-summary" data-summary="buffer-pool" data-experiment="buffer-pool-experiment" aria-labelledby="summary-buffer-title" hidden>
-          <h2 id="summary-buffer-title">实验结论</h2>
-          <div class="summary-text"></div>
-        </section>
+          <div id="index-read-experiment" hidden><div class="result-details" id="index-read-details"></div></div>
+        </details>
         <section class="section-band" id="buffer-pool-experiment" aria-labelledby="buffer-title" hidden>
           <div class="section-heading"><h2 id="buffer-title">Buffer Pool 容量对比</h2><span class="muted">1 GiB / 2 GiB</span></div>
+          <div id="buffer-pool-description"></div>
+          <section class="experiment-summary" data-summary="buffer-pool" data-experiment="buffer-pool-experiment" aria-labelledby="summary-buffer-title" hidden>
+            <h3 id="summary-buffer-title">实验结论</h3>
+            <div class="summary-text"></div>
+          </section>
           <div id="buffer-pool-results"></div>
-        </section>
-        <section class="experiment-summary" data-summary="hot-update" data-experiment="hot-update-experiment" aria-labelledby="summary-hot-title" hidden>
-          <h2 id="summary-hot-title">实验结论</h2>
-          <div class="summary-text"></div>
         </section>
         <section class="section-band" id="hot-update-experiment" aria-labelledby="hot-update-title" hidden>
           <div class="section-heading"><h2 id="hot-update-title">热点更新与行锁等待</h2><span class="muted">16 并发</span></div>
+          <div id="hot-update-description"></div>
+          <section class="experiment-summary" data-summary="hot-update" data-experiment="hot-update-experiment" aria-labelledby="summary-hot-title" hidden>
+            <h3 id="summary-hot-title">实验结论</h3>
+            <div class="summary-text"></div>
+          </section>
           <div id="hot-update-results"></div>
         </section>
         <section class="section-band" id="environment" aria-labelledby="environment-title">

@@ -201,6 +201,57 @@ export function peakPoint(report) {
     .filter((point) => validMetric(point.qps)).sort((a, b) => b.qps - a.qps)[0] ?? null;
 }
 
+export function projectDashboard(report) {
+  const concurrency = report.concurrency.filter((level) => level !== 32);
+  const series = report.series.map((item) => ({
+    ...item, points: item.points.filter((point) => point.concurrency !== 32),
+  }));
+  const indexRead = projectIndexReadExperiment(report.data);
+  if (indexRead) {
+    series.push(...indexRead.groups.map(group => ({
+      ...group, kind: "READ", testedAt: indexRead.testedAt,
+    })));
+  }
+  return { ...report, series, concurrency, selectedConcurrency: concurrency.at(-1) ?? null };
+}
+
+export function projectIndexReadExperiment(data) {
+  const experiment = data?.indexReadExperiment;
+  if (!experiment || experiment.schemaVersion !== 1 || experiment.purpose !== "formal" || experiment.restorationVerified !== true
+    || !Array.isArray(experiment.groups) || experiment.groups.length !== 2 || !Number.isFinite(Date.parse(experiment.testedAt))) return null;
+  const protocol = experiment.protocol;
+  if (JSON.stringify(protocol?.concurrency) !== "[1,8,16]" || protocol.warmupSeconds !== 30 || protocol.durationSeconds !== 90
+    || protocol.repeats !== 2 || protocol.thresholdPercent !== 30 || experiment.workload?.returnedRows !== 1
+    || experiment.workload?.queriesPerEvent !== 1 || experiment.workload?.sql !== "SELECT c FROM sbtestN WHERE k=?") return null;
+  const groups = [];
+  if (!artifactUrl(experiment.workload.scriptSnapshotPath) || !artifactUrl(experiment.restorationPath)) return null;
+  for (const [i,group] of experiment.groups.entries()) {
+    const id = ["indexed","table-scan"][i];
+    if (group?.id !== id || group.runGroup !== experiment.runGroup || !Array.isArray(group.points) || group.points.length !== 3
+      || new Set(group.points.map(p => p?.concurrency)).size !== 3 || !Array.isArray(group.runs)) return null;
+    const c = group.environment?.container;
+    if (c?.mysqlCpuLimit !== 8 || c.loadGeneratorCpuLimit !== 4 || c.mysqlMemoryLimit !== "6g" || c.loadGeneratorMemoryLimit !== "1g"
+      || group.environment.mysql?.bufferPoolBytes !== 3221225472) return null;
+    if (![group.environmentPath,group.datasetPath,group.finalDatasetPath,group.plansPath,group.finalPlansPath].every(artifactUrl)) return null;
+    for (const point of group.points) {
+      if (!point || ![1,8,16].includes(point.concurrency) || !METRICS.every(m => validMetric(point[m.key]))
+        || !["stable","acceptable","unstable"].includes(point.stability) || ![2,3].includes(point.attempts)
+        || point.queriesPerTransaction !== 1 || !Array.isArray(point.runs) || point.runs.length !== point.attempts
+        || !validMetric(point.resources?.mysql?.meanQuotaPercent) || !validMetric(point.resources?.loadgen?.meanQuotaPercent)) return null;
+      if (!point.runs.every(run => run && run.metrics && METRICS.every(m => validMetric(run.metrics[m.key]))
+        && validMetric(run.resources?.mysql?.meanQuotaPercent) && validMetric(run.resources?.loadgen?.meanQuotaPercent)
+        && [run.rawOutputPath,run.resourcePath,run.environmentPath].every(artifactUrl))) return null;
+    }
+    groups.push({...group,label:i===0?"二级索引点查":"无二级索引查询（全表扫描）",color:i===0?"#6e56a6":"#687583",
+      points:[...group.points].sort((a,b)=>a.concurrency-b.concurrency).map(p=>({...p,scenario:id}))});
+  }
+  const comparisons = [1,8,16].map(concurrency => {
+    const indexed=groups[0].points.find(p=>p.concurrency===concurrency),scan=groups[1].points.find(p=>p.concurrency===concurrency);
+    return {concurrency,qpsRatio:scan.qps>0?indexed.qps/scan.qps:null};
+  });
+  return {...experiment,groups,comparisons};
+}
+
 function niceValues(low, high) {
   const values = [];
   for (let power = Math.floor(Math.log10(low)); power <= Math.ceil(Math.log10(high)); power += 1) {
