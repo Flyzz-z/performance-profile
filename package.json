@@ -4,6 +4,7 @@
   "private": true,
   "description": "Benchmarks and quantified performance profiles for common internet infrastructure components.",
   "scripts": {
+    "mysql:index-read": "node benchmarks/mysql/scripts/index-read.mjs",
     "mysql:supplement": "node benchmarks/mysql/scripts/supplement.mjs",
     "mysql:hot-update": "node benchmarks/mysql/scripts/hot-update.mjs",
     "mysql:up": "docker compose --env-file benchmarks/mysql/.env -f benchmarks/mysql/compose.yaml up -d mysql",
@@ -21,6 +22,7 @@
     "test:redis": "node --test benchmarks/redis/scripts/test/*.test.mjs",
     "test:site": "node --test site/test/report.test.mjs site/test/routes.test.mjs site/test/redis-report.test.mjs",
     "test:site:browser": "node site/test/browser.mjs",
+    "test:site:index-read-browser": "node site/test/index-read-browser.mjs",
     "test:site:redis-browser": "node site/test/redis-browser.mjs",
     "openspec": "openspec",
     "openspec:list": "openspec list",

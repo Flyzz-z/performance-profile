@@ -16,6 +16,23 @@
 - 协议：预热 30 秒，正式运行 2 次、每次 90 秒；TPS 或 p99 差异超过 30% 时补跑第 3 次
 - 最终正式实验：6 个场景 × 并发 1/8/16，另含独立 Buffer Pool 1/2 GiB 两组实验及16并发热点更新实验；主测试与缓存测量约 91.5-133 分钟，热点实验另需3分钟，准备与重启时间另计
 
+## 独立二级索引读实验
+
+```bash
+npm run mysql:index-read -- --dry-run
+npm run mysql:index-read -- --verification --no-publish
+caffeinate -i npm run mysql:index-read -- --group=index-read-<唯一标识> --no-publish
+npm run mysql:index-read -- --publish-summary=benchmarks/mysql/results/index-read-<唯一标识>-index-read.json
+```
+
+两组各有10表×100000行的相同冻结数据，`k=id`使每个查询键恰好返回一行；保留自增主键，只有有索引组保留非唯一`k`二级索引。共享参数化`SELECT c FROM sbtestN WHERE k=?`，均匀随机选表与键，种子42；有索引组回表读取c，无索引组全表扫描。每查询扫描的表有10万行，总数据每组100万行；该实验不代表多行或范围检索。
+
+两组实际软件及基础镜像与既有正式结果一致，MySQL 8 CPU/6 GiB、sysbench 4 CPU/1 GiB、ARM64、3 GiB缓存及binlog ON、redo/sync_binlog/timeout 1/1/1。各测1/8/16并发，每组合30秒预热、两次90秒，TPS或p99差异超过30%补第三次；两次均值、三次中位数并保留全部观测。净负载21–30分钟，准备/检查另计，保持宿主机与VM工作且不叠加其他负载。
+
+数据在本次专属数据库准备，既有`sbtest`不重置；保存全行摘要、全部表的ref/ALL执行计划、单行返回验证、负载快照及各次原始输出。5秒资源采样要求至少72秒覆盖、最多100秒跨度、最多10秒间隔。结束核验冻结数据、配置、原数据库和自身负载清理，失败不发布，不删除共享卷或其他容器。SIGKILL/VM故障后需检查残留状态。
+
+完整原始证据复算通过才原子合并`indexReadExperiment`，备份在`results/verification/report-backups/`。主场景、32并发补测、缓存/热点、日期、环境及索引页峰值不改写；`--no-publish`与`--publish-summary`分开测量和发布。新原始结果组不可覆盖旧组；验证位于`results/verification/`、不能发布，dry run不启动容器或修改文件/数据库。页面独立展示，两组只按同并发计算QPS倍数；结论作者手写。
+
 ## 两场景32并发补测
 
 ```bash
@@ -48,6 +65,8 @@ caffeinate -i npm run mysql:hot-update
 保留的完整正式summary可通过`npm run mysql:hot-update -- --publish-summary=benchmarks/mysql/results/<group>-hot-update.json`重新复算验收并发布。
 
 ## 常规命令
+
+容器周期性健康检查仅核验 mysqld 进程与 Unix socket，避免 `mysqladmin ping` 的短暂连接被正式实验的客户端隔离巡检计入。所有启动入口在健康状态通过后继续执行 `SELECT 1` 确认 SQL 可用；正式测量前仍核验实际版本、配置和其他客户端，不放宽隔离门禁。
 
 ```bash
 npm run mysql:up

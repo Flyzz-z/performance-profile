@@ -21,7 +21,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent",
+          "test -S /var/run/mysqld/mysqld.sock && kill -0 \"$$(cat /var/run/mysqld/mysqld.pid)\"",
         ]
       interval: 5s
       timeout: 5s
@@ -50,6 +50,7 @@ services:
       TABLE_SIZE: ${TABLE_SIZE}
     volumes:
       - ./results:/workspace/results
+      - ./loadgen/scripts:/workspace/scripts:ro
     working_dir: /workspace
     networks:
       - benchmark

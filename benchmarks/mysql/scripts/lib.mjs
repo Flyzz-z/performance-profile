@@ -267,7 +267,13 @@ export async function waitForMysql(env, timeoutMilliseconds = 120_000) {
       containerId,
     ]);
     if (inspectResult.stdout.trim() === "healthy") {
-      return containerId;
+      try {
+        if ((await mysqlQuery(env, "SELECT 1;")).trim() === "1") {
+          return containerId;
+        }
+      } catch {
+        // The process/socket check can pass before SQL accepts connections.
+      }
     }
     await sleep(1_000);
   }
